@@ -19,4 +19,5 @@ public class Student {
     private Date st_registerdate;
     @TableField(select = false)
     private String st_password;
+    private String st_card;
 }

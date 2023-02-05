@@ -19,4 +19,5 @@ public class Teacher {
     private Date te_registerdate;
     @TableField(select = false)
     private String te_password;
+    private String te_card;
 }

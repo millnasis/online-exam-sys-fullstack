@@ -19,7 +19,7 @@ class OnlineExamSysApplicationTests {
 	void firstTest() {
 		Student st = new Student();
 		st.setSt_age(23);
-		st.setSt_name("谭云勇");
+		st.setSt_name("ddd");
 		st.setSt_password("123kkk");
 		st.setSt_registerdate(new Date(System.currentTimeMillis()));
 		st.setSt_sex("M");
