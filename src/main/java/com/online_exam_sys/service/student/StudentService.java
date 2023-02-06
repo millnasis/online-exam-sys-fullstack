@@ -14,4 +14,6 @@ public interface StudentService {
     public boolean add(Student student);
 
     public boolean update(Student student);
+
+    public Student queryByCard(String card);
 }

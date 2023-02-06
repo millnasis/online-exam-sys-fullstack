@@ -5,6 +5,7 @@ public interface Constant {
         int error = -1;
         int success = 200;
         int sys_err = 500;
+        int not_found = 404;
     }
 
     interface sex {

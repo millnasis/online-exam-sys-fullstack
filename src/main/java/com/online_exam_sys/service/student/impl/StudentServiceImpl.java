@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.online_exam_sys.dao.StudentDao;
 import com.online_exam_sys.pojo.Student;
 import com.online_exam_sys.service.student.StudentService;
@@ -43,6 +44,14 @@ public class StudentServiceImpl implements StudentService {
     public boolean update(Student student) {
         int ret = studentDao.updateById(student);
         return ret > 0;
+    }
+
+    @Override
+    public Student queryByCard(String card) {
+        LambdaQueryWrapper<Student> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(Student::getSt_card, card);
+        Student data = studentDao.selectOne(lqw);
+        return data;
     }
 
 }
