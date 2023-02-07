@@ -16,4 +16,6 @@ public interface StudentService {
     public boolean update(Student student);
 
     public Student queryByCard(String card);
+
+    public String getPwd(Long id);
 }

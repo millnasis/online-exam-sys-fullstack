@@ -9,4 +9,15 @@ public class ResourceController {
     public String login() {
         return "login.html";
     }
+
+    @RequestMapping("/register")
+    public String register() {
+        return "register.html";
+    }
+
+    @RequestMapping("/success")
+    public String success() {
+        return "success.html";
+    }
+
 }

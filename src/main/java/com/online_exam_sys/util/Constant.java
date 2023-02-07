@@ -6,6 +6,7 @@ public interface Constant {
         int success = 200;
         int sys_err = 500;
         int not_found = 404;
+        int account_exist = 40301;
     }
 
     interface sex {

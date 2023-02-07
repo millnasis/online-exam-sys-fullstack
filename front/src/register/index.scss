@@ -1,0 +1,34 @@
+body {
+  background-color: rgba($color: #000000, $alpha: 0.05);
+  padding: 0;
+  margin: 0;
+  .warpper {
+    width: 98vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding-top: 50px;
+    padding-bottom: 50px;
+    .register-window {
+      padding: 20px 5%;
+      width: 30vw;
+      min-width: 300px;
+      border-radius: 1vmin;
+      box-shadow: 0px 15px 25px 0 rgba(0, 0, 0, 0.6);
+      .title {
+        text-align: center;
+        font-size: 5vmin;
+        text-shadow: 0 5px 5px rgba(0, 0, 0, 0.6);
+      }
+      .bottom-icons {
+        font-size: 30px;
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+        svg {
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}

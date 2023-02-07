@@ -54,4 +54,9 @@ public class StudentServiceImpl implements StudentService {
         return data;
     }
 
+    @Override
+    public String getPwd(Long id) {
+        return studentDao.getPwd(id);
+    }
+
 }

@@ -34,8 +34,8 @@ function Home(props) {
           });
           console.log(data);
         } else {
-          localStorage.setItem("userinfo", data);
-          location.href = "./success.html";
+          localStorage.setItem("userinfo", JSON.stringify(data));
+          location.href = "/success";
         }
       } else {
         notification.error({
@@ -56,7 +56,7 @@ function Home(props) {
       >
         <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} onFinish={login}>
           <Item
-            label="Username"
+            label="学号"
             name="username"
             rules={[{ required: true, message: "请输入用户名" }]}
           >
@@ -64,7 +64,7 @@ function Home(props) {
           </Item>
 
           <Item
-            label="Password"
+            label="密码"
             name="password"
             rules={[{ required: true, message: "请输入密码" }]}
           >

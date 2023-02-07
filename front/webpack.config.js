@@ -1,14 +1,17 @@
 const path = require("path");
+const fs = require("fs");
 const htmlWebpackPlugin = require("html-webpack-plugin");
 //自动打包html文件plugin
 const miniCssExtractPlugin = require("mini-css-extract-plugin");
 //将css提取为单独文件plugin
 const { resolve } = require("path");
 
-const buildArray = ["login", "success"];
-
 let entryObject = {};
 let htmlWebpackPluginArray = [];
+
+const url = path.join(__dirname, "./src");
+
+const buildArray = fs.readdirSync(url).filter((v) => v.match(/^\w+$/));
 
 buildArray.forEach((value) => {
   entryObject[value] = `./src/${value}/index.jsx`;

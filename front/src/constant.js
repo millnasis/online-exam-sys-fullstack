@@ -4,6 +4,12 @@ export default {
     success: 200,
     sys_err: 500,
     not_found: 404,
+    account_exist: 40301,
+  },
+
+  identity: {
+    student: "STUDENT",
+    teacher: "TEACHER",
   },
 
   sex: {

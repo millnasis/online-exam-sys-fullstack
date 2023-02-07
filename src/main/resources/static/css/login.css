@@ -24,4 +24,5 @@ body {
 .warpper .login-win .title {
   font-size: 5vmin;
   text-align: center;
+  text-shadow: 0 5px 5px rgba(0, 0, 0, 0.6);
 }
