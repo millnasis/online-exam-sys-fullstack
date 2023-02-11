@@ -19,13 +19,19 @@ import com.online_exam_sys.service.student.StudentService;
 import com.online_exam_sys.util.Constant;
 import com.online_exam_sys.util.Result;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 // RESTful风格的登陆请求是/cookies 因为登陆动作是请求这个资源
 @RestController
+@Api
 @RequestMapping("/session")
 public class SessionController {
     @Autowired
     private StudentService studentService;
 
+
+    @ApiOperation("学生登陆")
     @PostMapping("/student")
     public Result studentLogin(@RequestBody Student data, HttpServletRequest req) {
         Student st = studentService.queryByCard(data.getSt_card());
@@ -41,6 +47,7 @@ public class SessionController {
         return new Result(st, null, Constant.code.success);
     }
 
+    @ApiOperation("退出登陆")
     @DeleteMapping
     public Result logout(HttpServletRequest req, HttpServletResponse res) throws IOException {
         HttpSession session = req.getSession();

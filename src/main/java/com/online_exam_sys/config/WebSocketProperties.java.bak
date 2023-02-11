@@ -1,0 +1,54 @@
+package com.online_exam_sys.config;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import lombok.Data;
+
+@Data
+@ConfigurationProperties("ws")
+public class WebSocketProperties {
+    /**
+     * title
+     */
+    private String title;
+
+    /**
+     * host
+     */
+    private String host;
+
+    /**
+     * port
+     */
+    private Integer port;
+
+    /**
+     * bossCount
+     */
+    private int bossCount;
+
+    /**
+     * workCount
+     */
+    private int workCount;
+
+    /**
+     * allowCustomRequests
+     */
+    private boolean allowCustomRequests;
+
+    /**
+     * upgradeTimeout
+     */
+    private int upgradeTimeout;
+
+    /**
+     * pingTimeout
+     */
+    private int pingTimeout;
+
+    /**
+     * pingInterval
+     */
+    private int pingInterval;
+}

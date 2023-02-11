@@ -16,12 +16,17 @@ import com.online_exam_sys.service.student.StudentService;
 import com.online_exam_sys.util.Constant;
 import com.online_exam_sys.util.Result;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 @RestController
+@Api(tags = "学生接口")
 @RequestMapping("/students")
 public class StudentController {
     @Autowired
     private StudentService studentService;
 
+    @ApiOperation("根据id查询学生")
     @GetMapping("/{id}")
     public Result queryById(@PathVariable int id) {
         // DigestUtils.md5DigestAsHex("1234".getBytes());
@@ -30,6 +35,7 @@ public class StudentController {
                 : new Result(null, "未找到", Constant.code.not_found);
     }
 
+    @ApiOperation("注册新学生")
     @PostMapping
     public Result register(@RequestBody Student data) {
         Student st = studentService.queryByCard(data.getSt_card());

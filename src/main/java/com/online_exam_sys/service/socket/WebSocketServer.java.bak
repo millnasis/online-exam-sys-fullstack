@@ -1,0 +1,107 @@
+package com.online_exam_sys.service.socket;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
+import javax.websocket.OnClose;
+import javax.websocket.OnError;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+import javax.websocket.server.ServerEndpoint;
+
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Component
+@Slf4j
+@ServerEndpoint("/")
+public class WebSocketServer {
+    private static final ConcurrentMap<String, WebSocketServer> USER_CLIENT_MAP = new ConcurrentHashMap<>();
+    private Session session;
+
+    @OnOpen
+    public void onOpen(Session session) {
+        USER_CLIENT_MAP.put(session.getId(), this);
+        this.session = session;
+    }
+
+    @OnMessage
+    public void onMessage(String msg, Session session) throws IOException {
+        log.info("{},{},{}", msg, this.toString(), session.getId());
+        String key = this.session.getId();
+        if (!USER_CLIENT_MAP.containsKey(key)) {
+            this.close();
+            return;
+        }
+        push("token", "收到消息" + msg);
+    }
+
+    @OnError
+    public void onError(Session session, Throwable throwable) throws IOException {
+        if (this.session != null && this.session.isOpen()) {
+            log.error("websocket连接onError。inputSession：{}-localSession：{}", session.getId(), this.toString(),
+                    throwable);
+            this.close();
+        } else {
+            log.info("已经关闭的websocket连接发生异常！inputSession：{}-localSession：{}", session.getId(), this.toString(),
+                    throwable);
+        }
+    }
+
+    @OnClose
+    public void onClose() throws IOException {
+        log.debug("websocket连接onClose。{}", this.toString());
+        // 然后关闭
+        this.close();
+    }
+
+    private void close() throws IOException {
+        USER_CLIENT_MAP.remove(this.session.getId());
+        if (session == null) {
+            log.info("连接关闭{}", this.toString());
+            return;
+        }
+        if (session.isOpen()) {
+            session.close();
+        }
+    }
+
+    public void push(String token, String message) throws IOException {
+        if (StringUtils.isEmpty(token)) {
+            throw new RuntimeException("token must not be null. token=" + token + ", message=" + message);
+        }
+
+        if (StringUtils.isEmpty(message)) {
+            throw new RuntimeException("message must not be null. token=" + token + ", message=" + message);
+        }
+
+        if (!session.isOpen()) {
+            this.close();
+            throw new RuntimeException("session is closed. token=" + token + ", message=" + message);
+        }
+
+        // 发送消息
+        this.sendMessage(message);
+    }
+
+    private void sendMessage(String msg) {
+        try {
+            session.getBasicRemote().sendText(msg);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public void sendToAll(Map<String, Object> map) {
+        USER_CLIENT_MAP.values().forEach(item -> {
+            item.sendMessage(map.toString());
+        });
+    }
+
+}

@@ -1,0 +1,39 @@
+package com.online_exam_sys.config;
+
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.socket.server.standard.ServerEndpointExporter;
+
+import com.corundumstudio.socketio.SocketConfig;
+import com.corundumstudio.socketio.SocketIOServer;
+
+@Configuration
+@EnableConfigurationProperties({
+        WebSocketProperties.class
+})
+public class WebSocketConfig {
+
+    @Bean
+    public ServerEndpointExporter handlerAdapter() {
+        return new ServerEndpointExporter();
+    }
+
+    @Bean
+    public SocketIOServer socketIOServer(WebSocketProperties wp) {
+        SocketConfig socketConfig = new SocketConfig();
+        socketConfig.setTcpNoDelay(true);
+        socketConfig.setSoLinger(0);
+        com.corundumstudio.socketio.Configuration config = new com.corundumstudio.socketio.Configuration();
+        config.setSocketConfig(socketConfig);
+        config.setHostname(wp.getHost());
+        config.setPort(wp.getPort());
+        config.setBossThreads(wp.getBossCount());
+        config.setWorkerThreads(wp.getWorkCount());
+        config.setAllowCustomRequests(wp.isAllowCustomRequests());
+        config.setUpgradeTimeout(wp.getUpgradeTimeout());
+        config.setPingTimeout(wp.getPingTimeout());
+        config.setPingInterval(wp.getPingInterval());
+        return new SocketIOServer(config);
+    }
+}

@@ -1,0 +1,76 @@
+package com.online_exam_sys.service.socket;
+
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.corundumstudio.socketio.SocketIOClient;
+import com.corundumstudio.socketio.SocketIOServer;
+
+import io.netty.handler.codec.http.HttpHeaders;
+import lombok.extern.slf4j.Slf4j;
+
+@Service
+@Slf4j
+public class WebSocketService {
+
+    private static final Map<UUID, SocketIOClient> CLIENT_MAP = new ConcurrentHashMap<>();
+    @Autowired
+    private SocketIOServer socketIOServer;
+
+    @PostConstruct
+    private void autoStart() {
+        log.info("socket服务器启动");
+        socketIOServer.addConnectListener(client -> {
+            // String token = getClientToken(client, "token");
+            // if (checkToken(token)) {
+            // log.info("token有效");
+            // CLIENT_MAP.put(client.getSessionId(), client);
+            // } else {
+            // client.disconnect();
+            // }
+            log.info(":{}进来了", client.getSessionId());
+            CLIENT_MAP.put(client.getSessionId(), client);
+        });
+        socketIOServer.addDisconnectListener(client -> {
+            CLIENT_MAP.remove(client.getSessionId());
+            client.disconnect();
+            log.info("client:{}下线了", client.getSessionId());
+        });
+        socketIOServer.start();
+        log.info("socket服务器启动完成");
+    }
+
+    private String getClientToken(SocketIOClient client, String key) {
+        HttpHeaders httpHeaders = client.getHandshakeData().getHttpHeaders();
+        return httpHeaders.get(key);
+    }
+
+    private boolean checkToken(String token) {
+        log.info("token如下:{}", token);
+        return true;
+    }
+
+    @PreDestroy
+    private void onDestroy() {
+        if (socketIOServer != null) {
+            socketIOServer.stop();
+        }
+    }
+
+    public int sendMsg(Object data) {
+        CLIENT_MAP.forEach((key, value) -> {
+            value.sendEvent("server_event", data);
+            log.info("发送数据:{}", key);
+        });
+        return CLIENT_MAP.size();
+
+    }
+
+}
