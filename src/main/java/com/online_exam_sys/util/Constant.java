@@ -34,4 +34,15 @@ public interface Constant {
         String correcting = "CORRECTING";
         String finished = "FINISHED";
     }
+
+    interface signal {
+        String SIGNAL_TYPE_JOIN = "join";
+        String SIGNAL_TYPE_RESP_JOIN = "resp-join";
+        String SIGNAL_TYPE_LEAVE = "leave";
+        String SIGNAL_TYPE_NEW_PEER = "new-peer";
+        String SIGNAL_TYPE_PEER_LEAVE = "peer-leave";
+        String SIGNAL_TYPE_OFFER = "offer";
+        String SIGNAL_TYPE_ANSWER = "answer";
+        String SIGNAL_TYPE_CANDIDATE = "candidate";
+    }
 }

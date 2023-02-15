@@ -19,11 +19,11 @@ class Home extends React.Component {
     var socket = new SockJS("/gs-guide");
     const stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
-      stompClient.subscribe("/topic/greet", function (greeting) {
+      stompClient.subscribe("/ws-resp/greet", function (greeting) {
         const data = JSON.parse(greeting.body);
         R.setState({ msg: data.content, date: data.date });
       });
-      stompClient.send("/app/hello", {}, JSON.stringify({ name: "kkk" }));
+      stompClient.send("/signal/hello", {}, JSON.stringify({ name: "kkk" }));
       R.setState({ status: "已连接" + frame });
     });
   }
