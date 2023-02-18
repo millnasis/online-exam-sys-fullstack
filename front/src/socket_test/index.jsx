@@ -37,6 +37,11 @@ class Home extends React.Component {
     this.rtc.createWebsocket();
   }
 
+  componentWillUnmount() {
+    this.rtc.doLeave();
+    this.rtc.hangup();
+  }
+
   render() {
     return (
       <div>
@@ -72,9 +77,14 @@ class Home extends React.Component {
             >
               加入
             </Button>
-            <Button onClick={()=>{
-              this.rtc.doLeave();
-            }}>离开</Button>
+            <Button
+              onClick={() => {
+                this.rtc.doLeave();
+                this.rtc.hangup();
+              }}
+            >
+              离开
+            </Button>
           </Typography.Paragraph>
           <Typography.Paragraph>
             <video id="localVideo" autoPlay muted playsInline>
