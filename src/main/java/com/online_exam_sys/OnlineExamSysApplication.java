@@ -11,7 +11,7 @@ public class OnlineExamSysApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(OnlineExamSysApplication.class, args);
-		log.info("服务器运行在 http://localhost:8080/ ........");
+		log.info("服务器运行在 https://localhost:8443/ ........");
 	}
 
 }

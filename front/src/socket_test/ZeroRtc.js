@@ -127,6 +127,25 @@ export default class ZeroRtc {
   }
 
   createPeerConnection() {
+    // this.peerConnection = new RTCPeerConnection({
+    //   bundlePolicy: "max-bundle",
+    //   rtcpMuxPolicy: "require",
+    //   // relay是强制使用转发服务器，all是能打洞则打洞
+    //   iceTransportPolicy: "relay",
+    //   iceServers: [
+    //     {
+    //       urls: [
+    //         "turn:192.168.221.134:3478?transport=udp",
+    //         "turn:192.168.221.134:3478?transport=tcp",
+    //       ],
+    //       username: "lqf",
+    //       credential: "123456",
+    //     },
+    //     {
+    //       urls: ["stun:192.168.221.134:3478"],
+    //     },
+    //   ],
+    // });
     this.peerConnection = new RTCPeerConnection(null);
     this.peerConnection.onicecandidate = (e) => {
       console.log("处理candidate");
