@@ -17,13 +17,13 @@ const { Item } = Form;
 function Home(props) {
   const [identity, setIdentity] = useState(false);
   async function login(data) {
-    const { username, password } = data;
+    const { card, password } = data;
     const url = identity ? "/session/teacher" : "/session/student";
     try {
-      const response = await axios.post(url, {
-        st_card: username,
-        st_password: password,
-      });
+      const msgObj = identity
+        ? { te_card: card, te_password: password }
+        : { st_card: card, st_password: password };
+      const response = await axios.post(url, msgObj);
       if (response.status === 200) {
         const { data, msg, code } = response.data;
         if (code === constant.code.error) {
@@ -56,8 +56,8 @@ function Home(props) {
       >
         <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} onFinish={login}>
           <Item
-            label="学号"
-            name="username"
+            label={identity ? "工号" : "学号"}
+            name="card"
             rules={[{ required: true, message: "请输入用户名" }]}
           >
             <Input />

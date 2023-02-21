@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.online_exam_sys.pojo.Student;
+import com.online_exam_sys.pojo.Teacher;
 import com.online_exam_sys.service.student.StudentService;
+import com.online_exam_sys.service.teacher.TeacherService;
 import com.online_exam_sys.util.Constant;
 import com.online_exam_sys.util.Result;
 
@@ -29,6 +31,8 @@ import io.swagger.annotations.ApiOperation;
 public class SessionController {
     @Autowired
     private StudentService studentService;
+    @Autowired
+    private TeacherService teacherService;
 
 
     @ApiOperation("学生登陆")
@@ -45,6 +49,22 @@ public class SessionController {
         HttpSession session = req.getSession();
         session.setAttribute("user_id", st.getSt_id());
         return new Result(st, null, Constant.code.success);
+    }
+
+    @ApiOperation("老师登陆")
+    @PostMapping("/teacher")
+    public Result teacherLogin(@RequestBody Teacher data,HttpServletRequest req){
+        Teacher te = teacherService.queryByCard(data.getTe_card());
+        if (te == null) {
+            return new Result(null, "用户不存在", Constant.code.error);
+        }
+        String pwd = teacherService.getPwd(te.getTe_id());
+        if (!pwd.equals(DigestUtils.md5DigestAsHex(data.getTe_password().getBytes()))) {
+            return new Result(null, "密码错误", Constant.code.error);
+        }
+        HttpSession session = req.getSession();
+        session.setAttribute("user_id", te.getTe_id());
+        return new Result(te, null, Constant.code.success);
     }
 
     @ApiOperation("退出登陆")

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDom from "react-dom";
 import "./index.scss";
 import {
@@ -23,6 +23,7 @@ import axios from "axios";
 import constant from "../constant";
 
 function App(props) {
+  const [identity, setIdentity] = useState(false);
   return (
     <div className="warpper">
       <div className="register-window">
@@ -33,7 +34,23 @@ function App(props) {
                 ? "/students"
                 : "/teachers";
             try {
-              const response = await axios.post(url, v);
+              const msgdata = identity
+                ? {
+                    te_name: v.name,
+                    te_card: v.card,
+                    te_sex: v.sex,
+                    te_age: v.age,
+                    te_password: v.password,
+                  }
+                : {
+                    st_name: v.name,
+                    st_card: v.card,
+                    st_sex: v.sex,
+                    st_age: v.age,
+                    st_password: v.password,
+                  };
+              console.log(msgdata);
+              const response = await axios.post(url, msgdata);
               if (response.status === 200) {
                 const { data, msg, code } = response.data;
                 if (code === constant.code.success) {
@@ -68,14 +85,14 @@ function App(props) {
           </Form.Item>
           <Form.Item
             label="用户名"
-            name={"st_name"}
+            name={"name"}
             rules={[{ required: true, message: "请输入用户名" }]}
           >
             <Input prefix={<UserOutlined></UserOutlined>}></Input>
           </Form.Item>
           <Form.Item
-            label="学号"
-            name={"st_card"}
+            label={identity ? "工号" : "学号"}
+            name={"card"}
             rules={[{ required: true, message: "请输入学号" }]}
           >
             <InputNumber
@@ -87,7 +104,7 @@ function App(props) {
           <Form.Item>
             <Form.Item
               label="性别"
-              name={"st_sex"}
+              name={"sex"}
               style={{ display: "inline-block" }}
               rules={[{ required: true, message: "请选择性别" }]}
             >
@@ -103,10 +120,20 @@ function App(props) {
               rules={[{ required: true, message: "请选择身份" }]}
             >
               <Radio.Group>
-                <Radio.Button value={constant.identity.student}>
+                <Radio.Button
+                  value={constant.identity.student}
+                  onClick={() => {
+                    setIdentity(false);
+                  }}
+                >
                   学生
                 </Radio.Button>
-                <Radio.Button value={constant.identity.teacher}>
+                <Radio.Button
+                  value={constant.identity.teacher}
+                  onClick={() => {
+                    setIdentity(true);
+                  }}
+                >
                   老师
                 </Radio.Button>
               </Radio.Group>
@@ -114,7 +141,7 @@ function App(props) {
           </Form.Item>
           <Form.Item
             label="年龄"
-            name={"st_age"}
+            name={"age"}
             rules={[{ required: true, message: "请输入年龄" }]}
           >
             <InputNumber
@@ -140,7 +167,7 @@ function App(props) {
           </Form.Item>
           <Form.Item
             label="密码"
-            name={"st_password"}
+            name={"password"}
             rules={[{ required: true, message: "请输入密码" }]}
           >
             <Input
