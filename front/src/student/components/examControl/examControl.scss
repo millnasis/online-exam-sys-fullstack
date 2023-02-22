@@ -1,0 +1,24 @@
+.exam-control {
+  padding: 20px 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  .exam-card {
+    width: 28vw;
+    margin: 10px 10px;
+    min-width: 420px;
+    .state-font {
+      font-size: 4vmin;
+      margin: 2vmin 0;
+    }
+    .waiting {
+    }
+    .preparing {
+    }
+    .starting {
+    }
+    .end {
+    }
+  }
+}
