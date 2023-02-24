@@ -1,24 +1,67 @@
 .exam-control {
   padding: 20px 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  .exam-card {
-    width: 28vw;
-    margin: 10px 10px;
-    min-width: 420px;
-    .state-font {
-      font-size: 4vmin;
-      margin: 2vmin 0;
-    }
-    .waiting {
-    }
-    .preparing {
-    }
-    .starting {
-    }
-    .end {
+  background-color: darken($color: #fff, $amount: 2%);
+  .transition-warp {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    .exam-card {
+      width: 28vw;
+      margin: 10px 10px;
+      min-width: 420px;
+      .state-font {
+        font-size: 4vmin;
+        margin: 2vmin 0;
+      }
+      .des-font {
+        text-align: center;
+        float: right;
+        width: 40%;
+      }
+      &.waiting strong {
+        color: darkcyan;
+      }
+      &.preparing strong {
+        color: black;
+      }
+      &.starting {
+        .des-font {
+          cursor: pointer;
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+        strong {
+          color: darkred;
+        }
+      }
+      &.end {
+        color: gray;
+        .des-font {
+          color: darkgreen;
+          cursor: pointer;
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
     }
   }
+}
+
+.component-fade-enter {
+  opacity: 0;
+}
+.component-fade-exit {
+  opacity: 1;
+}
+.component-fade-enter-active {
+  opacity: 1;
+}
+.component-fade-exit-active {
+  opacity: 0;
+}
+.component-fade-enter-active,
+.component-fade-exit-active {
+  transition: 0.3s all ease-in-out;
 }
