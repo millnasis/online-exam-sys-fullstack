@@ -1,0 +1,109 @@
+/*!**********************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[0].oneOf[0].use[3]!./src/student/app.scss ***!
+  \**********************************************************************************************************************************************************************************************/
+.site-layout-content {
+  min-height: 280px;
+  padding: 24px;
+}
+
+.user-info {
+  float: left;
+  width: 120px;
+  height: 40px;
+  margin: 10px 24px 10px 0;
+  display: flex;
+  align-items: center;
+}
+.user-info .avatar {
+  margin-right: 10px;
+}
+
+.menu {
+  float: right;
+}
+
+.content {
+  padding: 0 50px;
+}
+.content .welcome {
+  text-align: center;
+}
+.content .welcome .welcome-big {
+  font-size: 8vmin;
+}
+
+.footer {
+  text-align: center;
+}
+/*!*****************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[0].oneOf[0].use[3]!./src/student/components/examControl/examControl.scss ***!
+  \*****************************************************************************************************************************************************************************************************************************/
+.exam-control {
+  padding: 20px 30px;
+  background-color: #fafafa;
+}
+.exam-control .transition-warp {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.exam-control .transition-warp .exam-card {
+  width: 28vw;
+  margin: 10px 10px;
+  min-width: 420px;
+}
+.exam-control .transition-warp .exam-card .state-font {
+  font-size: 4vmin;
+  margin: 2vmin 0;
+}
+.exam-control .transition-warp .exam-card .des-font {
+  text-align: center;
+  float: right;
+  width: 40%;
+}
+.exam-control .transition-warp .exam-card.waiting strong {
+  color: darkcyan;
+}
+.exam-control .transition-warp .exam-card.preparing strong {
+  color: black;
+}
+.exam-control .transition-warp .exam-card.starting .des-font {
+  cursor: pointer;
+}
+.exam-control .transition-warp .exam-card.starting .des-font:hover {
+  text-decoration: underline;
+}
+.exam-control .transition-warp .exam-card.starting strong {
+  color: darkred;
+}
+.exam-control .transition-warp .exam-card.end {
+  color: gray;
+}
+.exam-control .transition-warp .exam-card.end .des-font {
+  color: darkgreen;
+  cursor: pointer;
+}
+.exam-control .transition-warp .exam-card.end .des-font:hover {
+  text-decoration: underline;
+}
+
+.component-fade-enter {
+  opacity: 0;
+}
+
+.component-fade-exit {
+  opacity: 1;
+}
+
+.component-fade-enter-active {
+  opacity: 1;
+}
+
+.component-fade-exit-active {
+  opacity: 0;
+}
+
+.component-fade-enter-active,
+.component-fade-exit-active {
+  transition: 0.3s all ease-in-out;
+}

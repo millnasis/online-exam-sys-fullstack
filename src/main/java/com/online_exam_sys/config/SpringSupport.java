@@ -26,7 +26,8 @@ public class SpringSupport implements WebMvcConfigurer {
         pt.add("/login/**");
         pt.add("/register/**");
         registry.addInterceptor(loginInterceptor).addPathPatterns(pt);
-        registry.addInterceptor(entrySystemInterceptor).addPathPatterns("/success/**");
+        registry.addInterceptor(entrySystemInterceptor).addPathPatterns("/student/**");
+        registry.addInterceptor(entrySystemInterceptor).addPathPatterns("/teacher/**");
     }
 
 }

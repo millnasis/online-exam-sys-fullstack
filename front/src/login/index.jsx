@@ -35,7 +35,7 @@ function Home(props) {
           console.log(data);
         } else {
           localStorage.setItem("userinfo", JSON.stringify(data));
-          location.href = "/success";
+          location.href = identity ? "/teacher" : "/student";
         }
       } else {
         notification.error({

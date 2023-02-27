@@ -15,6 +15,7 @@ public class Student {
     private Long st_id;
     private String st_name;
     private String st_sex;
+    private String st_avatar;
     private int st_age;
     private Date st_registerdate;
     @TableField(select = false)

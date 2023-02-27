@@ -14,9 +14,14 @@ public class LoginInterceptor implements HandlerInterceptor {
             throws Exception {
         HttpSession session = request.getSession();
         if (session.getAttribute("user_id") != null) {
-            response.sendRedirect("/success");
+            if (session.getAttribute("identity") == "st") {
+                response.sendRedirect("/student");
+            } else {
+                response.sendRedirect("/teacher");
+
+            }
             return false;
-        } 
+        }
         return true;
 
     }

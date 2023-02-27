@@ -260,7 +260,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var core
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["vendors-node_modules_core-js_modules_es_array_reverse_js-node_modules_core-js_modules_es_arra-767600","vendors-node_modules_antd_es_button_index_js-node_modules_antd_es_config-provider_index_js-no-d16955","vendors-node_modules_antd_es_input-number_index_js","vendors-node_modules_antd_es_typography_index_js-node_modules_core-js_modules_es_date_to-prim-e02568"], () => (__webpack_require__("./src/socket_test/index.jsx")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["vendors-node_modules_core-js_modules_es_array_reverse_js-node_modules_core-js_modules_es_arra-767600","vendors-node_modules_antd_es_button_index_js-node_modules_antd_es_config-provider_index_js-no-d16955","vendors-node_modules_antd_es_input-number_index_js","vendors-node_modules_ant-design_icons_es_icons_CheckOutlined_js-node_modules_core-js_modules_-a1298e","vendors-node_modules_antd_es_typography_index_js-node_modules_core-js_modules_es_regexp_to-st-7b0828"], () => (__webpack_require__("./src/socket_test/index.jsx")))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()

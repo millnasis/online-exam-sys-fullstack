@@ -34,7 +34,6 @@ public class SessionController {
     @Autowired
     private TeacherService teacherService;
 
-
     @ApiOperation("学生登陆")
     @PostMapping("/student")
     public Result studentLogin(@RequestBody Student data, HttpServletRequest req) {
@@ -48,12 +47,13 @@ public class SessionController {
         }
         HttpSession session = req.getSession();
         session.setAttribute("user_id", st.getSt_id());
+        session.setAttribute("identity", "st");
         return new Result(st, null, Constant.code.success);
     }
 
     @ApiOperation("老师登陆")
     @PostMapping("/teacher")
-    public Result teacherLogin(@RequestBody Teacher data,HttpServletRequest req){
+    public Result teacherLogin(@RequestBody Teacher data, HttpServletRequest req) {
         Teacher te = teacherService.queryByCard(data.getTe_card());
         if (te == null) {
             return new Result(null, "用户不存在", Constant.code.error);
@@ -64,6 +64,7 @@ public class SessionController {
         }
         HttpSession session = req.getSession();
         session.setAttribute("user_id", te.getTe_id());
+        session.setAttribute("identity", "te");
         return new Result(te, null, Constant.code.success);
     }
 

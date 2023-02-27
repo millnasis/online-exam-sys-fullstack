@@ -15,6 +15,7 @@ public class Teacher {
     private Long te_id;
     private String te_name;
     private String te_sex;
+    private String te_avatar;
     private int te_age;
     private Date te_registerdate;
     @TableField(select = false)

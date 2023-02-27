@@ -20,4 +20,9 @@ public class ResourceController {
         return "success.html";
     }
 
+    @RequestMapping("/student")
+    public String student() {
+        return "student.html";
+    }
+
 }

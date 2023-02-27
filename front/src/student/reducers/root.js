@@ -2,28 +2,37 @@ import { combineReducers } from "redux";
 // import { reducer as userMessage } from "./userMessage";
 
 const initialState = {
-  editing: "NONE",
+  userInfo: {
+    // private Long st_id;
+    // private String st_name;
+    // private String st_sex;
+    // private String st_avatar;
+    // private int st_age;
+    // private Date st_registerdate;
+    // private String st_password;
+    // private String st_card;
+  },
 };
 
 export const actionsType = {
-  CHANGE_EDITING: "CHANGE_EDITING",
+  SETTING_USER_INFO: "SETTING_USER_INFO",
 };
 
 export const actions = {
-  change_editing(editing) {
+  set_user_info(userInfo) {
     return {
-      type: actionsType.CHANGE_EDITING,
-      editing,
+      type: actionsType.SETTING_USER_INFO,
+      userInfo,
     };
   },
 };
 
 export function reducer(state = initialState, action) {
   switch (action.type) {
-    case actionsType.CHANGE_EDITING:
+    case actionsType.SETTING_USER_INFO:
       return {
         ...state,
-        editing: action.editing,
+        userInfo: action.userInfo,
       };
 
     default:

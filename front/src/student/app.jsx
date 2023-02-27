@@ -1,9 +1,15 @@
 import React from "react";
-import { Avatar, Breadcrumb, Layout, Menu } from "antd";
+import { Avatar, Breadcrumb, Layout, Menu, notification } from "antd";
 import "./app.scss";
 import ExamControl from "./components/examControl/examControl.jsx";
 import GradeControl from "./components/gradeControl/gradeControl.jsx";
 import UserSetting from "./components/userSetting/userSetting.jsx";
+import axios from "axios";
+
+import { actions } from "./reducers/root";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+const { set_user_info } = actions;
 
 const { Header, Content, Footer } = Layout;
 
@@ -39,6 +45,12 @@ function Welcome(props) {
   );
 }
 
+async function logout() {
+  localStorage.removeItem("userinfo");
+  await axios.delete("/session");
+  location.href = "/login";
+}
+
 function RenderContent(props) {
   const { menukey } = props;
   let e = null;
@@ -56,6 +68,7 @@ function RenderContent(props) {
       e = <UserSetting></UserSetting>;
       break;
     case "logout":
+      logout();
       e = <div></div>;
       break;
     case "welcome":
@@ -78,19 +91,30 @@ class App extends React.Component {
     };
   }
 
+  componentDidMount() {
+    const userInfo = localStorage.getItem("userinfo");
+    if (userInfo === null) {
+      notification.error({ message: "未找到您的登陆信息，请重新登陆" });
+      setTimeout(() => {
+        location.href = "./login";
+      }, 1500);
+    }
+    this.props.set_user_info(JSON.parse(userInfo));
+  }
+
   render() {
+    const { userInfo } = this.props.global;
+    console.log(this.props);
     return (
       <Layout className="layout">
         <Header>
           <div className="user-info">
             <Avatar
-              src={
-                "https://img1.baidu.com/it/u=2079992994,1830113805&fm=253&fmt=auto&app=138&f=PNG?w=500&h=500"
-              }
+              src={userInfo.st_avatar}
               size={"large"}
               className="avatar"
             ></Avatar>
-            <a>用户名</a>
+            <a>{userInfo.st_name}</a>
           </div>
           <Menu
             theme="dark"
@@ -112,4 +136,13 @@ class App extends React.Component {
   }
 }
 
-export default App;
+function mapStateToProps(state) {
+  return { global: state.global };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    set_user_info: bindActionCreators(set_user_info, dispatch),
+  };
+}
+export default connect(mapStateToProps, mapDispatchToProps)(App);
