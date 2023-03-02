@@ -1,7 +1,9 @@
 package com.online_exam_sys.pojo;
 
 import java.sql.Date;
+import java.util.List;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 
 import lombok.Data;
@@ -18,4 +20,8 @@ public class Ex_paper {
     private Date ep_finishdate;
     private String ep_state;
     private int ep_screenoff_count;
+    @TableField(exist = false)
+    private Float ep_score;
+    @TableField(exist = false)
+    private List<Ex_question> ep_question;
 }

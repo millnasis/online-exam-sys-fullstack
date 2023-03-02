@@ -168,6 +168,10 @@ class ExamControl extends React.Component {
     };
   }
 
+  componentDidMount(){
+    
+  }
+
   render() {
     return (
       <div className="exam-control">

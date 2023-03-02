@@ -13,5 +13,5 @@ public class Ex_question {
     private Long ep_id;
     private Long qu_id;
     private String eq_answer;
-    private int eq_score;
+    private Float eq_score;
 }
