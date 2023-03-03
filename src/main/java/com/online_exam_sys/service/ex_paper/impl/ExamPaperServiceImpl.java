@@ -3,6 +3,7 @@ package com.online_exam_sys.service.ex_paper.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.util.concurrent.AtomicDouble;
@@ -12,6 +13,7 @@ import com.online_exam_sys.pojo.Ex_paper;
 import com.online_exam_sys.pojo.Ex_question;
 import com.online_exam_sys.service.ex_paper.ExamPaperService;
 
+@Service
 public class ExamPaperServiceImpl implements ExamPaperService {
 
     @Autowired

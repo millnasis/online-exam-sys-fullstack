@@ -1,0 +1,7 @@
+.grade-control {
+  padding: 20px 30px;
+  background-color: darken($color: #fff, $amount: 2%);
+  .list-item:hover{
+    background-color: darken($color: #fff, $amount: 5%);
+  }
+}

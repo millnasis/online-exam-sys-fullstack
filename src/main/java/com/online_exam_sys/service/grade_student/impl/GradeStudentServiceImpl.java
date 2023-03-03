@@ -1,6 +1,7 @@
 package com.online_exam_sys.service.grade_student.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -10,6 +11,7 @@ import com.online_exam_sys.pojo.Grade;
 import com.online_exam_sys.pojo.Grade_student;
 import com.online_exam_sys.service.grade_student.GradeStudentService;
 
+@Service
 public class GradeStudentServiceImpl implements GradeStudentService {
 
     @Autowired
