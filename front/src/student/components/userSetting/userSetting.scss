@@ -1,0 +1,58 @@
+.user-setting {
+  padding: 20px 30px;
+  width: 60vw;
+  left: 0;
+  height: auto;
+  right: 0;
+  margin: 0 auto;
+  background-color: darken($color: #fff, $amount: 2%);
+  display: flex;
+  flex-direction: column;
+  .background-img {
+    background-image: url("https://img2.baidu.com/it/u=616172321,1682314558&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=500");
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 200px;
+    width: 100%;
+  }
+  .user-info {
+    width: 100%;
+    display: flex;
+    height: auto;
+    align-items: start;
+    flex-direction: row;
+    .user-avatar-warp {
+      width: 180px;
+      margin: 10px;
+      height: 180px;
+      transform: translateY(-30px);
+      background-color: #fff;
+      border-radius: 5%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      .user-avatar {
+        width: 90%;
+        height: 90%;
+      }
+    }
+    .user-info-detail {
+      padding: 10px;
+      padding-left: 50px;
+      flex: 1;
+      p {
+        &.user-name {
+          font-size: 2em;
+          font-weight: 700;
+          transform: translate(-30px, -15px);
+        }
+        span {
+          font-size: 1.4em;
+          font-weight: 550;
+          width: 120px;
+          display: inline-block;
+        }
+      }
+    }
+  }
+}

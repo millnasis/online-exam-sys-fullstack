@@ -1,5 +1,15 @@
-import { Avatar, Col, List, Row, Input, Button, Radio } from "antd";
-import React from "react";
+import {
+  Avatar,
+  Col,
+  List,
+  Row,
+  Input,
+  Button,
+  Radio,
+  Divider,
+  Modal,
+} from "antd";
+import React, { useState } from "react";
 import "./gradeControl.scss";
 
 const fakeData = [
@@ -39,6 +49,21 @@ const fakeData = [
   },
 ];
 
+function ActionButton(props) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <a onClick={() => setOpen(true)}>更多</a>
+      <Modal
+        title="班级信息"
+        open={open}
+        onCancel={() => setOpen(false)}
+        onOk={() => setOpen(false)}
+      ></Modal>
+    </>
+  );
+}
+
 class GradeControl extends React.Component {
   constructor(props) {
     super(props);
@@ -60,12 +85,13 @@ class GradeControl extends React.Component {
           </Col>
           <Col span={12}>
             <span>排序方式：</span>
-            <Radio.Group>
-              <Radio.Button>最新消息</Radio.Button>
-              <Radio.Button>加入时间</Radio.Button>
-              <Radio.Button>按名称</Radio.Button>
+            <Radio.Group defaultValue={"new"}>
+              <Radio.Button value={"new"}>最新消息</Radio.Button>
+              <Radio.Button value={"time"}>加入时间</Radio.Button>
+              <Radio.Button value={"name"}>按名称</Radio.Button>
             </Radio.Group>
           </Col>
+          <Divider></Divider>
           <Col span={24}>
             <List
               dataSource={this.state.filterData}
@@ -74,7 +100,7 @@ class GradeControl extends React.Component {
               renderItem={(item) => {
                 return (
                   <List.Item
-                    actions={[<a>更多</a>]}
+                    actions={[<ActionButton></ActionButton>]}
                     className="list-item"
                     key={item.gr_id}
                   >

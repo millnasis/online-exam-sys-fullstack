@@ -122,7 +122,10 @@ class App extends React.Component {
     return (
       <Layout className="layout">
         <Header>
-          <div className="user-info">
+          <div
+            className="user-info"
+            onClick={() => this.setState({ menuSelect: ["user-setting"] })}
+          >
             <Avatar
               src={userInfo.st_avatar}
               size={"large"}
