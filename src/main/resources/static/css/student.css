@@ -35,6 +35,18 @@
 .footer {
   text-align: center;
 }
+
+.welcome {
+  padding: 20px 30px;
+  background-color: #fafafa;
+  display: flex;
+  align-items: center;
+  height: 80vh;
+}
+.welcome .welcome-big {
+  text-align: center;
+  width: 100%;
+}
 /*!*****************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[0].oneOf[0].use[3]!./src/student/components/examControl/examControl.scss ***!
   \*****************************************************************************************************************************************************************************************************************************/
@@ -106,4 +118,112 @@
 .component-fade-enter-active,
 .component-fade-exit-active {
   transition: 0.3s all ease-in-out;
+}
+/*!*******************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[0].oneOf[0].use[3]!./src/student/components/gradeControl/gradeControl.scss ***!
+  \*******************************************************************************************************************************************************************************************************************************/
+.grade-control {
+  padding: 20px 30px;
+  background-color: #fafafa;
+}
+.grade-control .list-item:hover {
+  background-color: #f2f2f2;
+}
+/*!*****************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[0].oneOf[0].use[3]!./src/student/components/userSetting/userSetting.scss ***!
+  \*****************************************************************************************************************************************************************************************************************************/
+.user-setting {
+  padding: 20px 30px;
+  width: 60vw;
+  left: 0;
+  height: auto;
+  right: 0;
+  margin: 0 auto;
+  background-color: #fafafa;
+  display: flex;
+  flex-direction: column;
+}
+.user-setting .background-img {
+  background-image: url("https://img2.baidu.com/it/u=616172321,1682314558&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=500");
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 200px;
+  width: 100%;
+}
+.user-setting .user-info {
+  width: 100%;
+  display: flex;
+  height: auto;
+  align-items: flex-start;
+  flex-direction: row;
+}
+.user-setting .user-info .user-avatar-warp {
+  width: 180px;
+  margin: 10px;
+  height: 180px;
+  transform: translateY(-30px);
+  background-color: #f2f2f2;
+  border-radius: 5%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.user-setting .user-info .user-avatar-warp .user-avatar {
+  width: 90%;
+  height: 90%;
+  margin-bottom: 10%;
+}
+.user-setting .user-info .user-avatar-warp .user-avatar-upload-btn {
+  margin-top: 5px;
+  text-align: center;
+}
+.user-setting .user-info .user-avatar-warp .user-avatar-upload-btn .ant-upload {
+  width: 100px;
+  height: 40px;
+}
+.user-setting .user-info .user-info-detail {
+  padding: 10px;
+  padding-left: 50px;
+  flex: 1;
+  position: relative;
+}
+.user-setting .user-info .user-info-detail p.control-btn {
+  margin-top: 30px;
+  text-align: center;
+}
+.user-setting .user-info .user-info-detail p.control-btn .btn {
+  margin: 10px;
+  width: 120px;
+}
+.user-setting .user-info .user-info-detail p.user-name {
+  font-size: 2em;
+  font-weight: 700;
+  transform: translate(-30px, -15px);
+}
+.user-setting .user-info .user-info-detail p.user-info-change-btn {
+  top: 0;
+  position: absolute;
+  right: 0;
+  color: gray;
+  cursor: pointer;
+}
+.user-setting .user-info .user-info-detail p.user-info-change-btn:hover {
+  text-decoration: underline;
+}
+.user-setting .user-info .user-info-detail p span.title {
+  font-size: 1.4em;
+  font-weight: 550;
+  width: 120px;
+  display: inline-block;
+}
+.user-setting .user-info .user-info-detail p .input-bar {
+  display: inline-block;
+  width: 50%;
+  margin-left: 0;
+  margin-right: 10px;
+}
+.user-setting .user-info .user-info-detail p .input-bar.radio-group {
+  font-size: unset;
+  font-weight: unset;
 }

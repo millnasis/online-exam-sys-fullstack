@@ -92,20 +92,20 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    localStorage.setItem(
-      "userinfo",
-      JSON.stringify({
-        st_id: 1622960532008493000,
-        st_name: "MillNasis",
-        st_sex: "M",
-        st_avatar:
-          "https://img-blog.csdnimg.cn/img_convert/4cef4c0a5c42d4ccae9ba327c550350b.png",
-        st_age: 23,
-        st_registerdate: "2023-02-07",
-        st_password: null,
-        st_card: "3192052051725",
-      })
-    );
+    // localStorage.setItem(
+    //   "userinfo",
+    //   JSON.stringify({
+    //     st_id: 1622960532008493000,
+    //     st_name: "MillNasis",
+    //     st_sex: "M",
+    //     st_avatar:
+    //       "https://img-blog.csdnimg.cn/img_convert/4cef4c0a5c42d4ccae9ba327c550350b.png",
+    //     st_age: 23,
+    //     st_registerdate: "2023-02-07",
+    //     st_password: null,
+    //     st_card: "3192052051725",
+    //   })
+    // );
     const userInfo = localStorage.getItem("userinfo");
     if (userInfo === null) {
       notification.error({ message: "未找到您的登陆信息，请重新登陆" });

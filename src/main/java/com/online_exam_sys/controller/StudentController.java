@@ -7,6 +7,7 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,6 +48,18 @@ public class StudentController {
         boolean add = studentService.add(data);
         return add ? new Result(null, "成功", Constant.code.success)
                 : new Result(null, "注册失败，请联系管理员", Constant.code.error);
+    }
+
+    @ApiOperation("修改个人信息")
+    @PutMapping
+    public Result update(@RequestBody Student data) {
+        Student st = studentService.queryByCard(data.getSt_card());
+        if (st == null) {
+            return new Result(null, "用户不存在", Constant.code.not_found);
+        }
+        boolean update = studentService.update(data);
+        return update ? new Result(null, "成功", Constant.code.success)
+                : new Result(null, "更新失败，请联系管理员", Constant.code.error);
     }
 
 }

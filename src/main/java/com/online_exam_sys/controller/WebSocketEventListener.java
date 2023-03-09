@@ -1,6 +1,5 @@
 package com.online_exam_sys.controller;
 
-import java.security.Principal;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;

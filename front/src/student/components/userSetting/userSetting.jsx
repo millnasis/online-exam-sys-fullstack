@@ -1,9 +1,16 @@
-import { Avatar, Button, Divider, Input, Radio, Upload } from "antd";
+import { Avatar, Button, Divider, Input, InputNumber, Upload } from "antd";
 import React from "react";
 import { connect } from "react-redux";
 import ImgCrop from "antd-img-crop";
+import axios from "axios";
+
+import { actions } from "../../reducers/root.js";
+const { get_user_info } = actions;
+
 import { CameraOutlined } from "@ant-design/icons";
 import "./userSetting.scss";
+import constant from "../../../constant";
+import { bindActionCreators } from "redux";
 
 class UserSetting extends React.Component {
   constructor(props) {
@@ -11,7 +18,13 @@ class UserSetting extends React.Component {
 
     this.state = {
       edit: false,
-      form: { sex: "F" },
+      form: {
+        sex: "F",
+        name: null,
+        age: 0,
+        avatar: "",
+      },
+      loading: false,
       avatar: [],
     };
   }
@@ -26,7 +39,7 @@ class UserSetting extends React.Component {
             <Avatar
               size={"large"}
               shape="square"
-              src={userInfo.st_avatar}
+              src={this.state.form.avatar}
               className="user-avatar"
             ></Avatar>
             {this.state.edit ? (
@@ -50,28 +63,46 @@ class UserSetting extends React.Component {
           <div className="user-info-detail">
             <p className="user-name">
               {this.state.edit ? (
-                <Input className="input-bar" size="large"></Input>
+                <Input
+                  className="input-bar"
+                  size="large"
+                  onChange={(v) => {
+                    this.setState({
+                      form: { ...this.state.form, name: v.currentTarget.value },
+                    });
+                  }}
+                  value={this.state.form.name}
+                ></Input>
               ) : (
                 userInfo.st_name
               )}
             </p>
-            <p
-              className="user-info-change-btn"
-              onClick={(e) => this.setState({ edit: true })}
-            >
-              编辑信息
-            </p>
+            {!this.state.edit && (
+              <p
+                className="user-info-change-btn"
+                onClick={(e) => {
+                  const { userInfo } = this.props.global;
+                  this.setState({
+                    edit: true,
+                    form: {
+                      sex: userInfo.st_sex,
+                      name: userInfo.st_name,
+                      age: userInfo.st_age,
+                      avatar: userInfo.st_avatar,
+                    },
+                  });
+                }}
+              >
+                编辑信息
+              </p>
+            )}
             <p>
-              <span>学号</span>
-              {this.state.edit ? (
-                <Input className="input-bar"></Input>
-              ) : (
-                userInfo.st_card
-              )}
+              <span className="title">学号</span>
+              {userInfo.st_card}
             </p>
             <Divider></Divider>
             <p>
-              <span>性别</span>
+              <span className="title">性别</span>
               {this.state.edit ? (
                 <span className="input-bar radio-group">
                   <input
@@ -80,7 +111,7 @@ class UserSetting extends React.Component {
                     onClick={() =>
                       this.setState({ form: { ...this.state.form, sex: "F" } })
                     }
-                    checked={this.state.form.sex === "F"}
+                    checked={this.state.form.sex === "M"}
                     readOnly
                   ></input>
                   男&nbsp;
@@ -91,7 +122,7 @@ class UserSetting extends React.Component {
                     onClick={() =>
                       this.setState({ form: { ...this.state.form, sex: "M" } })
                     }
-                    checked={this.state.form.sex === "M"}
+                    checked={this.state.form.sex === "F"}
                   ></input>
                   女
                 </span>
@@ -103,23 +134,57 @@ class UserSetting extends React.Component {
             </p>
             <Divider></Divider>
             <p>
-              <span>年龄</span>
+              <span className="title">年龄</span>
               {this.state.edit ? (
-                <Input className="input-bar"></Input>
+                <InputNumber
+                  controls={false}
+                  min={0}
+                  className="input-bar"
+                  onChange={(v) => {
+                    this.setState({
+                      form: { ...this.state.form, age: v.currentTarget.value },
+                    });
+                  }}
+                  value={this.state.form.age}
+                ></InputNumber>
               ) : (
                 userInfo.st_age
               )}
             </p>
             <Divider></Divider>
             <p>
-              <span>注册日期</span>
+              <span className="title">注册日期</span>
               {userInfo.st_registerdate}
             </p>
-            {!this.state.edit &&
-            (
-              <p>
-                <Button>取消</Button>
-                <Button type="primary">保存</Button>
+            {this.state.edit && (
+              <p className="control-btn">
+                <Button
+                  className="btn"
+                  onClick={() => this.setState({ edit: false })}
+                >
+                  取消
+                </Button>
+                <Button
+                  type="primary"
+                  className="btn"
+                  onClick={async () => {
+                    this.setState({ loading: true });
+                    const response = await axios.post("/students", {
+                      ...userInfo,
+                      ...this.state.form,
+                    });
+                    if (
+                      response.status === 200 &&
+                      response.data.code === constant.code.success
+                    ) {
+                      this.props.get_user_info(userInfo.st_card);
+                      this.setState({ loading: false });
+                    }
+                  }}
+                  loading={this.state.loading}
+                >
+                  保存
+                </Button>
               </p>
             )}
           </div>
@@ -136,7 +201,9 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return {};
+  return {
+    get_user_info: bindActionCreators(get_user_info, dispatch),
+  };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserSetting);

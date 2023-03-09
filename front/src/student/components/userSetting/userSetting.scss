@@ -35,12 +35,13 @@
       .user-avatar {
         width: 90%;
         height: 90%;
-        margin-bottom: 10%;
+        margin-top: 5%;
+        margin-bottom: 5%;
       }
       .user-avatar-upload-btn {
         margin-top: 5px;
         text-align: center;
-        .ant-upload{
+        .ant-upload {
           width: 100px;
           height: 40px;
         }
@@ -52,6 +53,14 @@
       flex: 1;
       position: relative;
       p {
+        &.control-btn{
+          margin-top: 30px;
+          text-align: center;
+          .btn{
+            margin: 10px;
+            width: 120px;
+          }
+        }
         &.user-name {
           font-size: 2em;
           font-weight: 700;
@@ -67,21 +76,20 @@
             text-decoration: underline;
           }
         }
-        span {
+        span.title {
           font-size: 1.4em;
           font-weight: 550;
           width: 120px;
           display: inline-block;
         }
-        .input-bar{
+        .input-bar {
           display: inline-block;
           width: 50%;
           margin-left: 0;
           margin-right: 10px;
-          &.radio-group{
+          &.radio-group {
             font-size: unset;
             font-weight: unset;
-            
           }
         }
       }

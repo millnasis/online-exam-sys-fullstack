@@ -16,6 +16,8 @@ const initialState = {
 
 export const actionsType = {
   SETTING_USER_INFO: "SETTING_USER_INFO",
+  GET_USER_INFO: "GET_USER_INFO",
+  RESPONSE_GET_USER_INFO: "RESPONSE_GET_USER_INFO",
 };
 
 export const actions = {
@@ -25,11 +27,28 @@ export const actions = {
       userInfo,
     };
   },
+  get_user_info(st_card) {
+    return {
+      type: actionsType.GET_USER_INFO,
+      st_card,
+    };
+  },
+  response_user_info(userInfo) {
+    return {
+      type: actionsType.RESPONSE_GET_USER_INFO,
+      userInfo,
+    };
+  },
 };
 
 export function reducer(state = initialState, action) {
   switch (action.type) {
     case actionsType.SETTING_USER_INFO:
+      return {
+        ...state,
+        userInfo: action.userInfo,
+      };
+    case actionsType.RESPONSE_GET_USER_INFO:
       return {
         ...state,
         userInfo: action.userInfo,
