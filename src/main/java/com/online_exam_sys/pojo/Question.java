@@ -11,8 +11,8 @@ import lombok.ToString;
 
 public class Question {
     @TableId
-    private Long qu_id;
-    private Long pa_id;
+    private int qu_id;
+    private int pa_id;
     private String qu_type;
     private String qu_answer;
 }

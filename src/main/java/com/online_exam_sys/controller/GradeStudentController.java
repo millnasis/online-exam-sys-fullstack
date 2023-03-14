@@ -25,7 +25,7 @@ public class GradeStudentController {
 
     @ApiOperation("学生加入班级")
     @PostMapping("/grade/{gr_id}")
-    public Result studentJoinGradeByGrId(@PathVariable Long gr_id, @RequestBody Student student) {
+    public Result studentJoinGradeByGrId(@PathVariable int gr_id, @RequestBody Student student) {
         boolean ret = gradeStudentService.studentJoinGradeByGradeId(gr_id, student.getSt_id());
         return ret ? new Result(ret, "成功", Constant.code.success)
                 : new Result(null, "加入失败，请检查班级是否存在，或者您已在班级中", Constant.code.error);
@@ -33,7 +33,7 @@ public class GradeStudentController {
 
     @ApiOperation("学生退出班级")
     @DeleteMapping("/{gs_id}")
-    public Result studentQuitGradeByGsId(@PathVariable Long gs_id) {
+    public Result studentQuitGradeByGsId(@PathVariable int gs_id) {
         boolean ret = gradeStudentService.studentQuitGradeByGsId(gs_id);
         return ret ? new Result(ret, "成功", Constant.code.success)
                 : new Result(null, "加入失败，请检查班级是否存在", Constant.code.error);

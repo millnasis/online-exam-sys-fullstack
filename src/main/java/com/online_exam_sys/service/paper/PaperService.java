@@ -5,7 +5,7 @@ import java.util.List;
 import com.online_exam_sys.pojo.Paper;
 
 public interface PaperService {
-    public List<Paper> queryPaperListByStudentId(Long st_id);
+    public List<Paper> queryPaperListByStudentId(int st_id);
 
-    public List<Paper> queryPaperListByGradeId(Long gr_id);
+    public List<Paper> queryPaperListByGradeId(int gr_id);
 }

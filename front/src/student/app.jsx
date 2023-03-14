@@ -107,6 +107,7 @@ class App extends React.Component {
     //   })
     // );
     const userInfo = localStorage.getItem("userinfo");
+    console.log(userInfo);
     if (userInfo === null) {
       notification.error({ message: "未找到您的登陆信息，请重新登陆" });
       setTimeout(() => {

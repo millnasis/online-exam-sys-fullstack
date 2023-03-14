@@ -6,8 +6,8 @@ import constant from "../../constant";
 
 export function* getUserInfo() {
   while (true) {
-    const st_card = yield take(actionsType.GET_USER_INFO);
-    const response = yield call(axios.get, "/students/" + st_card);
+    const action = yield take(actionsType.GET_USER_INFO);
+    const response = yield call(axios.get, "/students/" + action.st_id);
     if (response && response.status === 200) {
       const result = response.data;
       if (result.code === constant.code.success) {

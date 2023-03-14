@@ -53,6 +53,7 @@ public class StudentController {
     @ApiOperation("修改个人信息")
     @PutMapping
     public Result update(@RequestBody Student data) {
+        System.out.println(data);
         Student st = studentService.queryByCard(data.getSt_card());
         if (st == null) {
             return new Result(null, "用户不存在", Constant.code.not_found);

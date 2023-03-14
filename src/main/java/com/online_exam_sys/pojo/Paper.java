@@ -11,8 +11,8 @@ import lombok.ToString;
 @Data
 public class Paper {
     @TableId
-    private Long pa_id;
-    private Long gr_id;
+    private int pa_id;
+    private int gr_id;
     private Date pa_founddate;
     private String pa_state;
     private Date pa_begintime;

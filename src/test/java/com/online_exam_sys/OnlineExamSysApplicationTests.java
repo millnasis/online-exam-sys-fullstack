@@ -31,16 +31,4 @@ class OnlineExamSysApplicationTests {
 		studentDao.insert(st);
 	}
 
-	@Test
-	void query() {
-		Student ret = studentDao.selectById(1620786159835168770L);
-		System.out.println(ret);
-	}
-
-	@Test
-	void queryGrade() {
-		List<Grade> data = gradeDao.queryGradeListByStudentId(1622960532008493057L);
-		System.out.println(data);
-	}
-
 }

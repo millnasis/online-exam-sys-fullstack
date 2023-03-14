@@ -12,10 +12,10 @@ import lombok.ToString;
 @Data
 public class Grade {
     @TableId
-    private Long gr_id;
+    private int gr_id;
     private String gr_info;
     private String gr_name;
-    private Long te_id;
+    private int te_id;
     private String gr_avatar;
     private Date gr_founddate;
     private Date gr_lastupdate;

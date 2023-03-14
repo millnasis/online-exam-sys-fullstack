@@ -1,4 +1,12 @@
-import { Avatar, Button, Divider, Input, InputNumber, Upload } from "antd";
+import {
+  Avatar,
+  Button,
+  Divider,
+  Input,
+  InputNumber,
+  notification,
+  Upload,
+} from "antd";
 import React from "react";
 import { connect } from "react-redux";
 import ImgCrop from "antd-img-crop";
@@ -19,17 +27,17 @@ class UserSetting extends React.Component {
     this.state = {
       edit: false,
       form: {
-        sex: "F",
-        name: null,
-        age: 0,
-        avatar: "",
+        st_sex: "F",
+        st_name: null,
+        st_age: 0,
+        st_avatar: "",
       },
-      loading: false,
       avatar: [],
     };
   }
 
   render() {
+    console.log(this.state);
     const { userInfo } = this.props.global;
     return (
       <div className="user-setting">
@@ -39,19 +47,30 @@ class UserSetting extends React.Component {
             <Avatar
               size={"large"}
               shape="square"
-              src={this.state.form.avatar}
+              src={this.state.form.st_avatar}
               className="user-avatar"
             ></Avatar>
             {this.state.edit ? (
               <ImgCrop rotate>
                 <Upload
                   className="user-avatar-upload-btn"
-                  action="/api/upload/avatar"
+                  action="/upload/avatar"
                   listType="picture-card"
                   fileList={this.state.avatar}
+                  showUploadList={false}
                   name="avatar"
                   onChange={(e) => {
-                    this.setState({ avatar: e.fileList });
+                    const obj =
+                      "response" in e.file
+                        ? {
+                            avatar: e.fileList,
+                            form: {
+                              ...this.state.form,
+                              st_avatar: e.file.response.data,
+                            },
+                          }
+                        : { avatar: e.fileList };
+                    this.setState(obj);
                   }}
                   maxCount={1}
                 >
@@ -68,10 +87,13 @@ class UserSetting extends React.Component {
                   size="large"
                   onChange={(v) => {
                     this.setState({
-                      form: { ...this.state.form, name: v.currentTarget.value },
+                      form: {
+                        ...this.state.form,
+                        st_name: v.currentTarget.value,
+                      },
                     });
                   }}
-                  value={this.state.form.name}
+                  value={this.state.form.st_name}
                 ></Input>
               ) : (
                 userInfo.st_name
@@ -85,10 +107,10 @@ class UserSetting extends React.Component {
                   this.setState({
                     edit: true,
                     form: {
-                      sex: userInfo.st_sex,
-                      name: userInfo.st_name,
-                      age: userInfo.st_age,
-                      avatar: userInfo.st_avatar,
+                      st_sex: userInfo.st_sex,
+                      st_name: userInfo.st_name,
+                      st_age: userInfo.st_age,
+                      st_avatar: userInfo.st_avatar,
                     },
                   });
                 }}
@@ -109,9 +131,11 @@ class UserSetting extends React.Component {
                     type={"radio"}
                     name="sex"
                     onClick={() =>
-                      this.setState({ form: { ...this.state.form, sex: "F" } })
+                      this.setState({
+                        form: { ...this.state.form, st_sex: "M" },
+                      })
                     }
-                    checked={this.state.form.sex === "M"}
+                    checked={this.state.form.st_sex === "M"}
                     readOnly
                   ></input>
                   男&nbsp;
@@ -120,9 +144,11 @@ class UserSetting extends React.Component {
                     type={"radio"}
                     name="sex"
                     onClick={() =>
-                      this.setState({ form: { ...this.state.form, sex: "M" } })
+                      this.setState({
+                        form: { ...this.state.form, st_sex: "F" },
+                      })
                     }
-                    checked={this.state.form.sex === "F"}
+                    checked={this.state.form.st_sex === "F"}
                   ></input>
                   女
                 </span>
@@ -142,10 +168,10 @@ class UserSetting extends React.Component {
                   className="input-bar"
                   onChange={(v) => {
                     this.setState({
-                      form: { ...this.state.form, age: v.currentTarget.value },
+                      form: { ...this.state.form, st_age: v },
                     });
                   }}
-                  value={this.state.form.age}
+                  value={this.state.form.st_age}
                 ></InputNumber>
               ) : (
                 userInfo.st_age
@@ -168,8 +194,7 @@ class UserSetting extends React.Component {
                   type="primary"
                   className="btn"
                   onClick={async () => {
-                    this.setState({ loading: true });
-                    const response = await axios.post("/students", {
+                    const response = await axios.put("/students", {
                       ...userInfo,
                       ...this.state.form,
                     });
@@ -177,9 +202,16 @@ class UserSetting extends React.Component {
                       response.status === 200 &&
                       response.data.code === constant.code.success
                     ) {
-                      this.props.get_user_info(userInfo.st_card);
-                      this.setState({ loading: false });
+                      this.props.get_user_info(userInfo.st_id);
+                    } else if (response.data) {
+                      notification.error({
+                        description: response.data.msg,
+                        message: "修改失败",
+                      });
+                    } else {
+                      notification.error({ message: "系统出错" });
                     }
+                    this.setState({ edit: false });
                   }}
                   loading={this.state.loading}
                 >

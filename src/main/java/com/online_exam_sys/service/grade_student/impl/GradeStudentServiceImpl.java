@@ -21,7 +21,7 @@ public class GradeStudentServiceImpl implements GradeStudentService {
     private GradeDao gradeDao;
 
     @Override
-    public boolean studentJoinGradeByGradeId(Long gr_id, Long st_id) {
+    public boolean studentJoinGradeByGradeId(int gr_id, int st_id) {
 
         LambdaQueryWrapper<Grade> gradeLQW = new LambdaQueryWrapper<>();
         gradeLQW.eq(Grade::getGr_id, gr_id);
@@ -46,7 +46,7 @@ public class GradeStudentServiceImpl implements GradeStudentService {
     }
 
     @Override
-    public boolean studentQuitGradeByGsId(Long gs_id) {
+    public boolean studentQuitGradeByGsId(int gs_id) {
         LambdaUpdateWrapper<Grade_student> luw = new LambdaUpdateWrapper<>();
         luw.eq(Grade_student::getGs_id, gs_id);
         return grade_studentDao.delete(luw) > 0;

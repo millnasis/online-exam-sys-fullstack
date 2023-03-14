@@ -13,9 +13,9 @@ import lombok.ToString;
 @Data
 public class Ex_paper {
     @TableId
-    private Long ep_id;
-    private Long st_id;
-    private Long pa_id;
+    private int ep_id;
+    private int st_id;
+    private int pa_id;
     private Date ep_begindate;
     private Date ep_finishdate;
     private String ep_state;

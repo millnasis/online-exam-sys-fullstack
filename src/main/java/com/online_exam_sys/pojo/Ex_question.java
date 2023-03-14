@@ -9,9 +9,9 @@ import lombok.ToString;
 @Data
 public class Ex_question {
     @TableId
-    private Long eq_id;
-    private Long ep_id;
-    private Long qu_id;
+    private int eq_id;
+    private int ep_id;
+    private int qu_id;
     private String eq_answer;
     private Float eq_score;
 }

@@ -25,7 +25,7 @@ public class GradeController {
 
     @ApiOperation("根据学生id查班级")
     @GetMapping("/student/{st_id}")
-    public Result queryByStudentId(@PathVariable Long st_id){
+    public Result queryByStudentId(@PathVariable int st_id){
         List<Grade> grade = gradeService.queryGradeListByStudentId(st_id);
         return grade != null ? new Result(grade, "成功", Constant.code.success)
                 : new Result(null, "未找到", Constant.code.not_found);

@@ -13,7 +13,7 @@ import lombok.ToString;
 public class Grade_student {
     @TableId(type = IdType.AUTO)
     private int gs_id;
-    private Long gr_id;
-    private Long st_id;
+    private int gr_id;
+    private int st_id;
     private Date gs_founddate;
 }

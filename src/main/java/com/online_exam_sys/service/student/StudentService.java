@@ -17,5 +17,5 @@ public interface StudentService {
 
     public Student queryByCard(String card);
 
-    public String getPwd(Long id);
+    public String getPwd(int id);
 }

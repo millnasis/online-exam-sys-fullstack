@@ -5,5 +5,5 @@ import java.util.List;
 import com.online_exam_sys.pojo.Grade;
 
 public interface GradeService {
-    public List<Grade> queryGradeListByStudentId(Long id);
+    public List<Grade> queryGradeListByStudentId(int id);
 }

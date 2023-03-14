@@ -17,5 +17,5 @@ public interface TeacherService {
 
     public Teacher queryByCard(String card);
 
-    public String getPwd(Long id);
+    public String getPwd(int id);
 }

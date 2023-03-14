@@ -9,5 +9,5 @@ import com.online_exam_sys.pojo.Teacher;
 @Mapper
 public interface TeacherDao extends BaseMapper<Teacher>{
     @Select("SELECT te_password FROM exam_sys.teacher WHERE te_id = #{id}")
-    public String getPwd(Long id);
+    public String getPwd(int id);
 }

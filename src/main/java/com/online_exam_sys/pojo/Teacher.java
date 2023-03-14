@@ -12,7 +12,7 @@ import lombok.ToString;
 @ToString
 public class Teacher {
     @TableId
-    private Long te_id;
+    private int te_id;
     private String te_name;
     private String te_sex;
     private String te_avatar;

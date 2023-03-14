@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +23,9 @@ import io.swagger.annotations.ApiOperation;
 @Api
 @RequestMapping("/upload")
 public class FileUploadController {
+
+    private String staticPathHome = "D:/javaWorkSpace/online-exam-sys-fullstack/src/main/resources/static";
+
     @ApiOperation("上传单个文件")
     @PostMapping("/single")
     // MultipartFile的形参名img对应input标签中的name属性
@@ -30,7 +36,7 @@ public class FileUploadController {
         System.out.println(img.getSize()); // 文件大小
         System.out.println(img.getOriginalFilename()); // 获取上传文件的真实名称
 
-        File destFile = new File("D:\\javaWorkSpace\\online-exam-sys-fullstack\\src\\main\\resources\\static\\img");
+        File destFile = new File("D:/javaWorkSpace/online-exam-sys-fullstack/src/main/resources/static/img");
         if (!destFile.exists()) {
             destFile.mkdir();
         }
@@ -46,5 +52,26 @@ public class FileUploadController {
         // 保存文件到本地磁盘
         img.transferTo(file);
         return new Result(null, "上传成功", Constant.code.success);
+    }
+
+    @ApiOperation("上传用户头像")
+    @PostMapping("/avatar")
+    public Result avatar(MultipartFile avatar, HttpServletRequest req) throws IllegalStateException, IOException {
+        HttpSession session = req.getSession();
+        if (session.getAttribute("user_id") == null) {
+            return new Result(null, "无权限", Constant.code.success);
+        }
+        File destFile = new File(staticPathHome + "/avatar/" + session.getAttribute("user_id"));
+        if (!destFile.exists()) {
+            destFile.mkdir();
+        }
+        String fileName = UUID.randomUUID().toString().replaceAll("-", "");
+        String extension = FilenameUtils.getExtension(avatar.getOriginalFilename());
+        String newFileName = fileName + "." + extension;
+        File file = new File(destFile, newFileName);
+        avatar.transferTo(file);
+        return new Result("/avatar/" + session.getAttribute("user_id") + "/" + newFileName, "上传成功",
+                Constant.code.success);
+
     }
 }

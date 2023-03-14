@@ -12,5 +12,5 @@ import com.online_exam_sys.pojo.Grade;
 public interface GradeDao extends BaseMapper<Grade> {
 
     @Select("SELECT grade.*,grade_student.gs_founddate FROM grade, grade_student WHERE grade_student.st_id = #{id} AND grade.gr_id = grade_student.gr_id")
-    public List<Grade> queryGradeListByStudentId(Long id);
+    public List<Grade> queryGradeListByStudentId(int id);
 }

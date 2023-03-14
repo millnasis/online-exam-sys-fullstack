@@ -27,10 +27,10 @@ export const actions = {
       userInfo,
     };
   },
-  get_user_info(st_card) {
+  get_user_info(st_id) {
     return {
       type: actionsType.GET_USER_INFO,
-      st_card,
+      st_id,
     };
   },
   response_user_info(userInfo) {

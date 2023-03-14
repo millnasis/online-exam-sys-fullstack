@@ -16,7 +16,7 @@ public class GradeServiceImpl implements GradeService {
     private GradeDao gradeDao;
 
     @Override
-    public List<Grade> queryGradeListByStudentId(Long id) {
+    public List<Grade> queryGradeListByStudentId(int id) {
         return gradeDao.queryGradeListByStudentId(id);
     }
 

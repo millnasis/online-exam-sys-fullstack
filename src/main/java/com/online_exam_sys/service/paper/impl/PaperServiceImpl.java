@@ -17,12 +17,12 @@ public class PaperServiceImpl implements PaperService {
     private PaperDao paperDao;
 
     @Override
-    public List<Paper> queryPaperListByStudentId(Long st_id) {
+    public List<Paper> queryPaperListByStudentId(int st_id) {
         return paperDao.queryPaperListByStudentId(st_id);
     }
 
     @Override
-    public List<Paper> queryPaperListByGradeId(Long gr_id) {
+    public List<Paper> queryPaperListByGradeId(int gr_id) {
         LambdaQueryWrapper<Paper> lqw = new LambdaQueryWrapper<>();
         lqw.eq(Paper::getGr_id, gr_id);
         List<Paper> data = paperDao.selectList(lqw);
