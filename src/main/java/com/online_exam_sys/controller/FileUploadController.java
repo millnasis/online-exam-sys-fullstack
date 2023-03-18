@@ -54,14 +54,15 @@ public class FileUploadController {
         return new Result(null, "上传成功", Constant.code.success);
     }
 
-    @ApiOperation("上传用户头像")
-    @PostMapping("/avatar")
-    public Result avatar(MultipartFile avatar, HttpServletRequest req) throws IllegalStateException, IOException {
+    @ApiOperation("上传学生头像")
+    @PostMapping("/student/avatar")
+    public Result StudentAvatar(MultipartFile avatar, HttpServletRequest req)
+            throws IllegalStateException, IOException {
         HttpSession session = req.getSession();
         if (session.getAttribute("user_id") == null) {
             return new Result(null, "无权限", Constant.code.success);
         }
-        File destFile = new File(staticPathHome + "/avatar/" + session.getAttribute("user_id"));
+        File destFile = new File(staticPathHome + "/avatar/student/" + session.getAttribute("user_id"));
         if (!destFile.exists()) {
             destFile.mkdir();
         }
@@ -70,7 +71,29 @@ public class FileUploadController {
         String newFileName = fileName + "." + extension;
         File file = new File(destFile, newFileName);
         avatar.transferTo(file);
-        return new Result("/avatar/" + session.getAttribute("user_id") + "/" + newFileName, "上传成功",
+        return new Result("/avatar/student/" + session.getAttribute("user_id") + "/" + newFileName, "上传成功",
+                Constant.code.success);
+
+    }
+
+    @ApiOperation("上传老师头像")
+    @PostMapping("/teacher/avatar")
+    public Result TeacherAvatar(MultipartFile avatar, HttpServletRequest req)
+            throws IllegalStateException, IOException {
+        HttpSession session = req.getSession();
+        if (session.getAttribute("user_id") == null) {
+            return new Result(null, "无权限", Constant.code.success);
+        }
+        File destFile = new File(staticPathHome + "/avatar/teacher/" + session.getAttribute("user_id"));
+        if (!destFile.exists()) {
+            destFile.mkdir();
+        }
+        String fileName = UUID.randomUUID().toString().replaceAll("-", "");
+        String extension = FilenameUtils.getExtension(avatar.getOriginalFilename());
+        String newFileName = fileName + "." + extension;
+        File file = new File(destFile, newFileName);
+        avatar.transferTo(file);
+        return new Result("/avatar/teacher/" + session.getAttribute("user_id") + "/" + newFileName, "上传成功",
                 Constant.code.success);
 
     }

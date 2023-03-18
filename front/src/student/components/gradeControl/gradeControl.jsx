@@ -8,8 +8,13 @@ import {
   Radio,
   Divider,
   Modal,
+  notification,
+  InputNumber,
 } from "antd";
+import axios from "axios";
 import React, { useState } from "react";
+import { connect } from "react-redux";
+import constant from "../../../constant";
 import "./gradeControl.scss";
 
 const fakeData = [
@@ -70,12 +75,54 @@ class GradeControl extends React.Component {
     this.originData = fakeData;
     this.state = {
       filterData: fakeData,
+      showModal: false,
     };
+  }
+
+  async componentDidMount() {
+    const { userInfo } = this.props.global;
+    try {
+      const response = await axios.get("/grades/student/" + userInfo.st_id);
+      if (response.status === 200) {
+        const { data, msg, code } = response.data;
+        if (code === constant.code.error) {
+          notification.error({
+            message: "错误",
+            description:
+              typeof msg === "object" ? "系统错误，请查看后台日志" : msg,
+          });
+          console.log(data);
+        } else {
+          this.setState({
+            filterData: response.data.data,
+          });
+        }
+      } else {
+        notification.error({
+          message: "错误代码" + response.status,
+          description: JSON.stringify(response.data),
+        });
+      }
+    } catch (error) {
+      notification.error({ description: "错误，未找到服务器" });
+    }
   }
 
   render() {
     return (
       <div className="grade-control">
+        <Modal
+          open={this.state.showModal}
+          title="加入一个班级"
+          onOk={() => this.setState({ showModal: false })}
+          onCancel={() => this.setState({ showModal: false })}
+        >
+          <InputNumber
+            addonBefore={"班级id"}
+            style={{ width: "100%" }}
+            controls={false}
+          ></InputNumber>
+        </Modal>
         <Row gutter={16}>
           <Col span={12}>
             <Input.Search
@@ -90,6 +137,13 @@ class GradeControl extends React.Component {
               <Radio.Button value={"time"}>加入时间</Radio.Button>
               <Radio.Button value={"name"}>按名称</Radio.Button>
             </Radio.Group>
+            <Button
+              className="join-grade-btn"
+              type="primary"
+              onClick={() => this.setState({ showModal: true })}
+            >
+              加入班级
+            </Button>
           </Col>
           <Divider></Divider>
           <Col span={24}>
@@ -126,4 +180,10 @@ class GradeControl extends React.Component {
   }
 }
 
-export default GradeControl;
+function mapStateToProps(state) {
+  return {
+    global: state.global,
+  };
+}
+
+export default connect(mapStateToProps, null)(GradeControl);

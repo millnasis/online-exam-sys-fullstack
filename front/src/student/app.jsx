@@ -130,7 +130,7 @@ class App extends React.Component {
             <Avatar
               src={userInfo.st_avatar}
               size={"large"}
-              className="avatar"
+              className="ft-avatar"
             ></Avatar>
             <a>{userInfo.st_name}</a>
           </div>

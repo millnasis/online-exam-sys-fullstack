@@ -32,12 +32,11 @@ class UserSetting extends React.Component {
         st_age: 0,
         st_avatar: "",
       },
-      avatar: [],
+      avatar_temp: "",
     };
   }
 
   render() {
-    console.log(this.state);
     const { userInfo } = this.props.global;
     return (
       <div className="user-setting">
@@ -47,30 +46,34 @@ class UserSetting extends React.Component {
             <Avatar
               size={"large"}
               shape="square"
-              src={this.state.form.st_avatar}
+              src={
+                this.state.edit ? this.state.form.st_avatar : userInfo.st_avatar
+              }
               className="user-avatar"
             ></Avatar>
             {this.state.edit ? (
               <ImgCrop rotate>
                 <Upload
                   className="user-avatar-upload-btn"
-                  action="/upload/avatar"
+                  action="/upload/student/avatar"
                   listType="picture-card"
-                  fileList={this.state.avatar}
-                  showUploadList={false}
                   name="avatar"
+                  showUploadList={false}
                   onChange={(e) => {
-                    const obj =
-                      "response" in e.file
-                        ? {
-                            avatar: e.fileList,
-                            form: {
-                              ...this.state.form,
-                              st_avatar: e.file.response.data,
-                            },
-                          }
-                        : { avatar: e.fileList };
-                    this.setState(obj);
+                    if ("done" === e.file.status) {
+                      const reader = new FileReader();
+                      reader.addEventListener("load", () => {
+                        const url = reader.result;
+                        this.setState({
+                          form: {
+                            ...this.state.form,
+                            st_avatar: url,
+                          },
+                          avatar_temp: e.file.response.data,
+                        });
+                      });
+                      reader.readAsDataURL(e.file.originFileObj);
+                    }
                   }}
                   maxCount={1}
                 >
@@ -197,6 +200,7 @@ class UserSetting extends React.Component {
                     const response = await axios.put("/students", {
                       ...userInfo,
                       ...this.state.form,
+                      st_avatar: this.state.avatar_temp,
                     });
                     if (
                       response.status === 200 &&
