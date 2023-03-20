@@ -20,7 +20,7 @@ class OnlineExamSysApplicationTests {
 	@Autowired
 	private GradeDao gradeDao;
 
-	@Test
+	// @Test
 	void firstTest() {
 		Student st = new Student();
 		st.setSt_age(23);
@@ -29,6 +29,12 @@ class OnlineExamSysApplicationTests {
 		st.setSt_registerdate(new Date(System.currentTimeMillis()));
 		st.setSt_sex("M");
 		studentDao.insert(st);
+	}
+
+	@Test
+	void apiTest() {
+		List<Student> data = studentDao.queryStudentByGrId(0);
+		System.out.println(data);
 	}
 
 }

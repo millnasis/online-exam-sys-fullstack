@@ -1,5 +1,7 @@
 package com.online_exam_sys.service.grade_student.impl;
 
+import java.sql.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +43,7 @@ public class GradeStudentServiceImpl implements GradeStudentService {
         Grade_student grade_student = new Grade_student();
         grade_student.setSt_id(st_id);
         grade_student.setGr_id(gr_id);
+        grade_student.setGs_founddate(new Date(System.currentTimeMillis()));
         return grade_studentDao.insert(grade_student) > 0;
 
     }

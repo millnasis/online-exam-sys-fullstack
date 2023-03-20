@@ -59,4 +59,10 @@ public class StudentServiceImpl implements StudentService {
         return studentDao.getPwd(id);
     }
 
+    @Override
+    public List<Student> queryStudentByGrId(int gr_id) {
+        List<Student> data = studentDao.queryStudentByGrId(gr_id);
+        return data;
+    }
+
 }

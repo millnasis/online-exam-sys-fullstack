@@ -1,6 +1,7 @@
 package com.online_exam_sys.controller;
 
 import java.sql.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
@@ -61,6 +62,14 @@ public class StudentController {
         boolean update = studentService.update(data);
         return update ? new Result(null, "成功", Constant.code.success)
                 : new Result(null, "更新失败，请联系管理员", Constant.code.error);
+    }
+
+    @ApiOperation("根据班级id查学生")
+    @GetMapping("/grade/{id}")
+    public Result queryByGrId(@PathVariable int id) {
+        List<Student> stList = studentService.queryStudentByGrId(id);
+        return stList != null ? new Result(stList, "成功", Constant.code.success)
+                : new Result(null, "未找到", Constant.code.not_found);
     }
 
 }

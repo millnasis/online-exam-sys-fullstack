@@ -8,3 +8,51 @@
     margin-left: 5%;
   }
 }
+.grade-modal {
+  height: 50vh;
+  display: flex;
+  flex-direction: row;
+  overflow-y: auto;
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.1);
+  }
+  &::-webkit-scrollbar-track {
+    border-radius: 0;
+    background: rgba(0, 0, 0, 0.1);
+  }
+  .grade-modal-avatar {
+    margin-top: 30px;
+    width: 100px;
+    height: 100px;
+  }
+  .grade-modal-info {
+    flex: 1;
+    border-left: 1px solid rgba(0, 0, 0, 0.2);
+    padding: 0 10px;
+    strong {
+      font-size: 1.5em;
+    }
+
+    span.grade-modal-info-title {
+      font-weight: 700;
+      display: inline-block;
+      width: 100px;
+      float: left;
+    }
+    .grade-modal-info-des {
+      float: left;
+      display: inline-block;
+      width: 70%;
+      
+    }
+    .grade-modal-member {
+      .grade-modal-member-avatar {
+        margin-right: 10px;
+      }
+    }
+  }
+}

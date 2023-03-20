@@ -7,6 +7,8 @@ import com.online_exam_sys.pojo.Student;
 public interface StudentService {
     public Student queryOne(int id);
 
+    public List<Student> queryStudentByGrId(int gr_id);
+
     public List<Student> queryAll();
 
     public boolean delete(int id);
