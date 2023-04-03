@@ -19,6 +19,7 @@ import { CameraOutlined } from "@ant-design/icons";
 import "./userSetting.scss";
 import constant from "../../../constant";
 import { bindActionCreators } from "redux";
+import request from "../../../request.js";
 
 class UserSetting extends React.Component {
   constructor(props) {
@@ -197,25 +198,22 @@ class UserSetting extends React.Component {
                   type="primary"
                   className="btn"
                   onClick={async () => {
-                    const response = await axios.put("/students", {
-                      ...userInfo,
-                      ...this.state.form,
-                      st_avatar: this.state.avatar_temp,
-                    });
-                    if (
-                      response.status === 200 &&
-                      response.data.code === constant.code.success
-                    ) {
-                      this.props.get_user_info(userInfo.st_id);
-                    } else if (response.data) {
-                      notification.error({
-                        description: response.data.msg,
-                        message: "修改失败",
-                      });
-                    } else {
-                      notification.error({ message: "系统出错" });
-                    }
-                    this.setState({ edit: false });
+                    request(
+                      axios.put("/students", {
+                        ...userInfo,
+                        ...this.state.form,
+                        st_avatar:
+                          this.state.avatar_temp === ""
+                            ? this.state.form.st_avatar
+                            : this.state.avatar_temp,
+                      }),
+                      (response) => {
+                        this.props.get_user_info(userInfo.st_id);
+                      },
+                      () => {
+                        this.setState({ edit: false });
+                      }
+                    );
                   }}
                   loading={this.state.loading}
                 >

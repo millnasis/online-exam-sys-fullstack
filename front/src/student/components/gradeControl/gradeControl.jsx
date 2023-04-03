@@ -15,7 +15,8 @@ import {
 import axios from "axios";
 import React, { useState } from "react";
 import { connect } from "react-redux";
-import constant from "../../../constant";
+import request from "../../../request";
+
 import "./gradeControl.scss";
 
 const fakeData = [
@@ -58,11 +59,29 @@ const fakeData = [
 function GradeListItem(props) {
   const [open, setOpen] = useState(false);
   const [fetching, setFetchinng] = useState(false);
-  const [member, setMember] = useState([1, 2, 3, 4, 5, 6, 7, 8]);
+  const [member, setMember] = useState([]);
   const { item } = props;
   return (
     <List.Item
-      actions={[<a onClick={() => setOpen(true)}>更多</a>]}
+      actions={[
+        <a
+          onClick={() => {
+            setOpen(true);
+            setFetchinng(true);
+            request(
+              axios.get("/students/grade/" + item.gr_id),
+              (response) => {
+                setMember(response.data.data);
+              },
+              () => {
+                setFetchinng(false);
+              }
+            );
+          }}
+        >
+          更多
+        </a>,
+      ]}
       className="list-item"
       key={item.gr_id}
     >
@@ -86,12 +105,7 @@ function GradeListItem(props) {
               </p>
               <p>
                 <span className="grade-modal-info-title">班级信息</span>
-                <span
-                className="grade-modal-info-des"
-                  
-                >
-                  {item.gr_info}
-                </span>
+                <span className="grade-modal-info-des">{item.gr_info}</span>
               </p>
               <p>
                 <span className="grade-modal-info-title">创建时间</span>
@@ -114,8 +128,11 @@ function GradeListItem(props) {
                       actions={[<a>查看</a>]}
                       className="grade-modal-member"
                     >
-                      <Avatar className="grade-modal-member-avatar"></Avatar>
-                      什么几把名字
+                      <Avatar
+                        className="grade-modal-member-avatar"
+                        src={memberItem.st_avatar}
+                      ></Avatar>
+                      {memberItem.st_name}
                     </List.Item>
                   );
                 }}
@@ -148,31 +165,16 @@ class GradeControl extends React.Component {
 
   async getGradeInfo() {
     const { userInfo } = this.props.global;
-    try {
-      const response = await axios.get("/grades/student/" + userInfo.st_id);
-      if (response.status === 200) {
-        const { data, msg, code } = response.data;
-        if (code === constant.code.error) {
-          notification.error({
-            message: "错误",
-            description:
-              typeof msg === "object" ? "系统错误，请查看后台日志" : msg,
-          });
-          console.log(data);
-        } else {
-          this.setState({
-            filterData: response.data.data,
-          });
-        }
-      } else {
-        notification.error({
-          message: "错误代码" + response.status,
-          description: JSON.stringify(response.data),
+    request(
+      axios.get("/grades/student/" + userInfo.st_id),
+      (response) => {
+        this.originData = response.data.data;
+        this.setState({
+          filterData: response.data.data,
         });
-      }
-    } catch (error) {
-      notification.error({ description: "错误，未找到服务器" });
-    }
+      },
+      () => null
+    );
   }
 
   componentDidMount() {
@@ -191,38 +193,20 @@ class GradeControl extends React.Component {
               return;
             }
             const { userInfo } = this.props.global;
-            try {
-              const response = await axios.post(
+            request(
+              axios.post(
                 `/grade-student/grade/${this.state.gradeInput}`,
                 userInfo
-              );
-              if (response.status === 200) {
-                const { data, msg, code } = response.data;
-                if (code === constant.code.error) {
-                  notification.error({
-                    message: "错误",
-                    description:
-                      typeof msg === "object"
-                        ? "系统错误，请查看后台日志"
-                        : msg,
-                  });
-                  console.log(data);
-                } else {
-                  await this.getGradeInfo();
-                }
-              } else {
-                notification.error({
-                  message: "错误代码" + response.status,
-                  description: JSON.stringify(response.data),
+              ),
+              async () => {
+                await this.getGradeInfo();
+              },
+              () => {
+                this.setState({
+                  showModal: false,
                 });
               }
-            } catch (error) {
-              notification.error({ description: "错误，未找到服务器" });
-            } finally {
-              this.setState({
-                showModal: false,
-              });
-            }
+            );
           }}
           onCancel={() => this.setState({ showModal: false })}
         >

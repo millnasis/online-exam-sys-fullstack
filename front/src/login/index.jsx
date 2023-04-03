@@ -12,6 +12,7 @@ import {
 import axios from "axios";
 import "./index.scss";
 import constant from "../constant";
+import request from "../request";
 
 const { Item } = Form;
 function Home(props) {
@@ -19,33 +20,17 @@ function Home(props) {
   async function login(data) {
     const { card, password } = data;
     const url = identity ? "/session/teacher" : "/session/student";
-    try {
-      const msgObj = identity
-        ? { te_card: card, te_password: password }
-        : { st_card: card, st_password: password };
-      const response = await axios.post(url, msgObj);
-      if (response.status === 200) {
-        const { data, msg, code } = response.data;
-        if (code === constant.code.error) {
-          notification.error({
-            message: "错误",
-            description:
-              typeof msg === "object" ? "系统错误，请查看后台日志" : msg,
-          });
-          console.log(data);
-        } else {
-          localStorage.setItem("userinfo", JSON.stringify(data));
-          location.href = identity ? "/teacher" : "/student";
-        }
-      } else {
-        notification.error({
-          message: "错误代码" + response.status,
-          description: JSON.stringify(response.data),
-        });
-      }
-    } catch (error) {
-      notification.error({ description: "错误，未找到服务器" });
-    }
+    const msgObj = identity
+      ? { te_card: card, te_password: password }
+      : { st_card: card, st_password: password };
+    request(
+      await axios.post(url, msgObj),
+      (response) => {
+        localStorage.setItem("userinfo", JSON.stringify(response.data.data));
+        location.href = identity ? "/teacher" : "/student";
+      },
+      () => null
+    );
   }
 
   return (

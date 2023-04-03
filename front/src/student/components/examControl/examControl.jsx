@@ -3,6 +3,9 @@ import { Card, Col, Divider, Dropdown, Input, Modal, Row, Select } from "antd";
 import "./examControl.scss";
 import constant from "../../../constant";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
+import request from "../../../request.js";
+import axios from "axios";
+import { connect } from "react-redux";
 
 function Exam(props) {
   const { paperstate } = props;
@@ -168,8 +171,26 @@ class ExamControl extends React.Component {
     };
   }
 
-  componentDidMount(){
-    
+  getExamInfo() {
+    const { userInfo } = this.props.global;
+    request(
+      axios.get("/papers/student/" + userInfo.st_id),
+      (response) => {
+        this.originData = response.data.data;
+        this.setState({
+          filterData: response.data.data,
+          search: "",
+          grade: "all",
+          pa_state: "all",
+        });
+      },
+      () => null
+    );
+  }
+
+  componentDidMount() {
+    this.getExamInfo();
+    console.log(this.state);
   }
 
   render() {
@@ -188,7 +209,7 @@ class ExamControl extends React.Component {
                 }
                 this.timeout = setTimeout(() => {
                   this.setState({
-                    ...this.clearState, 
+                    ...this.clearState,
                     search: e.target.value,
                     filterData: this.originData.filter(
                       (el) => el.pa_name.match(this.state.search) !== null
@@ -202,11 +223,15 @@ class ExamControl extends React.Component {
             <Select
               onSelect={(value) => {
                 if (value === "all") {
-                  this.setState({ ...this.clearState, filterData: this.originData, grade: value });
+                  this.setState({
+                    ...this.clearState,
+                    filterData: this.originData,
+                    grade: value,
+                  });
                   return;
                 }
                 this.setState({
-                  ...this.clearState, 
+                  ...this.clearState,
                   filterData: this.originData.filter((v) => {
                     return v.gr_id === value;
                   }),
@@ -225,14 +250,14 @@ class ExamControl extends React.Component {
               onSelect={(value) => {
                 if (value === "all") {
                   this.setState({
-                    ...this.clearState, 
+                    ...this.clearState,
                     filterData: this.originData,
                     pa_state: value,
                   });
                   return;
                 }
                 this.setState({
-                  ...this.clearState, 
+                  ...this.clearState,
                   filterData: this.originData.filter((v) => {
                     return v.pa_state === value;
                   }),
@@ -284,4 +309,10 @@ class ExamControl extends React.Component {
   }
 }
 
-export default ExamControl;
+function mapStateToProps(state) {
+  return {
+    global: state.global,
+  };
+}
+
+export default connect(mapStateToProps, null)(ExamControl);
