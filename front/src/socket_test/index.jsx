@@ -4,6 +4,7 @@ import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import ZeroRtc from "./ZeroRtc";
 import { Button, Input, InputNumber, Typography } from "antd";
+import MultiZeroRtc from "./MultiZeroRtc";
 
 class Home extends React.Component {
   constructor(props) {
@@ -33,7 +34,9 @@ class Home extends React.Component {
   //   });
   // }
   componentDidMount() {
-    this.rtc = new ZeroRtc("/gs-guide");
+    // this.rtc = new ZeroRtc("/gs-guide");
+    // this.rtc.createWebsocket();
+    this.rtc = new MultiZeroRtc("/gs-guide");
     this.rtc.createWebsocket();
   }
 
