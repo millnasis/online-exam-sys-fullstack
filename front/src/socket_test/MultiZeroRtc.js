@@ -38,7 +38,6 @@ export default class MultiZeroRtc {
           const msg = JSON.parse(resp.body);
           this.remoteUserIdList.push(msg.remoteUid);
           this.joinCallBack();
-          this.remoteStreamMap.set(msg.remoteUid, null);
           const remoteVideo = document.querySelector(
             "#remoteVideo" + msg.remoteUid
           );
@@ -53,7 +52,6 @@ export default class MultiZeroRtc {
           const msg = JSON.parse(resp.body);
           this.remoteUserIdList.push(msg.remoteUid);
           this.joinCallBack();
-          this.remoteStreamMap.set(msg.remoteUid, null);
           const remoteVideo = document.querySelector(
             "#remoteVideo" + msg.remoteUid
           );
@@ -92,32 +90,32 @@ export default class MultiZeroRtc {
           }
           const peerConnection = this.peerConnectionMap.get(remoteUid);
           if (peerConnection.remoteDescription === null) {
-            peerConnection.setRemoteDescription(desc);
+            await peerConnection.setRemoteDescription(desc);
           }
-          this.doAnswer(remoteUid);
+          await this.doAnswer(remoteUid);
         }
       );
       this.stompClient.subscribe(
         respPrefix + signal.SIGNAL_TYPE_ANSWER + `/${this.localUserId}`,
-        (resp) => {
+        async (resp) => {
           const msg = JSON.parse(resp.body);
           const desc = JSON.parse(msg.msg);
           const remoteUid = msg.uid;
           const peerConnection = this.peerConnectionMap.get(remoteUid);
           if (peerConnection.remoteDescription === null) {
-            peerConnection.setRemoteDescription(desc);
+            await peerConnection.setRemoteDescription(desc);
           }
         }
       );
       this.stompClient.subscribe(
         respPrefix + signal.SIGNAL_TYPE_CANDIDATE + `/${this.localUserId}`,
-        (resp) => {
+        async (resp) => {
           const msg = JSON.parse(resp.body);
           const candidate = JSON.parse(msg.msg);
           const remoteUid = msg.uid;
           const peerConnection = this.peerConnectionMap.get(remoteUid);
           console.log(this);
-          peerConnection.addIceCandidate(candidate);
+          await peerConnection.addIceCandidate(candidate);
         }
       );
     });
@@ -188,12 +186,12 @@ export default class MultiZeroRtc {
         console.log("candidate处理终止");
         console.log(this);
       }
-      peerConnection.ontrack = (e) => {
-        this.remoteStreamMap.set(remoteUid, e.streams[0]);
-        const remoteVideo = this.remoteVideoMap.get(remoteUid);
-        console.log("流来啦！！！！！！是" + remoteUid + "的");
-        remoteVideo.srcObject = e.streams[0];
-      };
+    };
+    peerConnection.ontrack = (e) => {
+      this.remoteStreamMap.set(remoteUid, e.streams[0]);
+      const remoteVideo = this.remoteVideoMap.get(remoteUid);
+      console.log("流来啦！！！！！！是" + remoteUid + "的");
+      remoteVideo.srcObject = e.streams[0];
     };
 
     this.localStream.getTracks().forEach((track) => {
@@ -211,7 +209,6 @@ export default class MultiZeroRtc {
     }
     const peerConnection = this.peerConnectionMap.get(remoteUid);
     const session = await peerConnection.createOffer();
-    await peerConnection.setLocalDescription(session);
     const jsonMsg = {
       uid: this.localUserId,
       remoteUid: remoteUid,
@@ -222,13 +219,14 @@ export default class MultiZeroRtc {
       sendPrefix + signal.SIGNAL_TYPE_OFFER + "/" + this.roomId,
       message
     );
+    await peerConnection.setLocalDescription(session);
     console.log("do offer msg:" + message);
   }
 
   async doAnswer(remoteUid) {
+    console.log("做了answer!!!");
     const peerConnection = this.peerConnectionMap.get(remoteUid);
     const session = await peerConnection.createAnswer();
-    await peerConnection.setLocalDescription(session);
     const jsonMsg = {
       uid: this.localUserId,
       remoteUid: remoteUid,
@@ -239,6 +237,7 @@ export default class MultiZeroRtc {
       sendPrefix + signal.SIGNAL_TYPE_ANSWER + "/" + this.roomId,
       message
     );
+    await peerConnection.setLocalDescription(session);
     console.log("do answer msg:" + message);
   }
 
