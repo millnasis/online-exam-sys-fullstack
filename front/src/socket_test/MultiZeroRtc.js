@@ -7,7 +7,7 @@ const respPrefix = "/ws-resp/";
 const sendPrefix = "/signal/";
 
 export default class MultiZeroRtc {
-  constructor(url) {
+  constructor(url, joinCallBack, exitCallBack) {
     this.url = url;
     this.stompClient = null;
     this.localUserId = Math.random().toString(36).substring(2);
@@ -18,6 +18,12 @@ export default class MultiZeroRtc {
     this.localVideo = document.querySelector("#localVideo");
     this.remoteVideoMap = new Map();
     this.peerConnectionMap = null;
+    this.joinCallBack = joinCallBack;
+    this.exitCallBack = exitCallBack;
+  }
+
+  getRemoteUserIdList() {
+    return this.remoteUserIdList;
   }
 
   createWebsocket() {
@@ -31,6 +37,12 @@ export default class MultiZeroRtc {
         (resp) => {
           const msg = JSON.parse(resp.body);
           this.remoteUserIdList.push(msg.remoteUid);
+          this.joinCallBack();
+          this.remoteStreamMap.set(msg.remoteUid, null);
+          const remoteVideo = document.querySelector(
+            "#remoteVideo" + msg.remoteUid
+          );
+          this.remoteVideoMap.set(msg.remoteUid, remoteVideo);
           // console.log(signal.SIGNAL_TYPE_NEW_PEER, msg);
           this.doOffer(msg.remoteUid);
         }
@@ -40,10 +52,12 @@ export default class MultiZeroRtc {
         (resp) => {
           const msg = JSON.parse(resp.body);
           this.remoteUserIdList.push(msg.remoteUid);
+          this.joinCallBack();
           this.remoteStreamMap.set(msg.remoteUid, null);
-          // 这里应该获取dom对象给remoteVideo
-          this.remoteVideoMap.set(msg.remoteUid, null);
-          this.peerConnectionMap.set(msg.remoteUid, null);
+          const remoteVideo = document.querySelector(
+            "#remoteVideo" + msg.remoteUid
+          );
+          this.remoteVideoMap.set(msg.remoteUid, remoteVideo);
           // console.log(signal.SIGNAL_TYPE_RESP_JOIN, msg);
         }
       );
@@ -54,6 +68,7 @@ export default class MultiZeroRtc {
           this.remoteUserIdList = this.remoteUserIdList.filter((value) => {
             return value != msg.remoteUid;
           });
+          this.exitCallBack();
           this.remoteStreamMap.delete(msg.remoteUid);
           const video = this.remoteVideoMap.get(msg.remoteUid);
           video.srcObject = null;
@@ -67,16 +82,19 @@ export default class MultiZeroRtc {
       );
       this.stompClient.subscribe(
         respPrefix + signal.SIGNAL_TYPE_OFFER + `/${this.localUserId}`,
-        (resp) => {
+        async (resp) => {
           const msg = JSON.parse(resp.body);
-          const remoteUid = msg.remoteUid;
+          const remoteUid = msg.uid;
           const desc = JSON.parse(msg.msg);
-          const peerConnection = this.peerConnectionMap.get(remoteUid);
-          if (peerConnection === null) {
-            this.createPeerConnection(remoteUid);
+          if (!this.peerConnectionMap.has(remoteUid)) {
+            console.log("订阅到了offer，id是" + remoteUid);
+            await this.createPeerConnection(remoteUid);
           }
-          peerConnection.setRemoteDescription(desc);
-          this.doAnswer();
+          const peerConnection = this.peerConnectionMap.get(remoteUid);
+          if (peerConnection.remoteDescription === null) {
+            peerConnection.setRemoteDescription(desc);
+          }
+          this.doAnswer(remoteUid);
         }
       );
       this.stompClient.subscribe(
@@ -84,8 +102,11 @@ export default class MultiZeroRtc {
         (resp) => {
           const msg = JSON.parse(resp.body);
           const desc = JSON.parse(msg.msg);
-          const peerConnection = this.peerConnectionMap.get(msg.remoteUid);
-          peerConnection.setRemoteDescription(desc);
+          const remoteUid = msg.uid;
+          const peerConnection = this.peerConnectionMap.get(remoteUid);
+          if (peerConnection.remoteDescription === null) {
+            peerConnection.setRemoteDescription(desc);
+          }
         }
       );
       this.stompClient.subscribe(
@@ -93,7 +114,9 @@ export default class MultiZeroRtc {
         (resp) => {
           const msg = JSON.parse(resp.body);
           const candidate = JSON.parse(msg.msg);
+          const remoteUid = msg.uid;
           const peerConnection = this.peerConnectionMap.get(remoteUid);
+          console.log(this);
           peerConnection.addIceCandidate(candidate);
         }
       );
@@ -147,7 +170,7 @@ export default class MultiZeroRtc {
     console.log(`dojoin msg: ${message}`);
   }
 
-  createPeerConnection(remoteUid) {
+  async createPeerConnection(remoteUid) {
     const peerConnection = new RTCPeerConnection(null);
     peerConnection.onicecandidate = (e) => {
       if (e.candidate) {
@@ -163,14 +186,13 @@ export default class MultiZeroRtc {
         );
       } else {
         console.log("candidate处理终止");
+        console.log(this);
       }
       peerConnection.ontrack = (e) => {
-        let remotestream = this.remoteStreamMap.get(remoteUid);
-        remotestream = e.streams[0];
-        this.remoteStreamMap.set(remoteUid, remotestream);
-        let remoteVideo = this.remoteVideoMap.get(remoteUid);
-        remoteVideo.srcObject = remotestream;
-        this.remoteVideoMap.set(remoteUid, remoteVideo);
+        this.remoteStreamMap.set(remoteUid, e.streams[0]);
+        const remoteVideo = this.remoteVideoMap.get(remoteUid);
+        console.log("流来啦！！！！！！是" + remoteUid + "的");
+        remoteVideo.srcObject = e.streams[0];
       };
     };
 
@@ -183,10 +205,11 @@ export default class MultiZeroRtc {
 
   async doOffer(remoteUid) {
     console.log("现在的remoteUid是", remoteUid);
-    const peerConnection = this.peerConnectionMap.get(remoteUid);
-    if (peerConnection === null) {
-      this.createPeerConnection(remoteUid);
+    if (!this.peerConnectionMap.has(remoteUid)) {
+      console.log("主动创建的offer，id是" + remoteUid);
+      await this.createPeerConnection(remoteUid);
     }
+    const peerConnection = this.peerConnectionMap.get(remoteUid);
     const session = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(session);
     const jsonMsg = {
@@ -245,5 +268,6 @@ export default class MultiZeroRtc {
       }
     });
     this.peerConnectionMap.clear();
+    this.exitCallBack();
   }
 }

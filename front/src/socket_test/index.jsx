@@ -15,6 +15,7 @@ class Home extends React.Component {
       date: "",
       status: "",
       roomId: null,
+      renderRemoteUserId: [],
     };
 
     this.rtc = null;
@@ -36,7 +37,16 @@ class Home extends React.Component {
   componentDidMount() {
     // this.rtc = new ZeroRtc("/gs-guide");
     // this.rtc.createWebsocket();
-    this.rtc = new MultiZeroRtc("/gs-guide");
+    this.rtc = new MultiZeroRtc(
+      "/gs-guide",
+      () => {
+        this.setState({ renderRemoteUserId: this.rtc.getRemoteUserIdList() });
+      },
+      () => {
+        this.setState({ renderRemoteUserId: this.rtc.getRemoteUserIdList() });
+      }
+    );
+
     this.rtc.createWebsocket();
   }
 
@@ -90,12 +100,26 @@ class Home extends React.Component {
             </Button>
           </Typography.Paragraph>
           <Typography.Paragraph>
-            <video id="localVideo" autoPlay muted playsInline>
+            <video
+              id="localVideo"
+              autoPlay
+              muted
+              playsInline
+              style={{ border: "1px red soild" }}
+            >
               本地窗口
             </video>
-            <video id="remoteVideo" autoPlay playsInline>
-              远端窗口
-            </video>
+            {this.state.renderRemoteUserId.map((v) => (
+              <video
+                key={v}
+                id={"remoteVideo" + v}
+                autoPlay
+                playsInline
+                style={{ border: "1px red soild" }}
+              >
+                远端窗口
+              </video>
+            ))}
           </Typography.Paragraph>
         </Typography>
       </div>
