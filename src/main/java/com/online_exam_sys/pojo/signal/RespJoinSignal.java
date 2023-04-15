@@ -5,4 +5,6 @@ import lombok.Data;
 @Data
 public class RespJoinSignal {
     private String remoteUid;
+    private Object[] studentIdList;
+    private Object[] teacherIdList;
 }

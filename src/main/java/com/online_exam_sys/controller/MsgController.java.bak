@@ -38,65 +38,61 @@ public class MsgController {
         this.template = simpMessagingTemplate;
     }
 
-    private static final Map<String, Set<String>> TEACHER_ROOM_TABLE_MAP = new ConcurrentHashMap<>();
-    private static final Map<String, Set<String>> STUDENT_ROOM_TABLE_MAP = new ConcurrentHashMap<>();
+    private static final Map<String, Set<String>> ROOM_TABLE_MAP = new ConcurrentHashMap<>();
 
-    private static final Map<String, String> TEACHER_USER_ROOM_MAP = new ConcurrentHashMap<>();
-    private static final Map<String, String> STUDENT_USER_ROOM_MAP = new ConcurrentHashMap<>();
+    private static final Map<String, String> USER_ROOM_MAP = new ConcurrentHashMap<>();
 
-    public static Map<String, Set<String>> getStudentRoomTableMap() {
-        return STUDENT_ROOM_TABLE_MAP;
+    public static Map<String, Set<String>> getRoomTableMap() {
+        return ROOM_TABLE_MAP;
     }
 
-    public static Map<String, String> getStudentUserRoomMap() {
-        return STUDENT_USER_ROOM_MAP;
+    public static Map<String, String> getUserRoomMap() {
+        return USER_ROOM_MAP;
     }
 
-    public static Map<String, Set<String>> getTeacherRoomTableMap() {
-        return TEACHER_ROOM_TABLE_MAP;
-    }
-
-    public static Map<String, String> getTeacherUserRoomMap() {
-        return TEACHER_USER_ROOM_MAP;
+    @MessageMapping("/hello")
+    // @SendTo("/topic/greet")
+    public void hello(HelloMessage msg) throws InterruptedException {
+        Hello h = new Hello();
+        h.setContent("HELLO ！！！" + HtmlUtils.htmlEscape(msg.getName()));
+        h.setDate(LocalDateTime.now().toString());
+        this.template.convertAndSend("/ws-resp/greet", h);
+        // return h;
     }
 
     @MessageMapping("/" + Constant.signal.SIGNAL_TYPE_JOIN + "/{roomid}")
     public void join(JoinSignal msgJoin, @DestinationVariable String roomid) {
         log.info("join " + roomid + " 操作，消息：{}", msgJoin);
-        Set<String> TroomSet = TEACHER_ROOM_TABLE_MAP.get(roomid);
-        if (TroomSet == null) {
-            TroomSet = new ConcurrentSkipListSet<String>();
-            TEACHER_ROOM_TABLE_MAP.put(roomid, TroomSet);
-        }
-        Set<String> SroomSet = STUDENT_ROOM_TABLE_MAP.get(roomid);
-        if (SroomSet == null) {
-            SroomSet = new ConcurrentSkipListSet<String>();
-            STUDENT_ROOM_TABLE_MAP.put(roomid, SroomSet);
+        Set<String> roomSet = ROOM_TABLE_MAP.get(roomid);
+        if (roomSet == null) {
+            roomSet = new ConcurrentSkipListSet<String>();
+            ROOM_TABLE_MAP.put(roomid, roomSet);
         }
 
-        if ("teacher".equals(msgJoin.getIdentity())) {
-            TroomSet.add(msgJoin.getUid());
-            TEACHER_USER_ROOM_MAP.put(msgJoin.getUid(), roomid);
-            if (SroomSet.size() > 0) {
-                SroomSet.forEach((uid) -> {
+        roomSet.add(msgJoin.getUid());
+        USER_ROOM_MAP.put(msgJoin.getUid(), roomid);
+        log.info("当前房间{}人数:{}", roomid, roomSet.size());
+        log.info("set集合:{}", USER_ROOM_MAP.entrySet());
+        if (roomSet.size() > 1) {
+            roomSet.forEach((uid) -> {
+                log.info("当前uid:{}", uid);
+                if (!uid.equals(msgJoin.getUid())) {
                     NewPeerSignal nps = new NewPeerSignal();
                     nps.setRemoteUid(msgJoin.getUid());
-                    this.template.convertAndSend("/ws-resp/" + Constant.signal.SIGNAL_TYPE_NEW_PEER + "/" + uid, nps);
-                });
-                RespJoinSignal rjs = new RespJoinSignal();
-                rjs.setStudentIdList(SroomSet.toArray());
-                this.template.convertAndSend(
-                        "/ws-resp/" + Constant.signal.SIGNAL_TYPE_RESP_JOIN + "/" + msgJoin.getUid(), rjs);
-            }
-        } else {
-            SroomSet.add(msgJoin.getUid());
-            STUDENT_USER_ROOM_MAP.put(msgJoin.getUid(), roomid);
-            if (TroomSet.size() > 0) {
-                RespJoinSignal rjs = new RespJoinSignal();
-                rjs.setTeacherIdList(TroomSet.toArray());
-                this.template.convertAndSend(
-                        "/ws-resp/" + Constant.signal.SIGNAL_TYPE_RESP_JOIN + "/" + msgJoin.getUid(), rjs);
-            }
+                    this.template.convertAndSend("/ws-resp/" + Constant.signal.SIGNAL_TYPE_NEW_PEER + "/" + uid,
+                            nps);
+
+                    log.info("发送给{}", "/ws-resp/" + Constant.signal.SIGNAL_TYPE_NEW_PEER + "/" + uid);
+
+                    RespJoinSignal rjs = new RespJoinSignal();
+                    rjs.setRemoteUid((String) uid);
+                    this.template.convertAndSend(
+                            "/ws-resp/" + Constant.signal.SIGNAL_TYPE_RESP_JOIN + "/" + msgJoin.getUid(),
+                            rjs);
+                    log.info("发送给{}", "/ws-resp/" + Constant.signal.SIGNAL_TYPE_RESP_JOIN + "/" + msgJoin.getUid());
+
+                }
+            });
         }
 
     }
@@ -104,30 +100,17 @@ public class MsgController {
     @MessageMapping("/" + Constant.signal.SIGNAL_TYPE_LEAVE + "/{roomid}")
     public void leave(LeaveSignal msgLeave, @DestinationVariable String roomid) {
         log.info("leave " + roomid + " 操作，消息：{}", msgLeave);
-
-        Set<String> roomSet;
-        Set<String> aroomSet;
-        Map<String, String> roomMap;
-        if ("teacher".equals(msgLeave.getIdentity())) {
-            roomSet = TEACHER_ROOM_TABLE_MAP.get(roomid);
-            aroomSet = STUDENT_ROOM_TABLE_MAP.get(roomid);
-            roomMap = TEACHER_USER_ROOM_MAP;
-        } else {
-            aroomSet = TEACHER_ROOM_TABLE_MAP.get(roomid);
-            roomSet = STUDENT_ROOM_TABLE_MAP.get(roomid);
-            roomMap = STUDENT_USER_ROOM_MAP;
-
-        }
+        Set<String> roomSet = ROOM_TABLE_MAP.get(roomid);
         if (roomSet == null) {
             log.error("无法找到房间{}", roomid);
             return;
         }
 
         roomSet.remove(msgLeave.getUid());
-        roomMap.remove(msgLeave.getUid());
+        USER_ROOM_MAP.remove(msgLeave.getUid());
         log.info("当前房间{}人数:{}", roomid, roomSet.size());
-        if (aroomSet.size() > 0) {
-            aroomSet.forEach((uid) -> {
+        if (roomSet.size() > 0) {
+            roomSet.forEach((uid) -> {
                 log.info("当前uid:{}", uid);
                 PeerLeaveSignal pls = new PeerLeaveSignal();
                 pls.setRemoteUid(msgLeave.getUid());
@@ -144,9 +127,13 @@ public class MsgController {
     @MessageMapping("/" + Constant.signal.SIGNAL_TYPE_OFFER + "/{roomid}")
     public void offer(OfferSignal msgOffer, @DestinationVariable String roomid) {
         log.info("join " + roomid + " 操作，消息：{}", msgOffer);
-        Set<String> roomSet = TEACHER_ROOM_TABLE_MAP.get(roomid);
+        Set<String> roomSet = ROOM_TABLE_MAP.get(roomid);
         if (roomSet == null) {
             log.error("无法找到房间{}", roomid);
+            return;
+        }
+        if (!roomSet.contains(msgOffer.getUid())) {
+            log.error("无法找到用户{}", msgOffer.getUid());
             return;
         }
 
@@ -164,9 +151,13 @@ public class MsgController {
     @MessageMapping("/" + Constant.signal.SIGNAL_TYPE_ANSWER + "/{roomid}")
     public void answer(AnswerSignal msgAnswer, @DestinationVariable String roomid) {
         log.info("join " + roomid + " 操作，消息：{}", msgAnswer);
-        Set<String> roomSet = STUDENT_ROOM_TABLE_MAP.get(roomid);
+        Set<String> roomSet = ROOM_TABLE_MAP.get(roomid);
         if (roomSet == null) {
             log.error("无法找到房间{}", roomid);
+            return;
+        }
+        if (!roomSet.contains(msgAnswer.getUid())) {
+            log.error("无法找到用户{}", msgAnswer.getUid());
             return;
         }
 
@@ -183,15 +174,13 @@ public class MsgController {
     @MessageMapping("/" + Constant.signal.SIGNAL_TYPE_CANDIDATE + "/{roomid}")
     public void answer(CandidateSignal msgCandidate, @DestinationVariable String roomid) {
         log.info("join " + roomid + " 操作，消息：{}", msgCandidate);
-        Set<String> roomSet;
-        if ("teacher".equals(msgCandidate.getIdentity())) {
-            roomSet = STUDENT_ROOM_TABLE_MAP.get(roomid);
-        } else {
-            roomSet = TEACHER_ROOM_TABLE_MAP.get(roomid);
-
-        }
+        Set<String> roomSet = ROOM_TABLE_MAP.get(roomid);
         if (roomSet == null) {
             log.error("无法找到房间{}", roomid);
+            return;
+        }
+        if (!roomSet.contains(msgCandidate.getUid())) {
+            log.error("无法找到用户{}", msgCandidate.getUid());
             return;
         }
 

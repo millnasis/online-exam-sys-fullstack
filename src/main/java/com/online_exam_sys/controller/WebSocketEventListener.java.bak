@@ -1,6 +1,5 @@
 package com.online_exam_sys.controller;
 
-import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,41 +31,26 @@ public class WebSocketEventListener {
         log.info("WebSocket 客户端断开链接: {}",
                 event);
         String uuid = event.getSessionId();
-        String[] split = uuid.split(" ");
-        Map<String, String> roomMap;
-        Map<String, Set<String>> tableMap;
-        Map<String, Set<String>> atableMap;
-        if (split[0] == "S") {
-            roomMap = MsgController.getStudentUserRoomMap();
-            tableMap = MsgController.getStudentRoomTableMap();
-            atableMap = MsgController.getTeacherRoomTableMap();
-        } else {
-            roomMap = MsgController.getTeacherUserRoomMap();
-            tableMap = MsgController.getTeacherRoomTableMap();
-            atableMap = MsgController.getStudentRoomTableMap();
-
-        }
-        String roomid = roomMap.get(split[1]);
+        String roomid = MsgController.getUserRoomMap().get(uuid);
 
         if (roomid == null) {
-            log.error("无法找到对应房间id:{}", roomMap.entrySet());
+            log.error("无法找到对应房间id:{}", MsgController.getUserRoomMap().entrySet());
             return;
         }
-        Set<String> roomSet = tableMap.get(roomid);
-        Set<String> aroomSet = atableMap.get(roomid);
+        Set<String> roomSet = MsgController.getRoomTableMap().get(roomid);
         if (roomSet == null) {
             log.error("无法找到房间{}", roomid);
             return;
         }
-        roomSet.remove(split[1]);
+        roomSet.remove(uuid);
 
-        log.info("force leave " + roomid + " 操作，消息：{}", split[1]);
+        log.info("force leave " + roomid + " 操作，消息：{}", uuid);
         log.info("当前房间{}人数:{}", roomid, roomSet.size());
-        if (aroomSet.size() > 0) {
-            aroomSet.forEach((uid) -> {
+        if (roomSet.size() > 0) {
+            roomSet.forEach((uid) -> {
                 log.info("当前uid:{}", uid);
                 PeerLeaveSignal pls = new PeerLeaveSignal();
-                pls.setRemoteUid(split[1]);
+                pls.setRemoteUid(uuid);
                 this.template.convertAndSend("/ws-resp/" + Constant.signal.SIGNAL_TYPE_PEER_LEAVE + "/" + uid,
                         pls);
 

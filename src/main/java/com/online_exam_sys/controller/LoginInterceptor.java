@@ -9,20 +9,20 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
 public class LoginInterceptor implements HandlerInterceptor {
-    // @Override
-    // public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-    //         throws Exception {
-    //     HttpSession session = request.getSession();
-    //     if (session.getAttribute("user_id") != null) {
-    //         if (session.getAttribute("identity") == "st") {
-    //             response.sendRedirect("/student");
-    //         } else {
-    //             response.sendRedirect("/teacher");
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws Exception {
+        HttpSession session = request.getSession();
+        if (session.getAttribute("user_id") != null) {
+            if (session.getAttribute("identity") == "st") {
+                response.sendRedirect("/student");
+            } else {
+                response.sendRedirect("/teacher");
 
-    //         }
-    //         return false;
-    //     }
-    //     return true;
+            }
+            return false;
+        }
+        return true;
 
-    // }
+    }
 }
