@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -96,5 +97,26 @@ public class FileUploadController {
         return new Result("/avatar/teacher/" + session.getAttribute("user_id") + "/" + newFileName, "上传成功",
                 Constant.code.success);
 
+    }
+
+    @ApiOperation("上传班级头像")
+    @PostMapping("/grade/avatar/{gr_id}")
+    public Result GradeAvatar(MultipartFile avatar, HttpServletRequest req, @PathVariable int gr_id)
+            throws IllegalStateException, IOException {
+        HttpSession session = req.getSession();
+        if (session.getAttribute("user_id") == null) {
+            return new Result(null, "无权限", Constant.code.success);
+        }
+        File destFile = new File(staticPathHome + "/avatar/grade/" + gr_id);
+        if (!destFile.exists()) {
+            destFile.mkdir();
+        }
+        String fileName = UUID.randomUUID().toString().replaceAll("-", "");
+        String extension = FilenameUtils.getExtension(avatar.getOriginalFilename());
+        String newFileName = fileName + "." + extension;
+        File file = new File(destFile, newFileName);
+        avatar.transferTo(file);
+        return new Result("/avatar/grade/" + gr_id + "/" + newFileName, "上传成功",
+                Constant.code.success);
     }
 }

@@ -17,7 +17,6 @@ const { get_user_info } = actions;
 
 import { CameraOutlined } from "@ant-design/icons";
 import "./userSetting.scss";
-import constant from "../../../constant";
 import { bindActionCreators } from "redux";
 import request from "../../../request.js";
 
@@ -28,10 +27,10 @@ class UserSetting extends React.Component {
     this.state = {
       edit: false,
       form: {
-        st_sex: "F",
-        st_name: null,
-        st_age: 0,
-        st_avatar: "",
+        te_sex: "F",
+        te_name: null,
+        te_age: 0,
+        te_avatar: "",
       },
       avatar_temp: "",
     };
@@ -48,7 +47,7 @@ class UserSetting extends React.Component {
               size={"large"}
               shape="square"
               src={
-                this.state.edit ? this.state.form.st_avatar : userInfo.st_avatar
+                this.state.edit ? this.state.form.te_avatar : userInfo.te_avatar
               }
               className="user-avatar"
             ></Avatar>
@@ -56,7 +55,7 @@ class UserSetting extends React.Component {
               <ImgCrop rotate>
                 <Upload
                   className="user-avatar-upload-btn"
-                  action="/upload/student/avatar"
+                  action="/upload/teacher/avatar"
                   listType="picture-card"
                   name="avatar"
                   showUploadList={false}
@@ -68,7 +67,7 @@ class UserSetting extends React.Component {
                         this.setState({
                           form: {
                             ...this.state.form,
-                            st_avatar: url,
+                            te_avatar: url,
                           },
                           avatar_temp: e.file.response.data,
                         });
@@ -93,14 +92,14 @@ class UserSetting extends React.Component {
                     this.setState({
                       form: {
                         ...this.state.form,
-                        st_name: v.currentTarget.value,
+                        te_name: v.currentTarget.value,
                       },
                     });
                   }}
-                  value={this.state.form.st_name}
+                  value={this.state.form.te_name}
                 ></Input>
               ) : (
-                userInfo.st_name
+                userInfo.te_name
               )}
             </p>
             {!this.state.edit && (
@@ -111,10 +110,10 @@ class UserSetting extends React.Component {
                   this.setState({
                     edit: true,
                     form: {
-                      st_sex: userInfo.st_sex,
-                      st_name: userInfo.st_name,
-                      st_age: userInfo.st_age,
-                      st_avatar: userInfo.st_avatar,
+                      te_sex: userInfo.te_sex,
+                      te_name: userInfo.te_name,
+                      te_age: userInfo.te_age,
+                      te_avatar: userInfo.te_avatar,
                     },
                     avatar_temp: "",
                   });
@@ -124,8 +123,8 @@ class UserSetting extends React.Component {
               </p>
             )}
             <p>
-              <span className="title">学号</span>
-              {userInfo.st_card}
+              <span className="title">工号</span>
+              {userInfo.te_card}
             </p>
             <Divider></Divider>
             <p>
@@ -137,10 +136,10 @@ class UserSetting extends React.Component {
                     name="sex"
                     onClick={() =>
                       this.setState({
-                        form: { ...this.state.form, st_sex: "M" },
+                        form: { ...this.state.form, te_sex: "M" },
                       })
                     }
-                    checked={this.state.form.st_sex === "M"}
+                    checked={this.state.form.te_sex === "M"}
                     readOnly
                   ></input>
                   男&nbsp;
@@ -150,14 +149,14 @@ class UserSetting extends React.Component {
                     name="sex"
                     onClick={() =>
                       this.setState({
-                        form: { ...this.state.form, st_sex: "F" },
+                        form: { ...this.state.form, te_sex: "F" },
                       })
                     }
-                    checked={this.state.form.st_sex === "F"}
+                    checked={this.state.form.te_sex === "F"}
                   ></input>
                   女
                 </span>
-              ) : userInfo.st_sex === "M" ? (
+              ) : userInfo.te_sex === "M" ? (
                 "男"
               ) : (
                 "女"
@@ -173,19 +172,19 @@ class UserSetting extends React.Component {
                   className="input-bar"
                   onChange={(v) => {
                     this.setState({
-                      form: { ...this.state.form, st_age: v },
+                      form: { ...this.state.form, te_age: v },
                     });
                   }}
-                  value={this.state.form.st_age}
+                  value={this.state.form.te_age}
                 ></InputNumber>
               ) : (
-                userInfo.st_age
+                userInfo.te_age
               )}
             </p>
             <Divider></Divider>
             <p>
               <span className="title">注册日期</span>
-              {userInfo.st_registerdate}
+              {userInfo.te_registerdate}
             </p>
             {this.state.edit && (
               <p className="control-btn">
@@ -200,16 +199,16 @@ class UserSetting extends React.Component {
                   className="btn"
                   onClick={async () => {
                     request(
-                      axios.put("/students", {
+                      axios.put("/teachers", {
                         ...userInfo,
                         ...this.state.form,
-                        st_avatar:
+                        te_avatar:
                           this.state.avatar_temp === ""
-                            ? this.state.form.st_avatar
+                            ? this.state.form.te_avatar
                             : this.state.avatar_temp,
                       }),
                       (response) => {
-                        this.props.get_user_info(userInfo.st_id);
+                        this.props.get_user_info(userInfo.te_id);
                       },
                       () => {
                         this.setState({ edit: false });

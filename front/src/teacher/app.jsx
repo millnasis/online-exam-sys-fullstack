@@ -6,6 +6,8 @@ import axios from "axios";
 import { actions } from "./reducers/root";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import UserSetting from "./components/userSetting/userSetting.jsx";
+import GradeControl from "./components/gradeControl/gradeControl.jsx";
 const { set_user_info } = actions;
 
 const { Header, Content, Footer } = Layout;
@@ -92,15 +94,15 @@ class App extends React.Component {
     // localStorage.setItem(
     //   "userinfo",
     //   JSON.stringify({
-    //     st_id: 1622960532008493000,
-    //     st_name: "MillNasis",
-    //     st_sex: "M",
-    //     st_avatar:
+    //     te_id: 1622960532008493000,
+    //     te_name: "MillNasis",
+    //     te_sex: "M",
+    //     te_avatar:
     //       "https://img-blog.csdnimg.cn/img_convert/4cef4c0a5c42d4ccae9ba327c550350b.png",
-    //     st_age: 23,
-    //     st_registerdate: "2023-02-07",
-    //     st_password: null,
-    //     st_card: "3192052051725",
+    //     te_age: 23,
+    //     te_registerdate: "2023-02-07",
+    //     te_password: null,
+    //     te_card: "3192052051725",
     //   })
     // );
     const userInfo = localStorage.getItem("userinfo");
@@ -125,11 +127,11 @@ class App extends React.Component {
             onClick={() => this.setState({ menuSelect: ["user-setting"] })}
           >
             <Avatar
-              src={userInfo.st_avatar}
+              src={userInfo.te_avatar}
               size={"large"}
               className="ft-avatar"
             ></Avatar>
-            <a>{userInfo.st_name}</a>
+            <a>{userInfo.te_name}</a>
           </div>
           <Menu
             theme="dark"

@@ -24,5 +24,9 @@ public class ResourceController {
     public String student() {
         return "student.html";
     }
+    @RequestMapping("/teacher")
+    public String teacher() {
+        return "teacher.html";
+    }
 
 }

@@ -9,15 +9,17 @@ import {
   Divider,
   Modal,
   notification,
-  InputNumber,
+  Upload,
   Skeleton,
 } from "antd";
 import axios from "axios";
 import React, { useState } from "react";
 import { connect } from "react-redux";
 import request from "../../../request";
+import ImgCrop from "antd-img-crop";
 
 import "./gradeControl.scss";
+import { CameraOutlined } from "@ant-design/icons";
 
 const fakeData = [
   {
@@ -57,10 +59,14 @@ const fakeData = [
 ];
 
 function GradeListItem(props) {
+  const { getGradeInfo } = props;
   const [open, setOpen] = useState(false);
   const [fetching, setFetchinng] = useState(false);
   const [member, setMember] = useState([]);
   const { item } = props;
+  const [edit, setEdit] = useState(false);
+  const [form, setForm] = useState({ gr_avatar: "", gr_info: "", gr_name: "" });
+  const [avatar_temp, setAvatar_temp] = useState("");
   return (
     <List.Item
       actions={[
@@ -88,31 +94,143 @@ function GradeListItem(props) {
       <Modal
         title="班级信息"
         open={open}
-        onCancel={() => setOpen(false)}
-        footer={[
-          <Button danger key={"dangerBtn"}>
-            退出班级
-          </Button>,
-          <Button type="primary" key={"okBtn"} onClick={() => setOpen(false)}>
-            确定
-          </Button>,
-        ]}
+        onCancel={() => {
+          if (edit) {
+            setEdit(false);
+          } else {
+            setOpen(false);
+          }
+        }}
+        footer={
+          edit
+            ? [
+                <Button key={"cancelBtn"} onClick={() => setEdit(false)}>
+                  取消
+                </Button>,
+                <Button
+                  type="primary"
+                  key={"okBtn"}
+                  onClick={() => {
+                    request(
+                      axios.put("/grades", {
+                        ...item,
+                        ...form,
+                        gr_avatar:
+                          avatar_temp === "" ? form.gr_avatar : avatar_temp,
+                      }),
+                      (response) => {
+                        getGradeInfo();
+                      },
+                      () => {
+                        setEdit(false);
+                      }
+                    );
+                    setEdit(false);
+                  }}
+                >
+                  确定
+                </Button>,
+              ]
+            : [
+                <Button danger key={"dangerBtn"}>
+                  解散班级
+                </Button>,
+                <Button
+                  type="primary"
+                  key={"okBtn"}
+                  onClick={() => setOpen(false)}
+                >
+                  确定
+                </Button>,
+              ]
+        }
       >
         {fetching ? (
           <Skeleton></Skeleton>
         ) : (
           <div className="grade-modal">
-            <Avatar
-              src={item.gr_avatar}
-              className="grade-modal-avatar"
-            ></Avatar>
+            {edit || (
+              <span
+                className="edit-btn"
+                onClick={() => {
+                  setForm({
+                    gr_avatar: item.gr_avatar,
+                    gr_info: item.gr_info,
+                    gr_name: item.gr_name,
+                  });
+                  setAvatar_temp("");
+                  setEdit(true);
+                }}
+              >
+                修改信息
+              </span>
+            )}
+            <div className="grade-avatar-warp">
+              <Avatar
+                src={edit ? form.gr_avatar : item.gr_avatar}
+                className="grade-modal-avatar"
+              ></Avatar>
+              {edit && (
+                <ImgCrop rotate>
+                  <Upload
+                    className="grade-avatar-upload-btn"
+                    action={"/upload/grade/avatar/" + item.gr_id}
+                    listType="picture-card"
+                    name="avatar"
+                    showUploadList={false}
+                    onChange={(e) => {
+                      if ("done" === e.file.status) {
+                        const reader = new FileReader();
+                        reader.addEventListener("load", () => {
+                          const url = reader.result;
+                          setForm({
+                            ...form,
+                            gr_avatar: url,
+                          });
+                          setAvatar_temp(e.file.response.data);
+                        });
+                        reader.readAsDataURL(e.file.originFileObj);
+                      }
+                    }}
+                    maxCount={1}
+                  >
+                    <CameraOutlined></CameraOutlined>
+                  </Upload>
+                </ImgCrop>
+              )}
+            </div>
             <div className="grade-modal-info">
               <p>
-                <strong>{item.gr_name}</strong>
+                {edit ? (
+                  <Input
+                    addonBefore={"班级名字"}
+                    value={form.gr_name}
+                    onChange={(v) => {
+                      setForm({
+                        ...form,
+                        gr_name: v,
+                      });
+                    }}
+                  ></Input>
+                ) : (
+                  <strong>{item.gr_name}</strong>
+                )}
               </p>
               <p>
                 <span className="grade-modal-info-title">班级信息</span>
-                <span className="grade-modal-info-des">{item.gr_info}</span>
+                {edit ? (
+                  <Input.TextArea
+                    value={form.gr_info}
+                    onChange={(v) => {
+                      setForm({
+                        ...form,
+                        gr_info: v,
+                      });
+                    }}
+                  ></Input.TextArea>
+                ) : (
+                  <span className="grade-modal-info-des">{item.gr_info}</span>
+                )}
               </p>
               <p>
                 <span className="grade-modal-info-title">创建时间</span>
@@ -166,14 +284,19 @@ class GradeControl extends React.Component {
     this.state = {
       filterData: fakeData,
       showModal: false,
-      gradeInput: "",
+      gradeForm: {
+        gr_name: "",
+        gr_avatar:
+          "https://img1.baidu.com/it/u=2121025603,1672671484&fm=253&fmt=auto&app=138&f=PNG?w=500&h=500",
+        gr_info: "",
+      },
     };
   }
 
   async getGradeInfo() {
     const { userInfo } = this.props.global;
     request(
-      axios.get("/grades/student/" + userInfo.st_id),
+      axios.get("/grades/teacher/" + userInfo.te_id),
       (response) => {
         this.originData = response.data.data;
         this.setState({
@@ -193,7 +316,8 @@ class GradeControl extends React.Component {
       <div className="grade-control">
         <Modal
           open={this.state.showModal}
-          title="加入一个班级"
+          className="create-grade-modal"
+          title="创建一个班级"
           onOk={async () => {
             if (this.state.gradeInput === "") {
               notification.error({ message: "请输入班级id" });
@@ -217,15 +341,52 @@ class GradeControl extends React.Component {
           }}
           onCancel={() => this.setState({ showModal: false })}
         >
-          <InputNumber
-            addonBefore={"班级id"}
-            value={this.state.gradeInput}
+          <h3>班级头像</h3>
+          <div className="avatar-warp">
+            <Avatar
+              src={this.state.gradeForm.gr_avatar}
+              className="form-avatar"
+            ></Avatar>
+            <ImgCrop rotate>
+              <Upload
+                className="avatar-upload-btn"
+                action="/upload/grade/avatar"
+                listType="picture-card"
+                name="avatar"
+                showUploadList={false}
+                onChange={(e) => {
+                  if ("done" === e.file.status) {
+                    const reader = new FileReader();
+                    reader.addEventListener("load", () => {
+                      const url = reader.result;
+                      this.setState({
+                        form: {
+                          ...this.state.form,
+                          gr_avatar: url,
+                        },
+                      });
+                    });
+                    reader.readAsDataURL(e.file.originFileObj);
+                  }
+                }}
+                maxCount={1}
+              >
+                <CameraOutlined></CameraOutlined>上传
+              </Upload>
+            </ImgCrop>
+          </div>
+          <h3>班级名称</h3>
+          <Input
+            value={this.state.gradeForm.gr_name}
             onChange={(v) => {
-              this.setState({ gradeInput: v });
+              this.setState({
+                gradeForm: { ...this.state.gradeForm, gr_name: v },
+              });
             }}
-            style={{ width: "100%" }}
-            controls={false}
-          ></InputNumber>
+            className="name-input-bar"
+          ></Input>
+          <h3>通知信息</h3>
+          <Input.TextArea></Input.TextArea>
         </Modal>
         <Row gutter={16}>
           <Col span={12}>
@@ -238,7 +399,7 @@ class GradeControl extends React.Component {
             <span>排序方式：</span>
             <Radio.Group defaultValue={"new"}>
               <Radio.Button value={"new"}>最新消息</Radio.Button>
-              <Radio.Button value={"time"}>加入时间</Radio.Button>
+              <Radio.Button value={"time"}>创建时间</Radio.Button>
               <Radio.Button value={"name"}>按名称</Radio.Button>
             </Radio.Group>
             <Button
@@ -246,7 +407,7 @@ class GradeControl extends React.Component {
               type="primary"
               onClick={() => this.setState({ showModal: true, gradeInput: "" })}
             >
-              加入班级
+              创建班级
             </Button>
           </Col>
           <Divider></Divider>
@@ -256,7 +417,12 @@ class GradeControl extends React.Component {
               split={true}
               size={"large"}
               renderItem={(item) => {
-                return <GradeListItem item={item}></GradeListItem>;
+                return (
+                  <GradeListItem
+                    item={item}
+                    getGradeInfo={this.getGradeInfo}
+                  ></GradeListItem>
+                );
               }}
             ></List>
           </Col>
