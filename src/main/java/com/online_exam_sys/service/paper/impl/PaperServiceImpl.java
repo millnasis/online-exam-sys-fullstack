@@ -29,4 +29,28 @@ public class PaperServiceImpl implements PaperService {
         return data;
     }
 
+    @Override
+    public Paper queryById(int id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'queryById'");
+    }
+
+    @Override
+    public boolean delete(int id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+    }
+
+    @Override
+    public boolean add(Paper paper) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'add'");
+    }
+
+    @Override
+    public boolean update(Paper paper) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'update'");
+    }
+
 }

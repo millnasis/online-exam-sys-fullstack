@@ -11,15 +11,19 @@ import {
   notification,
   Upload,
   Skeleton,
+  Form,
+  DatePicker,
 } from "antd";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import request from "../../../request";
 import ImgCrop from "antd-img-crop";
 
 import "./gradeControl.scss";
 import { CameraOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 
 const fakeData = [
   {
@@ -58,8 +62,77 @@ const fakeData = [
   },
 ];
 
+function StartAnExamModal(props) {
+  const { open, setOpen, gr_id } = props;
+  const [form, setForm] = useState({
+    pa_name: "",
+    pa_begintime: "",
+    pa_duringtime: "",
+  });
+  const disabledDate = (current) => {
+    return current && current < dayjs().endOf("day");
+  };
+  return (
+    <Modal
+      open={open}
+      onCancel={() => {
+        setOpen(false);
+      }}
+      footer={[
+        <Button
+          onClick={() => {
+            setOpen(false);
+          }}
+        >
+          取消
+        </Button>,
+        <Button
+          type="primary"
+          onClick={() => {
+            console.log({ ...form, gr_id });
+          }}
+        >
+          确定
+        </Button>,
+      ]}
+      title="发起考试"
+    >
+      <Form>
+        <Form.Item name={"pa_name"} label={<strong>试卷名</strong>}>
+          <Input
+            value={form.pa_name}
+            onChange={(e) => {
+              setForm({ ...form, pa_name: e.currentTarget.value });
+            }}
+          ></Input>
+        </Form.Item>
+        <Form.Item name={"pa_begintime"} label={<strong>开始时间</strong>}>
+          <DatePicker
+            format="YYYY-MM-DD HH:mm:ss"
+            disabledDate={disabledDate}
+            showTime={{ defaultValue: dayjs("00:00:00", "HH:mm:ss") }}
+            value={form.pa_begintime}
+            onChange={(v) => {
+              setForm({ ...form, pa_begintime: v });
+            }}
+          />
+        </Form.Item>
+        <Form.Item name={"pa_duringtime"} label={<strong>考试时长</strong>}>
+          <Input
+            value={form.pa_duringtime}
+            onChange={(e) => {
+              setForm({ ...form, pa_duringtime: e.currentTarget.value });
+            }}
+            addonAfter="分钟"
+          ></Input>
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+}
+
 function GradeListItem(props) {
-  const { getGradeInfo } = props;
+  const { getGradeInfo, setStartExam } = props;
   const [open, setOpen] = useState(false);
   const [fetching, setFetchinng] = useState(false);
   const [member, setMember] = useState([]);
@@ -71,6 +144,7 @@ function GradeListItem(props) {
     <List.Item
       actions={[
         <a
+          key={"moreBtn"}
           onClick={() => {
             setOpen(true);
             setFetchinng(true);
@@ -86,6 +160,9 @@ function GradeListItem(props) {
           }}
         >
           更多
+        </a>,
+        <a key={"startBtn"} onClick={() => setStartExam(item.gr_id)}>
+          开启一场考试
         </a>,
       ]}
       className="list-item"
@@ -205,10 +282,10 @@ function GradeListItem(props) {
                   <Input
                     addonBefore={"班级名字"}
                     value={form.gr_name}
-                    onChange={(v) => {
+                    onChange={(e) => {
                       setForm({
                         ...form,
-                        gr_name: v,
+                        gr_name: e.currentTarget.value,
                       });
                     }}
                   ></Input>
@@ -221,15 +298,18 @@ function GradeListItem(props) {
                 {edit ? (
                   <Input.TextArea
                     value={form.gr_info}
-                    onChange={(v) => {
+                    onChange={(e) => {
                       setForm({
                         ...form,
-                        gr_info: v,
+                        gr_info: e.currentTarget.value,
                       });
                     }}
                   ></Input.TextArea>
                 ) : (
-                  <span className="grade-modal-info-des">{item.gr_info}</span>
+                  <>
+                    <br />
+                    <span className="grade-modal-info-des">{item.gr_info}</span>
+                  </>
                 )}
               </p>
               <p>
@@ -290,7 +370,11 @@ class GradeControl extends React.Component {
           "https://img1.baidu.com/it/u=2121025603,1672671484&fm=253&fmt=auto&app=138&f=PNG?w=500&h=500",
         gr_info: "",
       },
+      startExam: false,
+      startExamGr_id: -1,
     };
+
+    this.getGradeInfo = this.getGradeInfo.bind(this);
   }
 
   async getGradeInfo() {
@@ -314,32 +398,54 @@ class GradeControl extends React.Component {
   render() {
     return (
       <div className="grade-control">
+        <StartAnExamModal
+          key={this.state.startExamGr_id}
+          open={this.state.startExam}
+          gr_id={this.state.startExamGr_id}
+          setOpen={(bool) => this.setState({ startExam: bool })}
+        ></StartAnExamModal>
         <Modal
           open={this.state.showModal}
           className="create-grade-modal"
           title="创建一个班级"
           onOk={async () => {
-            if (this.state.gradeInput === "") {
-              notification.error({ message: "请输入班级id" });
+            if (this.state.gradeForm.gr_name === "") {
+              notification.error({ message: "请输入班级名称" });
               return;
             }
             const { userInfo } = this.props.global;
             request(
-              axios.post(
-                `/grade-student/grade/${this.state.gradeInput}`,
-                userInfo
-              ),
+              axios.post(`/grades`, {
+                ...this.state.gradeForm,
+                te_id: userInfo.te_id,
+              }),
               async () => {
                 await this.getGradeInfo();
               },
               () => {
                 this.setState({
                   showModal: false,
+                  gradeForm: {
+                    gr_name: "",
+                    gr_avatar:
+                      "https://img1.baidu.com/it/u=2121025603,1672671484&fm=253&fmt=auto&app=138&f=PNG?w=500&h=500",
+                    gr_info: "",
+                  },
                 });
               }
             );
           }}
-          onCancel={() => this.setState({ showModal: false })}
+          onCancel={() =>
+            this.setState({
+              showModal: false,
+              gradeForm: {
+                gr_name: "",
+                gr_avatar:
+                  "https://img1.baidu.com/it/u=2121025603,1672671484&fm=253&fmt=auto&app=138&f=PNG?w=500&h=500",
+                gr_info: "",
+              },
+            })
+          }
         >
           <h3>班级头像</h3>
           <div className="avatar-warp">
@@ -378,9 +484,12 @@ class GradeControl extends React.Component {
           <h3>班级名称</h3>
           <Input
             value={this.state.gradeForm.gr_name}
-            onChange={(v) => {
+            onChange={(e) => {
               this.setState({
-                gradeForm: { ...this.state.gradeForm, gr_name: v },
+                gradeForm: {
+                  ...this.state.gradeForm,
+                  gr_name: e.currentTarget.value,
+                },
               });
             }}
             className="name-input-bar"
@@ -419,6 +528,9 @@ class GradeControl extends React.Component {
               renderItem={(item) => {
                 return (
                   <GradeListItem
+                    setStartExam={(gr_id) =>
+                      this.setState({ startExam: true, startExamGr_id: gr_id })
+                    }
                     item={item}
                     getGradeInfo={this.getGradeInfo}
                   ></GradeListItem>

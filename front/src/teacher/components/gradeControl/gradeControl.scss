@@ -103,6 +103,9 @@
     flex: 1;
     border-left: 1px solid rgba(0, 0, 0, 0.2);
     padding: 0 10px;
+    p{
+      display: flex;
+    }
     strong {
       font-size: 1.5em;
     }
@@ -111,10 +114,9 @@
       font-weight: 700;
       display: inline-block;
       width: 100px;
-      float: left;
     }
     .grade-modal-info-des {
-      float: left;
+      padding: 5px;
       display: inline-block;
       width: 70%;
     }

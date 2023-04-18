@@ -1,10 +1,12 @@
 package com.online_exam_sys.controller;
 
+import java.sql.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,5 +54,15 @@ public class GradeController {
         boolean update = gradeService.update(data);
         return update ? new Result(null, "成功", Constant.code.success)
                 : new Result(null, "更新失败，请联系管理员", Constant.code.error);
+    }
+
+    @ApiOperation("创建班级")
+    @PostMapping
+    public Result add(@RequestBody Grade data) {
+        data.setGr_founddate(new Date(System.currentTimeMillis()));
+        data.setGr_lastupdate(new Date(System.currentTimeMillis()));
+        boolean add = gradeService.add(data);
+        return add ? new Result(null, "成功", Constant.code.success)
+                : new Result(null, "创建失败，请联系管理员", Constant.code.error);
     }
 }
