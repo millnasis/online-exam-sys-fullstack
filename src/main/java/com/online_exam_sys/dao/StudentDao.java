@@ -13,6 +13,6 @@ public interface StudentDao extends BaseMapper<Student> {
     @Select("SELECT st_password FROM exam_sys.student WHERE st_id = #{id}")
     public String getPwd(int id);
 
-    @Select("SELECT  * FROM exam_sys.student WHERE st_id = (SELECT  grade_student.st_id FROM grade_student WHERE gr_id = #{gr_id})")
+    @Select("SELECT  * FROM exam_sys.student WHERE st_id IN (SELECT  grade_student.st_id FROM grade_student WHERE gr_id = #{gr_id})")
     public List<Student> queryStudentByGrId(int gr_id);
 }

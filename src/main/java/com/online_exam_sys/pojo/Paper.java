@@ -13,6 +13,7 @@ public class Paper {
     @TableId
     private int pa_id;
     private int gr_id;
+    private String pa_name;
     private Date pa_founddate;
     private String pa_state;
     private Date pa_begintime;

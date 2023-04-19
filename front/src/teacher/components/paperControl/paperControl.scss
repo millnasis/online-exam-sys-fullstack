@@ -1,0 +1,21 @@
+.paper-control {
+  padding: 20px 30px;
+  background-color: darken($color: #fff, $amount: 2%);
+  .question-para {
+    position: relative;
+    .editBtn,
+    .saveBtn {
+      position: absolute;
+      right: 10px;
+      top: 0px;
+    }
+  }
+  .addBtn-warp {
+    text-align: center;
+    width: 100%;
+    .addBtn {
+      width: 200px;
+      height: 80px;
+    }
+  }
+}

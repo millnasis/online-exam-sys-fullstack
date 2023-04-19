@@ -20,10 +20,12 @@ import com.online_exam_sys.util.Result;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Api(tags = "考试接口")
 @RequestMapping("/papers")
+@Slf4j
 public class PaperController {
     @Autowired
     private PaperService paperService;
@@ -42,6 +44,8 @@ public class PaperController {
     @ApiOperation("创建考试")
     @PutMapping
     public Result add(@RequestBody Paper data) {
+        log.info(data.toString());
+
         Grade gr = gradeService.queryGradeById(data.getGr_id());
         if (gr == null) {
             return new Result(null, "班级不存在，无法创建考试", Constant.code.not_found);
@@ -49,6 +53,8 @@ public class PaperController {
         data.setPa_state(Constant.paper_state.preparing);
         data.setPa_founddate(new Date(System.currentTimeMillis()));
         data.setPa_order("[]");
-        return null;
+        boolean add = paperService.add(data);
+        return add ? new Result(null, "成功", Constant.code.success)
+                : new Result(null, "更新失败，请联系管理员", Constant.code.error);
     }
 }

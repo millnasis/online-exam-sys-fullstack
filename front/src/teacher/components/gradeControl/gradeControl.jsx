@@ -76,20 +76,33 @@ function StartAnExamModal(props) {
     <Modal
       open={open}
       onCancel={() => {
-        setOpen(false);
+        setOpen(false, -1);
       }}
       footer={[
         <Button
+          key={"cancelBtn"}
           onClick={() => {
-            setOpen(false);
+            setOpen(false, -1);
           }}
         >
           取消
         </Button>,
         <Button
           type="primary"
+          key={"confirmBtn"}
           onClick={() => {
-            console.log({ ...form, gr_id });
+            const data = { ...form, gr_id };
+            console.log(data);
+            request(
+              axios.put("/papers", data),
+              (response) => {
+                setOpen(false, -1);
+                notification.success({
+                  message: "创建成功，请转到考试管理查看",
+                });
+              },
+              () => null
+            );
           }}
         >
           确定
@@ -402,7 +415,9 @@ class GradeControl extends React.Component {
           key={this.state.startExamGr_id}
           open={this.state.startExam}
           gr_id={this.state.startExamGr_id}
-          setOpen={(bool) => this.setState({ startExam: bool })}
+          setOpen={(bool, id = this.state.startExamGr_id) =>
+            this.setState({ startExam: bool, startExamGr_id: id })
+          }
         ></StartAnExamModal>
         <Modal
           open={this.state.showModal}
@@ -495,7 +510,17 @@ class GradeControl extends React.Component {
             className="name-input-bar"
           ></Input>
           <h3>通知信息</h3>
-          <Input.TextArea></Input.TextArea>
+          <Input.TextArea
+            value={this.state.gradeForm.gr_info}
+            onChange={(e) =>
+              this.setState({
+                gradeForm: {
+                  ...this.state.gradeForm,
+                  gr_info: e.currentTarget.value,
+                },
+              })
+            }
+          ></Input.TextArea>
         </Modal>
         <Row gutter={16}>
           <Col span={12}>

@@ -31,26 +31,28 @@ public class PaperServiceImpl implements PaperService {
 
     @Override
     public Paper queryById(int id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'queryById'");
+        LambdaQueryWrapper<Paper> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(Paper::getPa_id, lqw);
+        Paper data = paperDao.selectOne(lqw);
+        return data;
     }
 
     @Override
     public boolean delete(int id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        int ret = paperDao.deleteById(id);
+        return ret > 0;
     }
 
     @Override
     public boolean add(Paper paper) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'add'");
+        int ret = paperDao.insert(paper);
+        return ret > 0;
     }
 
     @Override
     public boolean update(Paper paper) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+        int ret = paperDao.updateById(paper);
+        return ret > 0;
     }
 
 }

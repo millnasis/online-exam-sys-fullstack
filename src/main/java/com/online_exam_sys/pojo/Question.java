@@ -15,4 +15,7 @@ public class Question {
     private int pa_id;
     private String qu_type;
     private String qu_answer;
+    private String qu_describe;
+    private int qu_score;
+    private String qu_image;
 }
