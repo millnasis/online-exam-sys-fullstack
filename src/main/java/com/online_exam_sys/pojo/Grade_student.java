@@ -1,6 +1,6 @@
 package com.online_exam_sys.pojo;
 
-import java.sql.Date;
+import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;

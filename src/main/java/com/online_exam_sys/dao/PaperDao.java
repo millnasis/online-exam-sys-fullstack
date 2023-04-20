@@ -12,4 +12,7 @@ import com.online_exam_sys.pojo.Paper;
 public interface PaperDao extends BaseMapper<Paper> {
     @Select("SELECT  * FROM paper WHERE gr_id IN (SELECT  gr_id FROM grade_student WHERE st_id = #{st_id})")
     public List<Paper> queryPaperListByStudentId(int st_id);
+
+    @Select("SELECT  * FROM paper WHERE gr_id IN (SELECT  gr_id FROM grade WHERE te_id = #{te_id})")
+    public List<Paper> queryPaperListByTeacherId(int te_id);
 }

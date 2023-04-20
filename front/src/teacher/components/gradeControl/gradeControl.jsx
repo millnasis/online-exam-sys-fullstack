@@ -126,7 +126,7 @@ function StartAnExamModal(props) {
             showTime={{ defaultValue: dayjs("00:00:00", "HH:mm:ss") }}
             value={form.pa_begintime}
             onChange={(v) => {
-              setForm({ ...form, pa_begintime: v });
+              setForm({ ...form, pa_begintime: v.toDate() });
             }}
           />
         </Form.Item>

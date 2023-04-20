@@ -1,6 +1,6 @@
 package com.online_exam_sys.controller;
 
-import java.sql.Date;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;

@@ -199,7 +199,7 @@ class ExamControl extends React.Component {
   getExamInfo() {
     const { userInfo } = this.props.global;
     request(
-      axios.get("/papers/student/" + userInfo.st_id),
+      axios.get("/papers/teacher/" + userInfo.te_id),
       (response) => {
         this.originData = response.data.data;
         this.setState({

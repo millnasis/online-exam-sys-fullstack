@@ -1,11 +1,13 @@
 package com.online_exam_sys.controller;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +43,23 @@ public class PaperController {
                 : new Result(null, "未找到", Constant.code.not_found);
     }
 
+    @ApiOperation("根据老师id查询考试")
+    @GetMapping("/teacher/{id}")
+    public Result queryByTeacherId(@PathVariable int id) {
+        List<Paper> data = paperService.queryPaperListByTeacherId(id);
+        return data != null ? new Result(data, "成功", Constant.code.success)
+                : new Result(null, "未找到", Constant.code.not_found);
+
+    }
+
+    @ApiOperation("根据id查询考试")
+    @GetMapping("/{id}")
+    public Result queryById(@PathVariable int id) {
+        Paper data = paperService.queryById(id);
+        return data != null ? new Result(data, "成功", Constant.code.success)
+                : new Result(null, "未找到", Constant.code.not_found);
+    }
+
     @ApiOperation("创建考试")
     @PutMapping
     public Result add(@RequestBody Paper data) {
@@ -57,4 +76,43 @@ public class PaperController {
         return add ? new Result(null, "成功", Constant.code.success)
                 : new Result(null, "更新失败，请联系管理员", Constant.code.error);
     }
+
+    @ApiOperation("修改考试")
+    @PostMapping
+    public Result update(@RequestBody Paper data) {
+        System.out.println(data);
+        Paper pa = paperService.queryById(data.getPa_id());
+        if (pa == null) {
+            return new Result(null, "考试不存在", Constant.code.not_found);
+        }
+        boolean update = paperService.update(data);
+        return update ? new Result(null, "成功", Constant.code.success)
+                : new Result(null, "更新失败，请联系管理员", Constant.code.error);
+    }
+
+    @ApiOperation("删除考试")
+    @DeleteMapping("/{id}")
+    public Result delete(@PathVariable int id) {
+        Paper pa = paperService.queryById(id);
+        if (pa == null) {
+            return new Result(null, "考试不存在", Constant.code.not_found);
+        }
+        boolean delete = paperService.delete(id);
+        return delete ? new Result(null, "成功", Constant.code.success)
+                : new Result(null, "更新失败，请联系管理员", Constant.code.error);
+    }
+
+    @ApiOperation("发布考试")
+    @PostMapping("/waiting/{id}")
+    public Result waiting(@PathVariable int id) {
+        Paper pa = paperService.queryById(id);
+        if (pa == null) {
+            return new Result(null, "考试不存在", Constant.code.not_found);
+        }
+        pa.setPa_state(Constant.paper_state.waiting);
+        boolean update = paperService.update(pa);
+        return update ? new Result(null, "成功", Constant.code.success)
+                : new Result(null, "更新失败，请联系管理员", Constant.code.error);
+    }
+
 }

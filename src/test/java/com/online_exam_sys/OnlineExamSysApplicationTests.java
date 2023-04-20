@@ -7,6 +7,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.online_exam_sys.dao.GradeDao;
 import com.online_exam_sys.dao.StudentDao;
 import com.online_exam_sys.pojo.Grade;
@@ -31,10 +35,26 @@ class OnlineExamSysApplicationTests {
 		studentDao.insert(st);
 	}
 
-	@Test
+	// @Test
 	void apiTest() {
 		List<Student> data = studentDao.queryStudentByGrId(0);
 		System.out.println(data);
+	}
+
+	@Test
+	void JsonTest() throws JsonMappingException, JsonProcessingException {
+		// List<String> arr = ParseJson2Array.Json2Array("[1,2,3]");
+		// System.out.println(arr);
+		// arr.add("4");
+		// System.out.println(ParseJson2Array.Array2Json(arr));
+
+		ObjectMapper om = new ObjectMapper();
+		List<Integer> arr = om.readValue("[1,2,3]", new TypeReference<List<Integer>>() {
+		});
+		System.out.println(arr);
+		arr.add(4);
+		System.out.println(om.writeValueAsString(arr));
+		;
 	}
 
 }

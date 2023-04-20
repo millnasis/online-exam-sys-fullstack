@@ -32,7 +32,7 @@ public class PaperServiceImpl implements PaperService {
     @Override
     public Paper queryById(int id) {
         LambdaQueryWrapper<Paper> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(Paper::getPa_id, lqw);
+        lqw.eq(Paper::getPa_id, id);
         Paper data = paperDao.selectOne(lqw);
         return data;
     }
@@ -53,6 +53,11 @@ public class PaperServiceImpl implements PaperService {
     public boolean update(Paper paper) {
         int ret = paperDao.updateById(paper);
         return ret > 0;
+    }
+
+    @Override
+    public List<Paper> queryPaperListByTeacherId(int te_id) {
+        return paperDao.queryPaperListByTeacherId(te_id);
     }
 
 }
