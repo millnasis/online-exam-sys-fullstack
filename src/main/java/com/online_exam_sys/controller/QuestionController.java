@@ -1,8 +1,10 @@
 package com.online_exam_sys.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -78,7 +80,7 @@ public class QuestionController {
         qu.setPa_id(data.getPa_id());
         qu.setQu_answer("[]");
         qu.setQu_image("[]");
-        qu.setQu_describe("");
+        qu.setQu_describe("输入题目描述");
         qu.setQu_score(0);
         qu.setQu_type(data.getQu_type());
         qu.setQu_choose("[]");
@@ -94,6 +96,44 @@ public class QuestionController {
         boolean update = paperService.update(pa);
         return update ? new Result(null, "成功", Constant.code.success)
                 : new Result(null, "更新失败，请联系管理员", Constant.code.error);
+    }
+
+    @ApiOperation("根据id删除题目")
+    @DeleteMapping("/{id}")
+    public Result delete(@PathVariable int id) throws JsonMappingException, JsonProcessingException {
+        Question qu = questionService.queryById(id);
+        if (qu == null) {
+            return new Result(null, "题目不存在", Constant.code.not_found);
+        }
+        Paper pa = paperService.queryById(qu.getPa_id());
+        if (pa == null) {
+            return new Result(null, "考试不存在", Constant.code.not_found);
+        }
+        ObjectMapper om = new ObjectMapper();
+        List<Integer> order = om.readValue(pa.getPa_order(), new TypeReference<List<Integer>>() {
+        });
+        order.remove(order.indexOf(qu.getQu_id()));
+        pa.setPa_order(om.writeValueAsString(order));
+        boolean update = paperService.update(pa);
+        if (!update) {
+            return new Result(null, "删除失败，请联系管理员", Constant.code.error);
+        }
+        boolean delete = questionService.delete(id);
+        return delete ? new Result(null, "成功", Constant.code.success)
+                : new Result(null, "删除失败，请联系管理员", Constant.code.error);
+    }
+
+    @ApiOperation("批量删除题目")
+    @DeleteMapping("/paper/{id}")
+    public Result deleteMany(@PathVariable int id) {
+        List<Question> data = questionService.queryQuestionListByPaperId(id);
+        List<Integer> ids = new ArrayList<>();
+        data.forEach((v) -> {
+            ids.add(v.getQu_id());
+        });
+        boolean deleteMany = questionService.deleteMany(ids);
+        return deleteMany ? new Result(null, "成功", Constant.code.success)
+                : new Result(null, "删除失败，请联系管理员", Constant.code.error);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.online_exam_sys.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -15,8 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.online_exam_sys.pojo.Grade;
 import com.online_exam_sys.pojo.Paper;
+import com.online_exam_sys.pojo.Question;
 import com.online_exam_sys.service.grade.GradeService;
 import com.online_exam_sys.service.paper.PaperService;
+import com.online_exam_sys.service.question.QuestionService;
 import com.online_exam_sys.util.Constant;
 import com.online_exam_sys.util.Result;
 
@@ -31,6 +34,9 @@ import lombok.extern.slf4j.Slf4j;
 public class PaperController {
     @Autowired
     private PaperService paperService;
+
+    @Autowired
+    private QuestionService questionService;
 
     @Autowired
     private GradeService gradeService;
@@ -97,9 +103,18 @@ public class PaperController {
         if (pa == null) {
             return new Result(null, "考试不存在", Constant.code.not_found);
         }
+        List<Question> data = questionService.queryQuestionListByPaperId(id);
+        List<Integer> ids = new ArrayList<>();
+        data.forEach((v) -> {
+            ids.add(v.getQu_id());
+        });
+        boolean deleteMany = questionService.deleteMany(ids);
+        if (!deleteMany) {
+            return new Result(null, "删除失败，请联系管理员", Constant.code.error);
+        }
         boolean delete = paperService.delete(id);
         return delete ? new Result(null, "成功", Constant.code.success)
-                : new Result(null, "更新失败，请联系管理员", Constant.code.error);
+                : new Result(null, "删除失败，请联系管理员", Constant.code.error);
     }
 
     @ApiOperation("发布考试")

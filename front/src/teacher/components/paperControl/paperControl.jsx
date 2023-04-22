@@ -23,9 +23,14 @@ import {
   Row,
   Typography,
   Upload,
+  Modal,
+  Radio,
+  Popconfirm,
+  notification,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
+import constant from "../../../constant";
 
 const { Paragraph, Title } = Typography;
 
@@ -33,7 +38,7 @@ const fakeData = [
   {
     qu_id: "123",
     pa_id: "123",
-    qu_type: "cho",
+    qu_type: constant.question_type.choose,
     qu_answer: "[0]",
     qu_describe: "asjdoiasjdoiasjdas?",
     qu_score: 12,
@@ -44,7 +49,7 @@ const fakeData = [
   {
     qu_id: "12322",
     pa_id: "123",
-    qu_type: "cho",
+    qu_type: constant.question_type.choose,
     qu_answer: "[1,2]",
     qu_describe: "asjdoiasjdoiasjdas?",
     qu_score: 12,
@@ -54,7 +59,7 @@ const fakeData = [
   {
     qu_id: "124",
     pa_id: "1234",
-    qu_type: "fil",
+    qu_type: constant.question_type.fill,
     qu_answer: '["fuck","die"]',
     qu_describe: "asjdoiasj___doia___sjdas?",
     qu_choose: "[]",
@@ -64,7 +69,7 @@ const fakeData = [
   {
     qu_id: "125",
     pa_id: "1235",
-    qu_type: "sub",
+    qu_type: constant.question_type.subject,
     qu_answer: "[]",
     qu_describe: "<div>fasdjaklsdjalskduck?</div>",
     qu_choose: "[]",
@@ -86,8 +91,46 @@ const disabledDate = (current) => {
   return current && current < dayjs().endOf("day");
 };
 
+function transformStateToData({
+  describe,
+  answer,
+  score,
+  choose,
+  image,
+  type,
+}) {
+  let answerN =
+    type === constant.question_type.choose
+      ? answer
+          .map((v, i) => {
+            if (v) {
+              return i;
+            } else {
+              return -1;
+            }
+          })
+          .filter((v) => v !== -1)
+      : answer;
+
+  return {
+    qu_image: JSON.stringify(
+      image.map((v) => {
+        if ("response" in v) {
+          return v.response.data;
+        } else {
+          return v.url;
+        }
+      })
+    ),
+    qu_choose: JSON.stringify(choose),
+    qu_answer: JSON.stringify(answerN),
+    qu_score: score,
+    qu_describe: describe,
+  };
+}
+
 function Question(props) {
-  const { question, queue } = props;
+  const { question, queue, getQuestion } = props;
 
   const [edit, setEdit] = useState(false);
 
@@ -111,15 +154,15 @@ function Question(props) {
   const [score, setScore] = useState(question.qu_score);
   let answerObj;
   switch (question.qu_type) {
-    case "cho":
+    case constant.question_type.choose:
       answerObj = new Array(chooseC.length).fill(false).map((v, i) => {
         return answer.findIndex((f) => f === i) !== -1;
       });
       break;
-    case "fil":
+    case constant.question_type.fill:
       answerObj = answer;
       break;
-    case "sub":
+    case constant.question_type.subject:
       answerObj = null;
       break;
 
@@ -129,7 +172,7 @@ function Question(props) {
   const [answerC, setAnswerC] = useState(answerObj);
   function renderFunc(question) {
     switch (question.qu_type) {
-      case "cho": {
+      case constant.question_type.choose: {
         return (
           <>
             {edit ? (
@@ -154,7 +197,8 @@ function Question(props) {
               <>
                 <Divider orientation="left">配图</Divider>
                 <Upload
-                  action={""}
+                  name="img"
+                  action={"/upload/questions/" + question.qu_id}
                   listType="picture-card"
                   fileList={imageC}
                   onChange={({ fileList: newFileList }) =>
@@ -245,7 +289,7 @@ function Question(props) {
           </>
         );
       }
-      case "fil": {
+      case constant.question_type.fill: {
         return (
           <>
             {edit ? (
@@ -270,7 +314,8 @@ function Question(props) {
               <>
                 <Divider orientation="left">配图</Divider>
                 <Upload
-                  action={""}
+                  name="img"
+                  action={"/upload/questions/" + question.qu_id}
                   listType="picture-card"
                   fileList={imageC}
                   onChange={({ fileList: newFileList }) =>
@@ -346,7 +391,7 @@ function Question(props) {
         );
       }
 
-      case "sub":
+      case constant.question_type.subject:
         return (
           <>
             <Title level={3}>
@@ -371,18 +416,60 @@ function Question(props) {
           <Button
             type="primary"
             className="saveBtn"
-            onClick={() => setEdit(false)}
+            onClick={() => {
+              const obj = transformStateToData({
+                describe,
+                answer: answerC,
+                choose: chooseC,
+                image: imageC,
+                score,
+                type: question.qu_type,
+              });
+              request(
+                axios.post("/questions/", {
+                  ...question,
+                  ...obj,
+                }),
+                (response) => {
+                  getQuestion();
+                },
+                () => {
+                  setEdit(false);
+                }
+              );
+            }}
           >
             保存
           </Button>
         ) : (
-          <Button className="editBtn" onClick={() => setEdit(true)}>
+          <Button
+            className="editBtn"
+            onClick={() => {
+              setEdit(true);
+            }}
+          >
             修改
           </Button>
         )}
-        <Button danger className="deleteBtn">
-          删除
-        </Button>
+        <Popconfirm
+          title="删除题目"
+          description="确定删除吗"
+          onConfirm={() => {
+            request(
+              axios.delete("/questions/" + question.qu_id),
+              (response) => {
+                getQuestion(true);
+              },
+              () => {}
+            );
+          }}
+          okText="确定"
+          cancelText="取消"
+        >
+          <Button danger className="deleteBtn">
+            删除
+          </Button>
+        </Popconfirm>
         {renderFunc(question)}
       </Paragraph>
     </>
@@ -487,38 +574,79 @@ const DragTable = (props) => {
   );
 };
 
+function getPaperState(state) {
+  switch (state) {
+    case constant.paper_state.preparing:
+      return "未完成出题";
+    case constant.paper_state.waiting:
+      return "等待考试开始";
+
+    default:
+      break;
+  }
+}
+
 class PaperControl extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      filterData: [],
+      filterData: fakeData,
       editTime: false,
       editOrder: false,
       paperData: {},
+      modalOpen: false,
+      newQuestionType: constant.question_type.choose,
     };
 
     this.orderData = null;
 
     this.hookData = this.hookData.bind(this);
+    this.getQuestion = this.getQuestion.bind(this);
+    this.reOrderData = this.reOrderData.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const { paperId } = this.props;
     if (paperId === -1) {
       return;
     }
-    request(
+    await request(
       axios.get(`/papers/${paperId}`),
       (response) => {
         this.setState({ paperData: response.data.data });
       },
       () => null
     );
+    this.getQuestion();
+  }
+
+  async getQuestion(getOrder = false) {
+    const { paperId } = this.props;
+    if (paperId === -1) {
+      return;
+    }
+    if (getOrder) {
+      await request(
+        axios.get(`/papers/${paperId}`),
+        (response) => {
+          this.setState({ paperData: response.data.data });
+        },
+        () => null
+      );
+    }
     request(
       axios.get(`/questions/paper/${paperId}`),
       (response) => {
-        this.setState({ filterData: response.data.data });
+        const order = JSON.parse(this.state.paperData.pa_order);
+        const orderMap = new Map(order.map((v, i) => [i, v]));
+        const dataMap = new Map(response.data.data.map((v) => [v.qu_id, v]));
+        const arr = new Array(response.data.data.length).fill(0);
+        this.setState({
+          filterData: arr.map((v, i) => {
+            return dataMap.get(orderMap.get(i));
+          }),
+        });
       },
       () => null
     );
@@ -528,21 +656,90 @@ class PaperControl extends React.Component {
     this.orderData = data;
   }
 
+  reOrderData(order) {
+    const orderMap = new Map(order.map((v, i) => [i, v]));
+    const dataMap = new Map(this.state.filterData.map((v) => [v.qu_id, v]));
+    const arr = new Array(this.state.filterData.length).fill(0);
+    this.setState({
+      filterData: arr.map((v, i) => {
+        return dataMap.get(orderMap.get(i));
+      }),
+    });
+  }
+
   render() {
+    const { menuselect } = this.props;
     const { paperData } = this.state;
     return (
       <div className="paper-control">
+        <Modal
+          title="新建题目"
+          open={this.state.modalOpen}
+          onCancel={() => this.setState({ modalOpen: false })}
+          onOk={() => {
+            const R = this;
+            request(
+              axios.put("/questions", {
+                pa_id: paperData.pa_id,
+                qu_type: this.state.newQuestionType,
+              }),
+              (response) => {
+                if (response.data.code === constant.code.success) {
+                  this.getQuestion(true);
+                }
+              },
+              () => {
+                R.setState({
+                  modalOpen: false,
+                  newQuestionType: constant.question_type.choose,
+                });
+              }
+            );
+          }}
+        >
+          <Divider></Divider>
+          <p>选择题目类型</p>
+          <Radio.Group
+            value={this.state.newQuestionType}
+            onChange={(e) => this.setState({ newQuestionType: e.target.value })}
+          >
+            <Radio.Button value={constant.question_type.choose}>
+              选择题
+            </Radio.Button>
+            <Radio.Button value={constant.question_type.fill}>
+              填空题
+            </Radio.Button>
+            <Radio.Button value={constant.question_type.subject}>
+              主观题
+            </Radio.Button>
+          </Radio.Group>
+        </Modal>
         <Typography>
           <Title>为{paperData.pa_name}考试出题</Title>
+          <Title level={4}>当前状态：{getPaperState(paperData.pa_state)}</Title>
           <Divider></Divider>
           <Row gutter={[16, 16]}>
             <Col span={6}>
               {this.state.editOrder ? (
                 <Button
+                  style={{ marginRight: "10px" }}
                   type="primary"
                   onClick={() => {
-                    console.log(this.orderData);
-                    this.setState({ editOrder: false });
+                    const order = this.orderData.map((v) => {
+                      return v.qu_id;
+                    });
+                    console.log(order);
+                    request(
+                      axios.post("/papers", {
+                        ...this.state.paperData,
+                        pa_order: JSON.stringify(order),
+                      }),
+                      (response) => {
+                        this.getQuestion(true);
+                        this.setState({ editOrder: false });
+                      },
+                      () => null
+                    );
                   }}
                 >
                   保存题序
@@ -555,16 +752,61 @@ class PaperControl extends React.Component {
                   修改题序
                 </Button>
               )}
-              <Button type="primary" style={{ marginRight: "10px" }}>
-                发布考试
-              </Button>
-              <Button danger>删除考试</Button>
+              <Popconfirm
+                title="开启考试"
+                description="确定开启吗"
+                onConfirm={() => {
+                  request(
+                    axios.post("/papers/waiting/" + this.state.paperData.pa_id),
+                    (response) => {
+                      notification.success({ message: "发布成功，即将跳转" });
+                      setTimeout(() => {
+                        menuselect("exam-control");
+                      }, 1500);
+                    },
+                    () => {}
+                  );
+                }}
+                okText="确定"
+                cancelText="取消"
+              >
+                <Button type="primary" style={{ marginRight: "10px" }}>
+                  发布考试
+                </Button>
+              </Popconfirm>
+              <Popconfirm
+                title="删除考试"
+                description="确定删除吗"
+                onConfirm={() => {
+                  request(
+                    axios.delete("/papers/" + this.state.paperData.pa_id),
+                    (response) => {
+                      notification.success({ message: "删除成功，即将跳转" });
+                      setTimeout(() => {
+                        menuselect("exam-control");
+                      }, 1500);
+                    },
+                    () => {}
+                  );
+                }}
+                okText="确定"
+                cancelText="取消"
+              >
+                <Button danger>删除考试</Button>
+              </Popconfirm>
             </Col>
             <Col span={18}>
               {this.state.editTime ? (
                 <Button
                   type="primary"
                   onClick={() => {
+                    request(
+                      axios.post("/papers", {
+                        ...this.state.paperData,
+                      }),
+                      (response) => null,
+                      () => null
+                    );
                     this.setState({ editTime: false });
                   }}
                 >
@@ -576,16 +818,34 @@ class PaperControl extends React.Component {
                 </Button>
               )}
               &nbsp; 开始时间：
-              <DatePicker
-                format="YYYY-MM-DD HH:mm:ss"
-                value={dayjs(paperData.pa_begintime)}
-                disabledDate={disabledDate}
-                showTime={true}
-                disabled={!this.state.editTime}
-              ></DatePicker>
+              {"pa_begintime" in this.state.paperData && (
+                <DatePicker
+                  format="YYYY-MM-DD HH:mm:ss"
+                  value={dayjs(paperData.pa_begintime)}
+                  onChange={(v) => {
+                    this.setState({
+                      paperData: {
+                        ...paperData,
+                        pa_begintime: v.toDate(),
+                      },
+                    });
+                  }}
+                  disabledDate={disabledDate}
+                  showTime={true}
+                  disabled={!this.state.editTime}
+                ></DatePicker>
+              )}
               &nbsp;&nbsp;&nbsp; 持续时长：
               <InputNumber
                 value={paperData.pa_duringtime}
+                onChange={(v) => {
+                  this.setState({
+                    paperData: {
+                      ...paperData,
+                      pa_duringtime: v,
+                    },
+                  });
+                }}
                 controls={false}
                 addonAfter="分钟"
                 disabled={!this.state.editTime}
@@ -595,7 +855,12 @@ class PaperControl extends React.Component {
           {!this.state.editOrder ? (
             this.state.filterData.map((v, i) => {
               return (
-                <Question key={v.qu_id} question={v} queue={i + 1}></Question>
+                <Question
+                  key={v.qu_id}
+                  question={v}
+                  queue={i + 1}
+                  getQuestion={this.getQuestion}
+                ></Question>
               );
             })
           ) : (
@@ -606,7 +871,13 @@ class PaperControl extends React.Component {
           )}
           <Divider></Divider>
           <div className="addBtn-warp">
-            <Button type="dashed" className="addBtn" onClick={() => {}}>
+            <Button
+              type="dashed"
+              className="addBtn"
+              onClick={() => {
+                this.setState({ modalOpen: true });
+              }}
+            >
               <PlusOutlined></PlusOutlined>
             </Button>
           </div>

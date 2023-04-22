@@ -14,4 +14,6 @@ public interface QuestionService {
     public boolean add(Question question);
 
     public boolean update(Question question);
+
+    public boolean deleteMany(List<Integer> ids);
 }

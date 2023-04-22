@@ -26,7 +26,7 @@ function Exam(props) {
           <strong className="state-font">未开始</strong>
           <strong className="des-font">请等待老师安排考试</strong>
           <Divider></Divider>
-          考试开始时间：----：--：-- --：--：--
+          暂定开始时间：----：--：-- --：--：--
         </Card>
       );
 

@@ -51,4 +51,10 @@ public class QuestionServiceImpl implements QuestionService {
         return data;
     }
 
+    @Override
+    public boolean deleteMany(List<Integer> ids) {
+        questionDao.deleteBatchIds(ids);
+        return true;
+    }
+
 }

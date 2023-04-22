@@ -119,4 +119,25 @@ public class FileUploadController {
         return new Result("/avatar/grade/" + gr_id + "/" + newFileName, "上传成功",
                 Constant.code.success);
     }
+
+    @ApiOperation("上传题目配图")
+    @PostMapping("/questions/{qu_id}")
+    public Result QuestionsImage(MultipartFile img, HttpServletRequest req, @PathVariable int qu_id)
+            throws IllegalStateException, IOException {
+        HttpSession session = req.getSession();
+        if (session.getAttribute("user_id") == null) {
+            return new Result(null, "无权限", Constant.code.success);
+        }
+        File destFile = new File(staticPathHome + "/img/questions/" + qu_id);
+        if (!destFile.exists()) {
+            destFile.mkdir();
+        }
+        String fileName = UUID.randomUUID().toString().replaceAll("-", "");
+        String extension = FilenameUtils.getExtension(img.getOriginalFilename());
+        String newFileName = fileName + "." + extension;
+        File file = new File(destFile, newFileName);
+        img.transferTo(file);
+        return new Result("/img/questions/" + qu_id + "/" + newFileName, "上传成功",
+                Constant.code.success);
+    }
 }

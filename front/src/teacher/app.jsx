@@ -57,7 +57,7 @@ function RenderContent(props) {
   let e = null;
   switch (menukey) {
     case "paper-control":
-      e = <PaperControl key={paperId} paperId={paperId}></PaperControl>;
+      e = <PaperControl key={paperId} paperId={paperId} menuselect={menuselect}></PaperControl>;
       break;
     case "exam-control":
       e = <ExamControl menuselect={menuselect}></ExamControl>;
