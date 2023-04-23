@@ -4,6 +4,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.quartz.JobBuilder;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SimpleScheduleBuilder;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.online_exam_sys.pojo.BoardPaperDelayJob;
 import com.online_exam_sys.pojo.Grade;
 import com.online_exam_sys.pojo.Paper;
 import com.online_exam_sys.pojo.Question;
@@ -40,6 +48,9 @@ public class PaperController {
 
     @Autowired
     private GradeService gradeService;
+
+    @Autowired
+    private Scheduler scheduler;
 
     @ApiOperation("根据学生id查询考试")
     @GetMapping("/student/{id}")
@@ -119,11 +130,30 @@ public class PaperController {
 
     @ApiOperation("发布考试")
     @PostMapping("/waiting/{id}")
-    public Result waiting(@PathVariable int id) {
+    public Result waiting(@PathVariable int id) throws SchedulerException {
         Paper pa = paperService.queryById(id);
         if (pa == null) {
             return new Result(null, "考试不存在", Constant.code.not_found);
         }
+        Date start = pa.getPa_begintime();
+        JobDetail jobDetail = JobBuilder.newJob(BoardPaperDelayJob.class)
+                .usingJobData("pa_id", pa.getPa_id())
+                .withIdentity(Integer.toString(pa.getPa_id()))
+                .build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .usingJobData("pa_id", pa.getPa_id())
+                .withIdentity(Integer.toString(pa.getPa_id()))
+                // .startAt(start)
+                .startAt(start)
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule())
+                .build();
+
+        scheduler.scheduleJob(jobDetail, trigger);
+
+        if (!scheduler.isShutdown()) {
+            scheduler.start();
+        }
+
         pa.setPa_state(Constant.paper_state.waiting);
         boolean update = paperService.update(pa);
         return update ? new Result(null, "成功", Constant.code.success)

@@ -24,4 +24,5 @@ public class Ex_paper {
     private Float ep_score;
     @TableField(exist = false)
     private List<Ex_question> ep_question;
+    private String pa_order;
 }

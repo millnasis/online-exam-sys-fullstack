@@ -1,6 +1,6 @@
 package com.online_exam_sys;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -14,12 +14,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.online_exam_sys.dao.GradeDao;
 import com.online_exam_sys.dao.StudentDao;
 import com.online_exam_sys.pojo.Grade;
+import com.online_exam_sys.pojo.Paper;
 import com.online_exam_sys.pojo.Student;
+import com.online_exam_sys.service.paper.PaperService;
 
 @SpringBootTest
 class OnlineExamSysApplicationTests {
 	@Autowired
 	private StudentDao studentDao;
+
+	@Autowired
+	private PaperService paperService;
 
 	@Autowired
 	private GradeDao gradeDao;
@@ -41,7 +46,7 @@ class OnlineExamSysApplicationTests {
 		System.out.println(data);
 	}
 
-	@Test
+	// @Test
 	void JsonTest() throws JsonMappingException, JsonProcessingException {
 		// List<String> arr = ParseJson2Array.Json2Array("[1,2,3]");
 		// System.out.println(arr);
@@ -55,6 +60,12 @@ class OnlineExamSysApplicationTests {
 		arr.add(4);
 		System.out.println(om.writeValueAsString(arr));
 		;
+	}
+
+	@Test
+	void timeTest() {
+		Paper paper = paperService.queryById(6);
+
 	}
 
 }
