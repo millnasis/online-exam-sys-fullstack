@@ -24,9 +24,15 @@ public class ResourceController {
     public String student() {
         return "student.html";
     }
+
     @RequestMapping("/teacher")
     public String teacher() {
         return "teacher.html";
+    }
+
+    @RequestMapping("/exam-client")
+    public String examClient() {
+        return "exam_client.html";
     }
 
 }

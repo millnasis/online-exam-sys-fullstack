@@ -81,7 +81,7 @@ public class QuestionController {
         qu.setQu_answer("[]");
         qu.setQu_image("[]");
         qu.setQu_describe("输入题目描述");
-        qu.setQu_score(0);
+        qu.setQu_score(0F);
         qu.setQu_type(data.getQu_type());
         qu.setQu_choose("[]");
         boolean add = questionService.add(qu);

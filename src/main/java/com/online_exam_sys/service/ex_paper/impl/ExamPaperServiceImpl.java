@@ -36,9 +36,10 @@ public class ExamPaperServiceImpl implements ExamPaperService {
     private StudentService studentService;
 
     @Override
-    public Ex_paper queryExamPaperByPaperId(int pa_id) {
+    public Ex_paper queryExamPaperByPaperIdAndStudentId(int pa_id, int st_id) {
         LambdaQueryWrapper<Ex_paper> lqw = new LambdaQueryWrapper<>();
         lqw.eq(Ex_paper::getPa_id, pa_id);
+        lqw.eq(Ex_paper::getSt_id, st_id);
         Ex_paper data = ex_paperDao.selectOne(lqw);
 
         LambdaQueryWrapper<Ex_question> lqwQ = new LambdaQueryWrapper<>();
@@ -46,7 +47,7 @@ public class ExamPaperServiceImpl implements ExamPaperService {
         List<Ex_question> question = ex_questionDao.selectList(lqwQ);
         AtomicDouble score = new AtomicDouble(0D);
         question.forEach((e) -> {
-            Float f = e.getEq_score();
+            Float f = e.getQu_score();
             score.getAndAdd(f);
         });
         data.setEp_score(score.floatValue());
@@ -78,10 +79,18 @@ public class ExamPaperServiceImpl implements ExamPaperService {
                 eq.setQu_type(qu.getQu_type());
                 ex_questionDao.insert(eq);
             });
-            
+
         });
 
         return true;
+    }
+
+    @Override
+    public Ex_paper queryById(int id) {
+        LambdaQueryWrapper<Ex_paper> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(Ex_paper::getEp_id,id);
+        Ex_paper data = ex_paperDao.selectOne(lqw);
+        return data;
     }
 
 }

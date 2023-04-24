@@ -1,44 +1,80 @@
 import React, { useState } from "react";
-import { Card, Col, Divider, Dropdown, Input, Modal, Row, Select } from "antd";
+import { Card, Col, Divider, Statistic, Input, Modal, Row, Select } from "antd";
+const { Countdown } = Statistic;
 import "./examControl.scss";
 import constant from "../../../constant";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import request from "../../../request.js";
 import axios from "axios";
 import { connect } from "react-redux";
+import dayjs from "dayjs";
 
 function Exam(props) {
-  const { paperstate } = props;
+  const { paper } = props;
+  const paperstate = paper.pa_state;
   const [open, setOpen] = useState(false);
+  const begintime = dayjs(paper.pa_begintime)
+    .format("YYYY年MM月DD日HH时mm分ss秒")
+    .toString();
+  const begindeadline = dayjs(paper.pa_begintime);
+  const deadline = dayjs(
+    begindeadline.toDate().getTime() + paper.pa_duringtime * 1000 * 60
+  );
+  const endtime = deadline.format("YYYY年MM月DD日HH时mm分ss秒").toString();
   switch (paperstate) {
     case constant.paper_state.waiting:
       return (
         <Card className="exam-card waiting" {...props}>
           <strong className="state-font">等待考试开始</strong>
-          <strong className="des-font">21天9小时后开始考试</strong>
+          <strong className="des-font">
+            <Countdown
+              valueStyle={{ fontSize: "14px", color: "darkcyan" }}
+              value={begindeadline}
+              format="D 天 H 时 m 分 s 秒"
+            />
+            后开始考试
+          </strong>
           <Divider></Divider>
-          考试开始时间：2023年2月22日10:58:20
+          考试开始时间：{begintime}
         </Card>
       );
     case constant.paper_state.preparing:
       return (
         <Card className="exam-card preparing" {...props}>
           <strong className="state-font">未开始</strong>
-          <strong className="des-font">请等待老师安排考试</strong>
+          <strong className="des-font">尚未完成出题</strong>
           <Divider></Divider>
-          暂定开始时间：----：--：-- --：--：--
+          暂定开始时间：
+          {begintime}
         </Card>
       );
 
     case constant.paper_state.starting:
       return (
         <Card className="exam-card starting" {...props}>
-          <strong className="des-font">点击加入</strong>
+          <strong
+            className="des-font"
+            onClick={() => {
+              localStorage.setItem("pa_id", paper.pa_id);
+              location.href = "./exam-client";
+            }}
+          >
+            点击加入
+          </strong>
           <strong className="state-font">考试正在进行中</strong>
           <br />
-          <strong>2小时35分钟46秒后交卷</strong>
+          <strong>
+            {
+              <Countdown
+                valueStyle={{ fontSize: "14px", color: "darkred" }}
+                value={deadline}
+                format="D 天 H 时 m 分 s 秒"
+              ></Countdown>
+            }
+            后交卷
+          </strong>
           <Divider></Divider>
-          结束时间：2023年2月22日11:02:01
+          结束时间：{endtime}
         </Card>
       );
 
@@ -65,7 +101,7 @@ function Exam(props) {
             }}
           ></Modal>
           <Divider></Divider>
-          结束时间：2023年2月22日11:02:01
+          结束时间：{endtime}
         </Card>
       );
 
@@ -299,7 +335,7 @@ class ExamControl extends React.Component {
                   node.addEventListener("transitionend", done, false);
                 }}
               >
-                <Exam title={v.pa_name} paperstate={v.pa_state}></Exam>
+                <Exam paper={v}></Exam>
               </CSSTransition>
             );
           })}
