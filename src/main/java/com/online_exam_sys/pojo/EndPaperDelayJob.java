@@ -9,6 +9,7 @@ import org.quartz.SchedulerException;
 import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.online_exam_sys.service.ex_paper.ExamPaperService;
 import com.online_exam_sys.service.paper.PaperService;
 import com.online_exam_sys.util.Constant;
 
@@ -20,6 +21,9 @@ public class EndPaperDelayJob implements Job {
     @Autowired
     private Scheduler scheduler;
 
+    @Autowired
+    private ExamPaperService examPaperService;
+
     @Override
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
         int pa_id = (int) arg0.getJobDetail().getJobDataMap().get("pa_id");
@@ -29,6 +33,7 @@ public class EndPaperDelayJob implements Job {
         }
         pa.setPa_state(Constant.paper_state.end);
         paperService.update(pa);
+        examPaperService.handInPaperByPaper(pa);
 
         try {
             scheduler.pauseTrigger(TriggerKey.triggerKey(Integer.toString(pa_id)));

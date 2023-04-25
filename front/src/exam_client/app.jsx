@@ -11,6 +11,7 @@ import {
   Button,
   Input,
   notification,
+  Popconfirm,
 } from "antd";
 import constant from "../constant";
 const { Countdown } = Statistic;
@@ -20,12 +21,14 @@ import { CheckOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import request from "../request.js";
 import axios from "axios";
+import Check from "./check.jsx";
 
 const { Paragraph, Title } = Typography;
 
 const fakeData = [
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0]",
@@ -38,6 +41,7 @@ const fakeData = [
   },
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0,1]",
@@ -49,6 +53,7 @@ const fakeData = [
   },
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0]",
@@ -60,6 +65,7 @@ const fakeData = [
   },
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0]",
@@ -71,6 +77,7 @@ const fakeData = [
   },
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0]",
@@ -82,6 +89,7 @@ const fakeData = [
   },
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0]",
@@ -93,6 +101,7 @@ const fakeData = [
   },
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0]",
@@ -104,6 +113,7 @@ const fakeData = [
   },
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0]",
@@ -115,6 +125,7 @@ const fakeData = [
   },
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0]",
@@ -126,6 +137,7 @@ const fakeData = [
   },
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0]",
@@ -137,6 +149,7 @@ const fakeData = [
   },
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0]",
@@ -148,6 +161,7 @@ const fakeData = [
   },
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0]",
@@ -159,6 +173,7 @@ const fakeData = [
   },
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0]",
@@ -170,6 +185,7 @@ const fakeData = [
   },
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0]",
@@ -181,6 +197,7 @@ const fakeData = [
   },
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0]",
@@ -192,6 +209,7 @@ const fakeData = [
   },
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0]",
@@ -203,6 +221,7 @@ const fakeData = [
   },
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0]",
@@ -214,6 +233,7 @@ const fakeData = [
   },
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0]",
@@ -225,6 +245,7 @@ const fakeData = [
   },
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0]",
@@ -236,6 +257,7 @@ const fakeData = [
   },
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0]",
@@ -247,6 +269,7 @@ const fakeData = [
   },
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0]",
@@ -258,6 +281,7 @@ const fakeData = [
   },
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0]",
@@ -269,6 +293,7 @@ const fakeData = [
   },
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0]",
@@ -280,6 +305,7 @@ const fakeData = [
   },
   {
     qu_id: "123",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[0]",
@@ -291,6 +317,7 @@ const fakeData = [
   },
   {
     qu_id: "12322",
+    eq_answer: null,
     pa_id: "123",
     qu_type: constant.question_type.choose,
     qu_answer: "[1,2]",
@@ -305,12 +332,14 @@ const fakeData = [
     qu_type: constant.question_type.fill,
     qu_answer: '["fuck","die"]',
     qu_describe: "asjdoiasj___doia___sjdas?",
+    eq_answer: null,
     qu_choose: "[]",
     qu_score: 12,
     qu_image: "[]",
   },
   {
     qu_id: "125",
+    eq_answer: null,
     pa_id: "1235",
     qu_type: constant.question_type.subject,
     qu_answer: "[]",
@@ -416,138 +445,6 @@ function RenderQuestionContent(props) {
   }
 }
 
-function Check() {
-  //检测电脑设备是否已经安装了摄像头
-  if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
-    // Firefox 38+ seems having support of enumerateDevicesx
-    navigator.enumerateDevices = function (callback) {
-      navigator.mediaDevices.enumerateDevices().then(callback);
-    };
-  }
-  var MediaDevices = [];
-  var isHTTPs = location.protocol === "https:";
-  var canEnumerate = false;
-
-  if (
-    typeof MediaStreamTrack !== "undefined" &&
-    "getSources" in MediaStreamTrack
-  ) {
-    canEnumerate = true;
-  } else if (
-    navigator.mediaDevices &&
-    !!navigator.mediaDevices.enumerateDevices
-  ) {
-    canEnumerate = true;
-  }
-
-  var hasWebcam = false;
-
-  var isWebcamAlreadyCaptured = false;
-
-  function checkDeviceSupport(callback) {
-    if (!canEnumerate) {
-      return;
-    }
-
-    if (
-      !navigator.enumerateDevices &&
-      window.MediaStreamTrack &&
-      window.MediaStreamTrack.getSources
-    ) {
-      navigator.enumerateDevices = window.MediaStreamTrack.getSources.bind(
-        window.MediaStreamTrack
-      );
-    }
-
-    if (!navigator.enumerateDevices && navigator.enumerateDevices) {
-      navigator.enumerateDevices = navigator.enumerateDevices.bind(navigator);
-    }
-
-    if (!navigator.enumerateDevices) {
-      if (callback) {
-        callback();
-      }
-      return;
-    }
-
-    MediaDevices = [];
-    navigator.enumerateDevices(function (devices) {
-      devices.forEach(function (_device) {
-        var device = {};
-        for (var d in _device) {
-          device[d] = _device[d];
-        }
-
-        if (device.kind === "audio") {
-          device.kind = "audioinput";
-        }
-
-        if (device.kind === "video") {
-          device.kind = "videoinput";
-        }
-
-        var skip;
-        MediaDevices.forEach(function (d) {
-          if (d.id === device.id && d.kind === device.kind) {
-            skip = true;
-          }
-        });
-
-        if (skip) {
-          return;
-        }
-
-        if (!device.deviceId) {
-          device.deviceId = device.id;
-        }
-
-        if (!device.id) {
-          device.id = device.deviceId;
-        }
-
-        if (!device.label) {
-          device.label = "Please invoke getUserMedia once.";
-          if (!isHTTPs) {
-            device.label =
-              "HTTPs is required to get label of this " +
-              device.kind +
-              " device.";
-          }
-        } else {
-          if (device.kind === "videoinput" && !isWebcamAlreadyCaptured) {
-            isWebcamAlreadyCaptured = true;
-          }
-        }
-
-        if (device.kind === "videoinput") {
-          hasWebcam = true;
-        }
-
-        // there is no 'videoouput' in the spec.
-
-        MediaDevices.push(device);
-      });
-
-      if (callback) {
-        callback();
-      }
-    });
-  }
-  //end
-
-  checkDeviceSupport(function () {
-    if (hasWebcam == false) {
-      console.log("没有摄像头！");
-      return false;
-    } else {
-      if (isWebcamAlreadyCaptured == false) {
-        console.log("捕获摄像头失败，请重新安装摄像头！");
-        return false;
-      }
-    }
-  });
-}
-
 function overFlowHandle(content) {
   if (content.length > 30) {
     return content.substring(0, 30) + "...";
@@ -559,17 +456,21 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      check: false,
       userInfo: {},
-      paperData: {},
-      questionList: this.handleQuestionsData(fakeData),
+      paperData: {
+        pa_name: "xxx",
+        pa_order: "[]",
+      },
+      questionList: [],
       selectQuestion: -1,
     };
 
     this.changeInputC = this.changeInputC.bind(this);
+    this.switchSelectQuestion = this.switchSelectQuestion.bind(this);
   }
 
   async componentDidMount() {
-    Check();
     window.onblur = () => {
       console.log("切了一次");
     };
@@ -578,21 +479,21 @@ class App extends React.Component {
         console.log("切了一次");
       }
     });
-    localStorage.setItem(
-      "userinfo",
-      JSON.stringify({
-        st_id: 123,
-        st_name: "MillNasis",
-        st_sex: "M",
-        st_avatar:
-          "https://img-blog.csdnimg.cn/img_convert/4cef4c0a5c42d4ccae9ba327c550350b.png",
-        st_age: 23,
-        st_registerdate: "2023-02-07",
-        st_password: null,
-        st_card: "3192052051725",
-      })
-    );
-    localStorage.setItem("pa_id", 123);
+    // localStorage.setItem(
+    //   "userinfo",
+    //   JSON.stringify({
+    //     st_id: 123,
+    //     st_name: "MillNasis",
+    //     st_sex: "M",
+    //     st_avatar:
+    //       "https://img-blog.csdnimg.cn/img_convert/4cef4c0a5c42d4ccae9ba327c550350b.png",
+    //     st_age: 23,
+    //     st_registerdate: "2023-02-07",
+    //     st_password: null,
+    //     st_card: "3192052051725",
+    //   })
+    // );
+    // localStorage.setItem("pa_id", 123);
     const userInfo = localStorage.getItem("userinfo");
     if (userInfo === null) {
       notification.error({ message: "未找到您的登陆信息，请重新登陆" });
@@ -601,6 +502,7 @@ class App extends React.Component {
       }, 1500);
     }
     const pa_id = localStorage.getItem("pa_id");
+    const parseUserInfo = JSON.parse(userInfo);
     if (pa_id === null) {
       notification.error({ message: "未知的考卷id，请重试" });
       setTimeout(() => {
@@ -608,35 +510,66 @@ class App extends React.Component {
       }, 1500);
     }
     this.setState({
-      userInfo: JSON.parse(userInfo),
+      userInfo: parseUserInfo,
     });
 
+    console.log(parseUserInfo, pa_id);
+
     request(
-      axios.get("/exam-papers", { data: { pa_id, st_id: userInfo.st_id } }),
+      axios.get("/exam-papers", {
+        params: { pa_id, st_id: parseUserInfo.st_id },
+      }),
       (response) => {
         if (response.data.code === constant.code.success) {
-          this.setState({
-            paperData: response.data.data,
-            questionList: handleQuestionsData(response.data.data.ep_question),
-          });
+          console.log(response.data.data);
+          if (
+            response.data.data.ep_state !== constant.exam_paper_state.ongoing
+          ) {
+            notification.warning({ message: "试卷已不可作答，即将跳转" });
+            setTimeout(() => {
+              location.href = "./student";
+            }, 1500);
+          } else {
+            this.setState({
+              paperData: response.data.data,
+              questionList: this.handleQuestionsData(
+                response.data.data.ep_question,
+                response.data.data
+              ),
+            });
+          }
         }
       },
       () => null
     );
   }
 
-  handleQuestionsData(data) {
-    return data.map((v) => {
+  handleQuestionsData(data, paperData) {
+    console.log(data);
+    const order = JSON.parse(paperData.pa_order);
+    const orderMap = new Map(order.map((v, i) => [i, v]));
+    const dataMap = new Map(data.map((v) => [v.qu_id, v]));
+    const arr = new Array(data.length).fill(0).map((v, i) => {
+      return dataMap.get(orderMap.get(i));
+    });
+    return arr.map((v) => {
       const answer = JSON.parse(v.qu_answer);
       const choose = JSON.parse(v.qu_choose);
       const image = JSON.parse(v.qu_image);
+      const eq_answer = v.eq_answer === null ? null : JSON.parse(v.eq_answer);
       let inputC;
       switch (v.qu_type) {
         case constant.question_type.choose:
-          inputC = new Array(answer.length).fill(false);
+          inputC =
+            eq_answer === null
+              ? new Array(choose.length).fill(false)
+              : new Array(choose.length).fill(false).map((v, i) => {
+                  return eq_answer.findIndex((f) => f === i) !== -1;
+                });
           break;
         case constant.question_type.fill:
-          inputC = new Array(answer.length).fill("");
+          inputC =
+            eq_answer === null ? new Array(answer.length).fill("") : eq_answer;
           break;
         case constant.question_type.subject:
           break;
@@ -649,7 +582,7 @@ class App extends React.Component {
         qu_answer: answer,
         qu_choose: choose,
         qu_image: image,
-        finish: false,
+        finish: eq_answer !== null,
         inputC,
       };
     });
@@ -670,8 +603,42 @@ class App extends React.Component {
     });
   }
 
+  switchSelectQuestion(index) {
+    const preI = this.state.selectQuestion;
+    const question = this.state.questionList[preI];
+    if (preI !== -1 && question.finish) {
+      let answerN =
+        question.qu_type === constant.question_type.choose
+          ? question.inputC
+              .map((v, i) => {
+                if (v) {
+                  return i;
+                } else {
+                  return -1;
+                }
+              })
+              .filter((v) => v !== -1)
+          : question.inputC;
+      const eq_answer = JSON.stringify(answerN);
+      const obj = {
+        ...question,
+        qu_answer: JSON.stringify(question.qu_answer),
+        qu_choose: JSON.stringify(question.qu_choose),
+        qu_image: JSON.stringify(question.qu_image),
+        eq_answer,
+      };
+      request(
+        axios.post("/exam-questions", obj),
+        () => null,
+        () => null
+      );
+    }
+    this.setState({ selectQuestion: index });
+  }
+
   render() {
-    const { selectQuestion, userInfo } = this.state;
+    const { selectQuestion, userInfo, paperData } = this.state;
+    const order = JSON.parse(paperData.pa_order);
     const selectItem = this.state.questionList[selectQuestion];
     return (
       <Layout className="home">
@@ -699,55 +666,100 @@ class App extends React.Component {
               ></Countdown>
             </div>
           </div>
+          <div className="screenoff-count">切屏次数：0</div>
+          <div className="exam-state">当前考试状态：正常考试</div>
         </Header>
         <Layout className="body">
-          <div className="sider">
-            <List
-              header={<h1>xxx考试，共x题</h1>}
-              className="sider-question-list"
-              dataSource={this.state.questionList}
-              renderItem={(item, index) => {
-                return (
-                  <List.Item
-                    onClick={() => this.setState({ selectQuestion: index })}
-                    className="question-list-item"
-                    key={item.qu_id}
-                    actions={[item.finish && <CheckOutlined></CheckOutlined>]}
+          {this.state.check ? (
+            <>
+              <div className="sider">
+                <List
+                  header={
+                    <h1>
+                      {paperData.pa_name}考试，共{order.length}题
+                    </h1>
+                  }
+                  className="sider-question-list"
+                  dataSource={this.state.questionList}
+                  renderItem={(item, index) => {
+                    return (
+                      <List.Item
+                        onClick={() => this.switchSelectQuestion(index)}
+                        className="question-list-item"
+                        key={item.qu_id}
+                        actions={[
+                          item.finish && <CheckOutlined></CheckOutlined>,
+                        ]}
+                      >
+                        <strong>{`${index + 1}. ${overFlowHandle(
+                          item.qu_describe
+                        )}`}</strong>
+                        {`(${item.qu_score}分)`}
+                      </List.Item>
+                    );
+                  }}
+                ></List>
+              </div>
+              <Content className="content">
+                <div className="content-body">
+                  {selectQuestion !== -1 && (
+                    <RenderQuestionContent
+                      queue={selectQuestion + 1}
+                      question={selectItem}
+                      changeInputC={this.changeInputC}
+                    ></RenderQuestionContent>
+                  )}
+                </div>
+                <div className="content-btn-control">
+                  <Button
+                    onClick={() =>
+                      this.switchSelectQuestion(this.state.selectQuestion - 1)
+                    }
+                    disabled={selectQuestion === -1 || selectQuestion === 0}
                   >
-                    <strong>{`${index + 1}. ${overFlowHandle(
-                      item.qu_describe
-                    )}`}</strong>
-                    {`(${item.qu_score}分)`}
-                  </List.Item>
-                );
-              }}
-            ></List>
-          </div>
-          <Content className="content">
-            <div className="content-body">
-              {selectQuestion !== -1 && (
-                <RenderQuestionContent
-                  queue={selectQuestion}
-                  question={selectItem}
-                  changeInputC={this.changeInputC}
-                ></RenderQuestionContent>
-              )}
-            </div>
-            <div className="content-btn-control">
-              <Button disabled={selectQuestion === -1 || selectQuestion === 0}>
-                上一题
-              </Button>
-              <Button type="primary">交卷</Button>
-              <Button
-                disabled={
-                  selectQuestion === -1 ||
-                  selectQuestion === this.state.questionList.length - 1
-                }
-              >
-                下一题
-              </Button>
-            </div>
-          </Content>
+                    上一题
+                  </Button>
+                  <Popconfirm
+                    title="提前交转"
+                    description="确定要交卷吗，交卷后不可再作答"
+                    onConfirm={() => {
+                      request(
+                        axios.post("/exam-papers/handin", {
+                          ...this.state.paperData,
+                        }),
+                        (response) => {
+                          if (response.data.code === constant.code.success) {
+                            notification.success({
+                              message: "交卷成功，即将跳转",
+                            });
+                            setTimeout(() => {
+                              location.href = "./student";
+                            }, 1500);
+                          }
+                        },
+                        () => {}
+                      );
+                    }}
+                  >
+                    <Button type="primary">交卷</Button>
+                  </Popconfirm>
+                  <Button
+                    disabled={
+                      selectQuestion === -1 ||
+                      selectQuestion === this.state.questionList.length - 1
+                    }
+                    onClick={() =>
+                      this.switchSelectQuestion(this.state.selectQuestion + 1)
+                    }
+                  >
+                    下一题
+                  </Button>
+                </div>
+              </Content>
+            </>
+          ) : (
+            <Check></Check>
+          )}
         </Layout>
       </Layout>
     );

@@ -24,7 +24,7 @@ function Exam(props) {
   switch (paperstate) {
     case constant.paper_state.waiting:
       return (
-        <Card className="exam-card waiting" {...props}>
+        <Card className="exam-card waiting" {...props} title={paper.pa_name}>
           <strong className="state-font">等待考试开始</strong>
           <strong className="des-font">
             <Countdown
@@ -40,7 +40,7 @@ function Exam(props) {
       );
     case constant.paper_state.preparing:
       return (
-        <Card className="exam-card preparing" {...props}>
+        <Card className="exam-card preparing" {...props} title={paper.pa_name}>
           <strong className="state-font">未开始</strong>
           <strong className="des-font">尚未完成出题</strong>
           <Divider></Divider>
@@ -51,7 +51,7 @@ function Exam(props) {
 
     case constant.paper_state.starting:
       return (
-        <Card className="exam-card starting" {...props}>
+        <Card className="exam-card starting" {...props} title={paper.pa_name}>
           <strong
             className="des-font"
             onClick={() => {
@@ -80,7 +80,7 @@ function Exam(props) {
 
     case constant.paper_state.end:
       return (
-        <Card className="exam-card end" {...props}>
+        <Card className="exam-card end" {...props} title={paper.pa_name}>
           <strong className="state-font">考试已结束</strong>
           <strong
             className="des-font"

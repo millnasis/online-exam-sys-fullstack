@@ -135,7 +135,8 @@ public class PaperController {
         if (pa == null) {
             return new Result(null, "考试不存在", Constant.code.not_found);
         }
-        Date start = pa.getPa_begintime();
+        // Date start = pa.getPa_begintime();
+        Date start = new Date(System.currentTimeMillis() + 30 * 1000);
         JobDetail jobDetail = JobBuilder.newJob(BoardPaperDelayJob.class)
                 .usingJobData("pa_id", pa.getPa_id())
                 .withIdentity(Integer.toString(pa.getPa_id()))

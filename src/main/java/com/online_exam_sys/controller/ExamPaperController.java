@@ -1,7 +1,11 @@
 package com.online_exam_sys.controller;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,10 +20,12 @@ import com.online_exam_sys.util.Result;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Api(tags = "考卷接口")
 @RequestMapping("/exam-papers")
+@Slf4j
 public class ExamPaperController {
     @Autowired
     private ExamPaperService examPaperService;
@@ -32,7 +38,7 @@ public class ExamPaperController {
 
     @ApiOperation("根据试卷id和学生id获取考卷与考题")
     @GetMapping
-    public Result queryByPaperIdAndStudentId(int pa_id, int st_id) {
+    public Result queryByPaperIdAndStudentId(Integer pa_id, Integer st_id) {
         Student st = studentService.queryOne(st_id);
         if (st == null) {
             return new Result(null, "学生不存在", Constant.code.not_found);
@@ -47,5 +53,29 @@ public class ExamPaperController {
         }
         return new Result(data, "成功", Constant.code.success);
 
+    }
+
+    @ApiOperation("学生主动交卷")
+    @PostMapping("/handin")
+    public Result handInPaperByStudent(@RequestBody Ex_paper data) {
+        System.out.println(data);
+        data = examPaperService.autoCorrectPaperByPaper(data);
+        data.setEp_finishdate(new Date(System.currentTimeMillis()));
+        boolean update = examPaperService.updateById(data);
+        return update ? new Result(null, "成功", Constant.code.success)
+                : new Result(null, "更新失败，请联系管理员", Constant.code.error);
+    }
+
+    @ApiOperation("判定试卷作弊")
+    @PostMapping("/cheat")
+    public Result cheat(@RequestBody Ex_paper data) {
+        System.out.println(data);
+        data.setEp_state(Constant.exam_paper_state.cheating);
+        if (data.getEp_finishdate() == null) {
+            data.setEp_finishdate(new Date(System.currentTimeMillis()));
+        }
+        boolean update = examPaperService.updateById(data);
+        return update ? new Result(null, "成功", Constant.code.success)
+                : new Result(null, "更新失败，请联系管理员", Constant.code.error);
     }
 }

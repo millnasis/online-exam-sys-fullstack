@@ -2,6 +2,15 @@ body {
   margin: 0;
   padding: 0;
 }
+.my-camera {
+  width: 360px;
+  height: 180px;
+  display: flex;
+  background: darken($color: #fff, $amount: 10);
+  justify-content: center;
+  align-items: center;
+  margin: 20px 5px;
+}
 .home {
   .header {
     color: #fff;
@@ -16,18 +25,44 @@ body {
         margin-right: 10px;
       }
     }
-    .show-info{
+    .show-info {
       float: left;
-      .count-down{
+      .count-down {
         display: inline-block;
       }
       width: 300px;
+    }
+    .screenoff-count {
+      float: right;
     }
   }
   .body {
     height: calc(100vh - 64px);
     display: flex;
     flex-direction: row;
+    .check {
+      background-color: #fff;
+      width: 80vw;
+      margin: 0 10vw;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      .step {
+        width: 80vw;
+        margin: 20px 0;
+      }
+      .step-body {
+        .inner-step {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+        }
+
+        width: 80vw;
+        margin: 20px 0;
+      }
+    }
     .sider {
       text-align: center;
       height: calc(100vh - 64px);

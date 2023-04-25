@@ -62,10 +62,15 @@ class OnlineExamSysApplicationTests {
 		;
 	}
 
-	@Test
+	// @Test
 	void timeTest() {
 		Paper paper = paperService.queryById(6);
 
+	}
+
+	@Test
+	void mathTest() {
+		System.out.println(10F / (float) 3);
 	}
 
 }

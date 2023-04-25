@@ -1,7 +1,6 @@
 import { notification } from "antd";
 import constant from "./constant";
 
-
 /**
  *
  * @param {Promise} request
@@ -30,6 +29,7 @@ export default async function request(request, success, final) {
       });
     }
   } catch (error) {
+    console.error(error);
     notification.error({ description: "错误，未找到服务器" });
   } finally {
     final();

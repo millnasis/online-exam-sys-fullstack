@@ -26,6 +26,7 @@ function Exam(props) {
       return (
         <Card
           className="exam-card waiting"
+          title={paper.pa_name}
           {...props}
           actions={[
             <a
@@ -54,6 +55,7 @@ function Exam(props) {
       return (
         <Card
           className="exam-card preparing"
+          title={paper.pa_name}
           {...props}
           actions={[
             <a
@@ -75,7 +77,7 @@ function Exam(props) {
 
     case constant.paper_state.starting:
       return (
-        <Card className="exam-card starting" {...props}>
+        <Card className="exam-card starting" {...props} title={paper.pa_name}>
           <strong className="des-font">点击加入</strong>
           <strong className="state-font">考试正在进行中</strong>
           <br />
@@ -96,7 +98,7 @@ function Exam(props) {
 
     case constant.paper_state.end:
       return (
-        <Card className="exam-card end" {...props}>
+        <Card className="exam-card end" {...props} title={paper.pa_name}>
           <strong className="state-font">考试已结束</strong>
           <strong
             className="des-font"

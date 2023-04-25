@@ -17,6 +17,7 @@ public class Ex_question {
     private String qu_choose;
     private String qu_describe;
     private Float qu_score;
+    private String qu_answer;
     private String qu_image;
     private String qu_type;
 }
