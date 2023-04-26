@@ -196,4 +196,10 @@ public class ExamPaperServiceImpl implements ExamPaperService {
         return ex_paper;
     }
 
+    @Override
+    public List<Ex_paper> queryExamPaperListByPaperId(int pa_id) {
+        List<Ex_paper> data = ex_paperDao.queryExamPaperAndStudentNameByPaId(pa_id);
+        return data;
+    }
+
 }

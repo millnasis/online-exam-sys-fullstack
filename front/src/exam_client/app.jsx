@@ -22,6 +22,7 @@ import dayjs from "dayjs";
 import request from "../request.js";
 import axios from "axios";
 import Check from "./check.jsx";
+import MultiZeroRtc from "./MultiZeroRtc";
 
 const { Paragraph, Title } = Typography;
 
@@ -464,21 +465,85 @@ class App extends React.Component {
       },
       questionList: [],
       selectQuestion: -1,
+      pa_id: null,
     };
+
+    this.rtc = new MultiZeroRtc(
+      "/gs-guide",
+      () => {},
+      () => {}
+    );
 
     this.changeInputC = this.changeInputC.bind(this);
     this.switchSelectQuestion = this.switchSelectQuestion.bind(this);
+    this.startExam = this.startExam.bind(this);
   }
 
-  async componentDidMount() {
+  startExam() {
     window.onblur = () => {
-      console.log("切了一次");
+      request(
+        axios.post("/exam-papers/screenoff/" + this.state.paperData.ep_id),
+        () => {
+          this.setState({
+            paperData: {
+              ...this.state.paperData,
+              ep_screenoff_count: this.state.paperData.ep_screenoff_count + 1,
+            },
+          });
+        },
+        () => null
+      );
     };
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "hidden") {
-        console.log("切了一次");
+        request(
+          axios.post("/exam-papers/screenoff/" + this.state.paperData.ep_id),
+          () => {
+            this.setState({
+              paperData: {
+                ...this.state.paperData,
+                ep_screenoff_count: this.state.paperData.ep_screenoff_count + 1,
+              },
+            });
+          },
+          () => null
+        );
       }
     });
+
+    request(
+      axios.get("/exam-papers", {
+        params: { pa_id: this.state.pa_id, st_id: this.state.userInfo.st_id },
+      }),
+      (response) => {
+        if (response.data.code === constant.code.success) {
+          console.log(response.data.data);
+          if (
+            response.data.data.ep_state !== constant.exam_paper_state.ongoing
+          ) {
+            notification.warning({ message: "试卷已不可作答，即将跳转" });
+            setTimeout(() => {
+              location.href = "./student";
+            }, 1500);
+          } else {
+            this.setState({
+              paperData: response.data.data,
+              questionList: this.handleQuestionsData(
+                response.data.data.ep_question,
+                response.data.data
+              ),
+              check: true,
+            });
+          }
+        }
+      },
+      () => null
+    );
+  }
+
+  async componentDidMount() {
+    this.rtc.createWebsocket();
+
     // localStorage.setItem(
     //   "userinfo",
     //   JSON.stringify({
@@ -503,6 +568,7 @@ class App extends React.Component {
     }
     const pa_id = localStorage.getItem("pa_id");
     const parseUserInfo = JSON.parse(userInfo);
+    this.rtc.setlocalUserId(parseUserInfo.st_id);
     if (pa_id === null) {
       notification.error({ message: "未知的考卷id，请重试" });
       setTimeout(() => {
@@ -511,37 +577,10 @@ class App extends React.Component {
     }
     this.setState({
       userInfo: parseUserInfo,
+      pa_id,
     });
 
     console.log(parseUserInfo, pa_id);
-
-    request(
-      axios.get("/exam-papers", {
-        params: { pa_id, st_id: parseUserInfo.st_id },
-      }),
-      (response) => {
-        if (response.data.code === constant.code.success) {
-          console.log(response.data.data);
-          if (
-            response.data.data.ep_state !== constant.exam_paper_state.ongoing
-          ) {
-            notification.warning({ message: "试卷已不可作答，即将跳转" });
-            setTimeout(() => {
-              location.href = "./student";
-            }, 1500);
-          } else {
-            this.setState({
-              paperData: response.data.data,
-              questionList: this.handleQuestionsData(
-                response.data.data.ep_question,
-                response.data.data
-              ),
-            });
-          }
-        }
-      },
-      () => null
-    );
   }
 
   handleQuestionsData(data, paperData) {
@@ -640,15 +679,14 @@ class App extends React.Component {
     const { selectQuestion, userInfo, paperData } = this.state;
     const order = JSON.parse(paperData.pa_order);
     const selectItem = this.state.questionList[selectQuestion];
+    const begindeadline = dayjs(paperData.pa_begintime);
+    const deadline = dayjs(
+      begindeadline.toDate().getTime() + paperData.pa_duringtime * 1000 * 60
+    );
     return (
       <Layout className="home">
         <Header className="header">
-          <div
-            className="user-info"
-            onClick={() => {
-              document.documentElement.requestFullscreen();
-            }}
-          >
+          <div className="user-info">
             <Avatar
               src={userInfo.st_avatar}
               size={"large"}
@@ -656,18 +694,53 @@ class App extends React.Component {
             ></Avatar>
             <span>{userInfo.st_name}</span>
           </div>
-          <div className="show-info">
-            距离考试结束时间还有：
-            <div className="count-down">
-              <Countdown
-                value={dayjs(Date.now() + 120 * 1000)}
-                valueStyle={{ fontSize: "14px", color: "#fff", zIndex: "9999" }}
-                format="D 天 H 时 m 分 s 秒"
-              ></Countdown>
+          {this.state.check && (
+            <div className="show-info">
+              距离考试结束时间还有：
+              <div className="count-down">
+                <Countdown
+                  value={deadline}
+                  valueStyle={{
+                    fontSize: "14px",
+                    color: "#fff",
+                    zIndex: "9999",
+                  }}
+                  format="D 天 H 时 m 分 s 秒"
+                ></Countdown>
+              </div>
             </div>
+          )}
+
+          <div className="camera-window-header">
+            <video
+              id="camera-window-header"
+              autoPlay
+              playsInline
+              style={{
+                position: "absolute",
+                left: "0",
+                top: "0",
+                width: "100%",
+                height: "100%",
+              }}
+            ></video>
           </div>
-          <div className="screenoff-count">切屏次数：0</div>
-          <div className="exam-state">当前考试状态：正常考试</div>
+
+          {this.state.check && (
+            <div className="screenoff-count">
+              切屏次数：{paperData.ep_screenoff_count}
+            </div>
+          )}
+          {this.state.check && (
+            <div className="exam-state">
+              当前考试状态：
+              {paperData.ep_state === constant.exam_paper_state.cheating ? (
+                <span style={{ color: "red" }}>作弊</span>
+              ) : (
+                <span style={{ color: "darkgreen" }}>正常考试</span>
+              )}
+            </div>
+          )}
         </Header>
         <Layout className="body">
           {this.state.check ? (
@@ -676,7 +749,7 @@ class App extends React.Component {
                 <List
                   header={
                     <h1>
-                      {paperData.pa_name}考试，共{order.length}题
+                      {paperData.pa_name} 考试，共{order.length}题
                     </h1>
                   }
                   className="sider-question-list"
@@ -723,6 +796,7 @@ class App extends React.Component {
                     title="提前交转"
                     description="确定要交卷吗，交卷后不可再作答"
                     onConfirm={() => {
+                      this.switchSelectQuestion(-1);
                       request(
                         axios.post("/exam-papers/handin", {
                           ...this.state.paperData,
@@ -758,7 +832,14 @@ class App extends React.Component {
               </Content>
             </>
           ) : (
-            <Check></Check>
+            <Check
+              opencamera={() => {
+                this.rtc.initLocalStream(this.state.pa_id);
+              }}
+              setlocalvideo={this.rtc.setLocalVideo}
+              startexam={this.startExam}
+              reopenlocalstream={this.rtc.reopenLocalStream}
+            ></Check>
           )}
         </Layout>
       </Layout>

@@ -21,8 +21,23 @@ public class Ex_paper {
     private String ep_state;
     private int ep_screenoff_count;
     @TableField(exist = false)
+    private String st_name;
+    @TableField(exist = false)
     private Float ep_score;
     @TableField(exist = false)
     private List<Ex_question> ep_question;
+    @TableField(exist = false)
     private String pa_order;
+    @TableField(exist = false)
+    private int gr_id;
+    @TableField(exist = false)
+    private String pa_name;
+    @TableField(exist = false)
+    private Date pa_founddate;
+    @TableField(exist = false)
+    private String pa_state;
+    @TableField(exist = false)
+    private Date pa_begintime;
+    @TableField(exist = false)
+    private int pa_duringtime;
 }

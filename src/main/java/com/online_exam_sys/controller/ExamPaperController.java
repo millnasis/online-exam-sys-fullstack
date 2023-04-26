@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,9 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.online_exam_sys.pojo.Ex_paper;
 import com.online_exam_sys.pojo.Paper;
 import com.online_exam_sys.pojo.Student;
+import com.online_exam_sys.pojo.Teacher;
 import com.online_exam_sys.service.ex_paper.ExamPaperService;
 import com.online_exam_sys.service.paper.PaperService;
 import com.online_exam_sys.service.student.StudentService;
+import com.online_exam_sys.service.teacher.TeacherService;
 import com.online_exam_sys.util.Constant;
 import com.online_exam_sys.util.Result;
 
@@ -51,8 +54,27 @@ public class ExamPaperController {
         if (data == null) {
             return new Result(null, "试卷尚未生成，请重试", Constant.code.not_found);
         }
+        data.setPa_order(pa.getPa_order());
+        data.setGr_id(pa.getGr_id());
+        data.setPa_name(pa.getPa_name());
+        data.setPa_founddate(pa.getPa_founddate());
+        data.setPa_state(pa.getPa_state());
+        data.setPa_begintime(pa.getPa_begintime());
+        data.setPa_duringtime(pa.getPa_duringtime());
         return new Result(data, "成功", Constant.code.success);
+    }
 
+    @ApiOperation("切屏计数")
+    @PostMapping("/screenoff/{id}")
+    public Result screenOffCount(@PathVariable int id) {
+        Ex_paper data = examPaperService.queryById(id);
+        if (data == null) {
+            return new Result(null, "考卷不存在", Constant.code.not_found);
+        }
+        data.setEp_screenoff_count(data.getEp_screenoff_count() + 1);
+        boolean update = examPaperService.updateById(data);
+        return update ? new Result(null, "成功", Constant.code.success)
+                : new Result(null, "更新失败，请联系管理员", Constant.code.error);
     }
 
     @ApiOperation("学生主动交卷")

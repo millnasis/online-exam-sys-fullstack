@@ -1,7 +1,9 @@
 package com.online_exam_sys.pojo;
 
 import java.util.Date;
+import java.util.List;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 
 import lombok.Data;
@@ -19,4 +21,6 @@ public class Paper {
     private Date pa_begintime;
     private int pa_duringtime;
     private String pa_order;
+    @TableField(exist = false)
+    private List<Ex_paper> ep_list;
 }

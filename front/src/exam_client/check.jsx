@@ -1,8 +1,8 @@
-import React from "react";
-import { Button, Steps, notification } from "antd";
+import React, { useState } from "react";
+import { Button, Steps, Typography, notification } from "antd";
 import { CameraOutlined } from "@ant-design/icons";
 
-function checkFunc() {
+function checkFunc(back) {
   //检测电脑设备是否已经安装了摄像头
   if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
     // Firefox 38+ seems having support of enumerateDevicesx
@@ -134,45 +134,118 @@ function checkFunc() {
       }
     }
     notification.success({ message: "找到了摄像头!!" });
+    back();
   });
 }
-
-const description = "This is a description.";
 
 function MyCamera(props) {
   return (
     <div className="my-camera">
+      <video
+        id="camera-window"
+        autoPlay
+        playsInline
+        style={{
+          position: "absolute",
+          left: "0",
+          top: "0",
+          width: "100%",
+          height: "100%",
+        }}
+      ></video>
       <CameraOutlined></CameraOutlined>
     </div>
   );
 }
 
 function MyStep(props) {
-  const { step } = props;
+  const {
+    step,
+    opencamera,
+    setlocalvideo,
+    nextStep,
+    startexam,
+    reopenlocalstream,
+  } = props;
+  const [enable, setEnable] = useState(0);
   switch (step) {
     case 0:
       return (
         <div className="inner-step">
           <MyCamera></MyCamera>
-          <Button
-            onClick={() => {
-              checkFunc();
-            }}
-          >
-            开启摄像头
-          </Button>
+          <p>
+            <Button
+              onClick={() => {
+                checkFunc(() => {
+                  setlocalvideo(document.querySelector("#camera-window"));
+                  opencamera();
+                  setEnable(true);
+                });
+              }}
+              disabled={enable}
+            >
+              开启摄像头
+            </Button>
+            <Button
+              type="primary"
+              disabled={!enable}
+              onClick={() => {
+                setlocalvideo(document.querySelector("#camera-window-header"));
+                reopenlocalstream();
+                setEnable(false);
+                nextStep();
+              }}
+            >
+              下一步
+            </Button>
+          </p>
         </div>
       );
     case 1:
       return (
         <div className="inner-step">
-          <Button>开启摄像头</Button>
+          <p>
+            <Button
+              onClick={() => {
+                document.documentElement.requestFullscreen();
+                setEnable(true);
+                document.documentElement.onfullscreenchange = (e) => {
+                  console.log(e);
+                };
+              }}
+            >
+              开启全屏模式
+            </Button>
+            <Button
+              type="primary"
+              disabled={!enable}
+              onClick={() => {
+                setEnable(false);
+                nextStep();
+              }}
+            >
+              下一步
+            </Button>
+          </p>
         </div>
       );
     case 2:
       return (
         <div className="inner-step">
-          <Button>开启摄像头</Button>
+          <Typography style={{ textAlign: "center" }}>
+            <Typography.Title level={2}>注意</Typography.Title>
+            <Typography.Paragraph>
+              开始考试后您的切屏次数会被记录，并且将开启摄像头监控
+            </Typography.Paragraph>
+          </Typography>
+          <Button
+            type="primary"
+            onClick={() => {
+              startexam();
+            }}
+          >
+            开始考试
+          </Button>
         </div>
       );
 
@@ -191,6 +264,9 @@ class Check extends React.Component {
   }
 
   render() {
+    const { opencamera, setlocalvideo, startexam, reopenlocalstream } =
+      this.props;
+
     return (
       <div className="check">
         <Steps
@@ -199,20 +275,24 @@ class Check extends React.Component {
           items={[
             {
               title: "开启摄像头",
-              description,
             },
             {
               title: "全屏模式",
-              description,
             },
             {
               title: "开始考试",
-              description,
             },
           ]}
         ></Steps>
         <div className="step-body">
-          <MyStep step={this.state.step}></MyStep>
+          <MyStep
+            step={this.state.step}
+            nextStep={() => this.setState({ step: this.state.step + 1 })}
+            opencamera={opencamera}
+            setlocalvideo={setlocalvideo}
+            startexam={startexam}
+            reopenlocalstream={reopenlocalstream}
+          ></MyStep>
         </div>
       </div>
     );
