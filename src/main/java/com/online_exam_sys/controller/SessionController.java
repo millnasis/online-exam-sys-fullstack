@@ -37,14 +37,17 @@ public class SessionController {
     @ApiOperation("学生登陆")
     @PostMapping("/student")
     public Result studentLogin(@RequestBody Student data, HttpServletRequest req) {
+        // 检验于用户是否存在
         Student st = studentService.queryByCard(data.getSt_card());
         if (st == null) {
             return new Result(null, "用户不存在", Constant.code.error);
         }
+        // 比对密码
         String pwd = studentService.getPwd(st.getSt_id());
         if (!pwd.equals(DigestUtils.md5DigestAsHex(data.getSt_password().getBytes()))) {
             return new Result(null, "密码错误", Constant.code.error);
         }
+        // 将用户信息存入session
         HttpSession session = req.getSession();
         session.setAttribute("user_id", st.getSt_id());
         session.setAttribute("identity", "st");

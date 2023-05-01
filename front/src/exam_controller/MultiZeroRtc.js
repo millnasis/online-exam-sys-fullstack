@@ -30,7 +30,7 @@ export default class MultiZeroRtc {
     return this.remoteUserIdList;
   }
 
-  createWebsocket() {
+  createWebsocket(pa_id) {
     const socket = new SockJS(this.url, null, {
       sessionId: () => "T " + this.localUserId,
     });
@@ -42,9 +42,9 @@ export default class MultiZeroRtc {
           const msg = JSON.parse(resp.body);
           console.log("返回的信息!!!", msg);
           this.remoteUserIdList.push(msg.remoteUid);
-          this.joinCallBack();
+          this.joinCallBack(msg.remoteUid);
           const remoteVideo = document.querySelector(
-            "#remoteVideo" + msg.remoteUid
+            "#camera-window" + msg.remoteUid
           );
           this.remoteVideoMap.set(msg.remoteUid, remoteVideo);
           // console.log(signal.SIGNAL_TYPE_NEW_PEER, msg);
@@ -57,10 +57,10 @@ export default class MultiZeroRtc {
           console.log("返回的信息!!!", msg);
           const { studentIdList } = msg;
           this.remoteUserIdList.push(...studentIdList);
-          this.joinCallBack();
+          this.joinCallBack(studentIdList);
           studentIdList.forEach((studentId) => {
             const remoteVideo = document.querySelector(
-              "#remoteVideo" + studentId
+              "#camera-window" + studentId
             );
             this.remoteVideoMap.set(studentId, remoteVideo);
           });
@@ -73,7 +73,7 @@ export default class MultiZeroRtc {
           this.remoteUserIdList = this.remoteUserIdList.filter((value) => {
             return value != msg.remoteUid;
           });
-          this.exitCallBack();
+          this.exitCallBack(msg.remoteUid);
           this.remoteStreamMap.delete(msg.remoteUid);
           const video = this.remoteVideoMap.get(msg.remoteUid);
           video.srcObject = null;
@@ -92,9 +92,9 @@ export default class MultiZeroRtc {
           const remoteUid = msg.uid;
           if (this.remoteUserIdList.findIndex((v) => v === remoteUid) === -1) {
             this.remoteUserIdList.push(remoteUid);
-            this.joinCallBack();
+            this.joinCallBack(remoteUid);
             const remoteVideo = document.querySelector(
-              "#remoteVideo" + remoteUid
+              "#camera-window" + remoteUid
             );
             this.remoteVideoMap.set(remoteUid, remoteVideo);
           }
@@ -133,6 +133,7 @@ export default class MultiZeroRtc {
           await peerConnection.addIceCandidate(candidate);
         }
       );
+      this.initLocalStream(pa_id);
     });
   }
 

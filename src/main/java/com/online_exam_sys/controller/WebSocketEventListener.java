@@ -29,14 +29,20 @@ public class WebSocketEventListener {
 
     @EventListener
     public void handleWebsocketDisconnect(SessionDisconnectEvent event) {
-        log.info("WebSocket 客户端断开链接: {}",
-                event);
         String uuid = event.getSessionId();
+        log.info("WebSocket 客户端断开链接: {},sessionId是：{}",
+                event, uuid);
+
+        log.info("{}\n{}\n{}\n{}", MsgController.getTeacherRoomTableMap(), MsgController.getTeacherUserRoomMap(),
+                MsgController.getStudentRoomTableMap(),
+                MsgController.getStudentUserRoomMap());
+        // uuid是建立socket连接时传进来的身份信息
         String[] split = uuid.split(" ");
         Map<String, String> roomMap;
         Map<String, Set<String>> tableMap;
         Map<String, Set<String>> atableMap;
-        if (split[0] == "S") {
+        // 解析身份并获取对应的房间集合
+        if ("S".equals(split[0])) {
             roomMap = MsgController.getStudentUserRoomMap();
             tableMap = MsgController.getStudentRoomTableMap();
             atableMap = MsgController.getTeacherRoomTableMap();
@@ -60,6 +66,7 @@ public class WebSocketEventListener {
         }
         roomSet.remove(split[1]);
 
+        // 执行强制离开操作
         log.info("force leave " + roomid + " 操作，消息：{}", split[1]);
         log.info("当前房间{}人数:{}", roomid, roomSet.size());
         if (aroomSet.size() > 0) {

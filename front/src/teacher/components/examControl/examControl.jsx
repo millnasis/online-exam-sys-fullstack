@@ -78,7 +78,15 @@ function Exam(props) {
     case constant.paper_state.starting:
       return (
         <Card className="exam-card starting" {...props} title={paper.pa_name}>
-          <strong className="des-font">点击加入</strong>
+          <strong
+            className="des-font"
+            onClick={() => {
+              localStorage.setItem("pa_id", paper.pa_id);
+              location.href = "./exam-controller";
+            }}
+          >
+            点击加入
+          </strong>
           <strong className="state-font">考试正在进行中</strong>
           <br />
           <strong>

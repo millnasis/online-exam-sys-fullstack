@@ -10,6 +10,16 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./node_modules/antd/es/style/motion/collapse.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/antd/es/style/motion/collapse.js ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\nconst genCollapseMotion = token => ({\n  [token.componentCls]: {\n    // For common/openAnimation\n    [`${token.antCls}-motion-collapse-legacy`]: {\n      overflow: 'hidden',\n      '&-active': {\n        transition: `height ${token.motionDurationMid} ${token.motionEaseInOut},\n        opacity ${token.motionDurationMid} ${token.motionEaseInOut} !important`\n      }\n    },\n    [`${token.antCls}-motion-collapse`]: {\n      overflow: 'hidden',\n      transition: `height ${token.motionDurationMid} ${token.motionEaseInOut},\n        opacity ${token.motionDurationMid} ${token.motionEaseInOut} !important`\n    }\n  }\n});\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (genCollapseMotion);\n\n//# sourceURL=webpack://webpack/./node_modules/antd/es/style/motion/collapse.js?");
+
+/***/ }),
+
 /***/ "./src/student/app.jsx":
 /*!*****************************!*\
   !*** ./src/student/app.jsx ***!
@@ -360,7 +370,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extr
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["vendors-node_modules_react-dom_index_js","vendors-node_modules_core-js_internals_a-constructor_js-node_modules_core-js_modules_es_objec-8fa659","vendors-node_modules_ant-design_icons_es_components_AntdIcon_js-node_modules_antd_es_theme_in-ab0a83","vendors-node_modules_core-js_modules_es_array_reverse_js-node_modules_core-js_modules_es_arra-fd4c7c","vendors-node_modules_antd_es_button_index_js-node_modules_antd_es_config-provider_index_js-no-d16955","vendors-node_modules_core-js_modules_es_date_to-primitive_js-node_modules_core-js_modules_es_-4b9283","vendors-node_modules_axios_lib_axios_js","vendors-node_modules_antd_es_input-number_index_js","vendors-node_modules_ant-design_icons_es_icons_CheckOutlined_js-node_modules_core-js_modules_-ff6f85","vendors-node_modules_antd_es_grid_col_js-node_modules_antd_es_grid_row_js-node_modules_antd_e-021f5a","vendors-node_modules_antd_es_skeleton_index_js-node_modules_antd_es_style_motion_slide_js-nod-7240d9","vendors-node_modules_antd_es_radio_index_js-node_modules_core-js_modules_web_timers_js","vendors-node_modules_antd_es_layout_index_js","vendors-node_modules_ant-design_icons_es_icons_CameraOutlined_js-node_modules_antd_es__util_A-f2e946","vendors-node_modules_antd_es_card_index_js-node_modules_antd_es_style_motion_collapse_js","vendors-node_modules_antd-img-crop_dist_antd-img-crop_esm_js-node_modules_antd_es_col_index_j-fba492","src_request_js"], () => (__webpack_require__("./src/student/index.jsx")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["vendors-node_modules_react-dom_index_js","vendors-node_modules_core-js_modules_es_array_reverse_js-node_modules_core-js_modules_es_arra-90d864","vendors-node_modules_ant-design_icons_es_icons_CloseCircleFilled_js-node_modules_ant-design_i-a02a3f","vendors-node_modules_antd_es_button_index_js-node_modules_antd_es_input_TextArea_js","vendors-node_modules_axios_lib_axios_js","vendors-node_modules_ant-design_icons_es_icons_CheckOutlined_js-node_modules_ant-design_icons-0683f6","vendors-node_modules_ant-design_icons_es_icons_SearchOutlined_js-node_modules_antd_es_grid_co-a3871e","vendors-node_modules_antd_es_input-number_index_js","vendors-node_modules_antd_es_skeleton_index_js-node_modules_antd_es_style_motion_slide_js-nod-7240d9","vendors-node_modules_antd_es_input_index_js-node_modules_rc-checkbox_es_index_js","vendors-node_modules_ant-design_icons_es_icons_CameraOutlined_js-node_modules_antd_es_avatar_-acae53","vendors-node_modules_antd_es_card_index_js","vendors-node_modules_antd_es_radio_index_js","vendors-node_modules_antd_es__util_ActionButton_js-node_modules_antd_es_modal_style_index_js--6ea922","vendors-node_modules_antd-img-crop_dist_antd-img-crop_esm_js-node_modules_antd_es_col_index_j-c6e0a2","src_request_js"], () => (__webpack_require__("./src/student/index.jsx")))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()

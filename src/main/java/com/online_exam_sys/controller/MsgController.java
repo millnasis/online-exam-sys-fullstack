@@ -31,13 +31,14 @@ import java.util.concurrent.ConcurrentSkipListSet;
 @RestController
 @Slf4j
 public class MsgController {
-
+    // 用于转发消息的对象
     private SimpMessagingTemplate template;
 
     public MsgController(SimpMessagingTemplate simpMessagingTemplate) {
         this.template = simpMessagingTemplate;
     }
 
+    // 为教师和学生分别建立两个空间
     private static final Map<String, Set<String>> TEACHER_ROOM_TABLE_MAP = new ConcurrentHashMap<>();
     private static final Map<String, Set<String>> STUDENT_ROOM_TABLE_MAP = new ConcurrentHashMap<>();
 
@@ -63,6 +64,7 @@ public class MsgController {
     @MessageMapping("/" + Constant.signal.SIGNAL_TYPE_JOIN + "/{roomid}")
     public void join(JoinSignal msgJoin, @DestinationVariable String roomid) {
         log.info("join " + roomid + " 操作，消息：{}", msgJoin);
+        // 查询房间，若没有就建立
         Set<String> TroomSet = TEACHER_ROOM_TABLE_MAP.get(roomid);
         if (TroomSet == null) {
             TroomSet = new ConcurrentSkipListSet<String>();
@@ -75,20 +77,26 @@ public class MsgController {
         }
 
         if ("teacher".equals(msgJoin.getIdentity())) {
+            // 教师身份逻辑
+
+            // 教师加入房间
             TroomSet.add(msgJoin.getUid());
             TEACHER_USER_ROOM_MAP.put(msgJoin.getUid(), roomid);
+            // 如果有学生在房间内，则向其发送New-peer信令
             if (SroomSet.size() > 0) {
                 SroomSet.forEach((uid) -> {
                     NewPeerSignal nps = new NewPeerSignal();
                     nps.setRemoteUid(msgJoin.getUid());
                     this.template.convertAndSend("/ws-resp/" + Constant.signal.SIGNAL_TYPE_NEW_PEER + "/" + uid, nps);
                 });
+                // 并给教师本身返回Resp-join信令
                 RespJoinSignal rjs = new RespJoinSignal();
                 rjs.setStudentIdList(SroomSet.toArray());
                 this.template.convertAndSend(
                         "/ws-resp/" + Constant.signal.SIGNAL_TYPE_RESP_JOIN + "/" + msgJoin.getUid(), rjs);
             }
         } else {
+            // 学生身份逻辑，不发送New-peer给教师，而是在Resp-join信令中带回教师名单，再从前端逐一发送Offer
             SroomSet.add(msgJoin.getUid());
             STUDENT_USER_ROOM_MAP.put(msgJoin.getUid(), roomid);
             if (TroomSet.size() > 0) {
@@ -98,6 +106,8 @@ public class MsgController {
                         "/ws-resp/" + Constant.signal.SIGNAL_TYPE_RESP_JOIN + "/" + msgJoin.getUid(), rjs);
             }
         }
+        log.info("{}\n{}\n{}\n{}", TEACHER_ROOM_TABLE_MAP, TEACHER_USER_ROOM_MAP, STUDENT_ROOM_TABLE_MAP,
+                STUDENT_USER_ROOM_MAP);
 
     }
 

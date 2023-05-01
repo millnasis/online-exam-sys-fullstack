@@ -22,6 +22,7 @@ export default class MultiZeroRtc {
     this.setLocalVideo = this.setLocalVideo.bind(this);
     this.reopenLocalStream = this.reopenLocalStream.bind(this);
     this.setlocalUserId = this.setlocalUserId.bind(this);
+    this.dojoin = this.dojoin.bind(this);
   }
 
   setLocalVideo(element) {
@@ -145,7 +146,6 @@ export default class MultiZeroRtc {
 
   openLocalStream(stream) {
     console.log("开启本地流");
-    this.dojoin(this.roomId);
     this.localStream = stream;
     this.localVideo.srcObject = stream;
     // 创建多个peerConnection
@@ -160,7 +160,8 @@ export default class MultiZeroRtc {
     }
   }
 
-  dojoin(roomId) {
+  dojoin() {
+    const roomId = this.roomId;
     const jsonMsg = {
       uid: this.localUserId,
       identity: "student",

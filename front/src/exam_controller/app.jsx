@@ -17,9 +17,12 @@ const { Countdown } = Statistic;
 const { Content, Footer, Header, Sider } = Layout;
 import "./app.scss";
 import MultiZeroRtc from "./MultiZeroRtc";
+import request from "../request.js";
 import { CameraOutlined } from "@ant-design/icons";
 
 import dayjs from "dayjs";
+import axios from "axios";
+import constant from "../constant";
 
 function MyCamera(props) {
   const { vid } = props;
@@ -42,7 +45,25 @@ function MyCamera(props) {
   );
 }
 
-function name(params) {}
+function ExamStudentState(props) {
+  const { ep } = props;
+  const { online } = ep;
+  if (ep.ep_begindate === null) {
+    return <Badge count="未加入" color="black"></Badge>;
+  } else {
+    if (ep.ep_state === constant.exam_paper_state.ongoing) {
+      return online ? (
+        <Badge count="在线" style={{ backgroundColor: "green" }}></Badge>
+      ) : (
+        <Badge count="离线" style={{ backgroundColor: "orange" }}></Badge>
+      );
+    } else if (ep.ep_state === constant.exam_paper_state.cheating) {
+      return <Badge count="作弊" style={{ backgroundColor: "red" }}></Badge>;
+    } else {
+      return <Badge count="已交卷" style={{ backgroundColor: "blue" }}></Badge>;
+    }
+  }
+}
 
 class App extends React.Component {
   constructor(props) {
@@ -55,33 +76,76 @@ class App extends React.Component {
         pa_begintime: new Date(),
         pa_duringtime: 120,
       },
-      studentList: 0,
+      epList: [],
       windowSize: "small",
     };
 
     this.rtc = new MultiZeroRtc(
       "/gs-guide",
-      () => {},
-      () => {}
+      (arg) => {
+        if (Array.isArray(arg)) {
+          arg = arg.map((v) => +v);
+          this.setState({
+            epList: this.state.epList.map((v) => {
+              if (arg.findIndex((f) => f === v.st_id) !== -1) {
+                return {
+                  ...v,
+                  ep_begindate: new Date(),
+                  online: true,
+                };
+              }
+              return v;
+            }),
+          });
+        } else {
+          arg = +arg;
+          this.setState({
+            epList: this.state.epList.map((v) => {
+              if (v.st_id === arg) {
+                return {
+                  ...v,
+                  ep_begindate: new Date(),
+                  online: true,
+                };
+              }
+              return v;
+            }),
+          });
+        }
+      },
+      (rid) => {
+        rid = +rid;
+        this.setState({
+          epList: this.state.epList.map((v) => {
+            if (v.st_id === rid) {
+              return {
+                ...v,
+                online: false,
+              };
+            }
+            return v;
+          }),
+        });
+      }
     );
   }
 
   componentDidMount() {
-    localStorage.setItem(
-      "userinfo",
-      JSON.stringify({
-        te_id: 1622960532008493000,
-        te_name: "MillNasis",
-        te_sex: "M",
-        te_avatar:
-          "https://img-blog.csdnimg.cn/img_convert/4cef4c0a5c42d4ccae9ba327c550350b.png",
-        te_age: 23,
-        te_registerdate: "2023-02-07",
-        te_password: null,
-        te_card: "3192052051725",
-      })
-    );
-    localStorage.setItem("pa_id", 123);
+    // localStorage.setItem(
+    //   "userinfo",
+    //   JSON.stringify({
+    //     te_id: 1622960532008493000,
+    //     te_name: "MillNasis",
+    //     te_sex: "M",
+    //     te_avatar:
+    //       "https://img-blog.csdnimg.cn/img_convert/4cef4c0a5c42d4ccae9ba327c550350b.png",
+    //     te_age: 23,
+    //     te_registerdate: "2023-02-07",
+    //     te_password: null,
+    //     te_card: "3192052051725",
+    //   })
+    // );
+    // localStorage.setItem("pa_id", 123);
     const userInfo = localStorage.getItem("userinfo");
     if (userInfo === null) {
       notification.error({ message: "未找到您的登陆信息，请重新登陆" });
@@ -102,6 +166,22 @@ class App extends React.Component {
       userInfo: parseUserInfo,
       pa_id,
     });
+
+    request(
+      axios.get("/papers/exam/" + pa_id),
+      (response) => {
+        console.log(response);
+        this.setState({
+          paperData: response.data.data,
+          epList: response.data.data.ep_list.map((v) => {
+            return { ...v, online: false };
+          }),
+        });
+      },
+      () => {
+        this.rtc.createWebsocket(pa_id);
+      }
+    );
 
     console.log(parseUserInfo, pa_id);
   }
@@ -137,10 +217,6 @@ class App extends React.Component {
               ></Countdown>
             </div>
           </div>
-          <InputNumber
-            value={this.state.studentList}
-            onChange={(e) => this.setState({ studentList: e })}
-          ></InputNumber>
         </Header>
         <Layout className="body">
           <div className="sider">
@@ -161,18 +237,18 @@ class App extends React.Component {
             <List className="list"></List>
           </div>
           <Content className="content">
-            {new Array(this.state.studentList).fill(1).map((v, i) => {
+            {this.state.epList.map((ep, i) => {
               return (
                 <Card
                   className={"control-window " + this.state.windowSize}
                   key={i}
                   bodyStyle={{ padding: "0" }}
-                  cover={<MyCamera vid={i}></MyCamera>}
+                  cover={<MyCamera vid={ep.st_id}></MyCamera>}
                 >
-                  <span className="name">xx考生</span>
+                  <span className="name">{ep.st_name}</span>
                   <p>
-                    <Badge key={"badge"} count="未开始" color="black"></Badge>,
-                    <span>切屏次数：12</span>
+                    <ExamStudentState key={ep.ep_id} ep={ep}></ExamStudentState>
+                    <span>切屏次数：{ep.ep_screenoff_count}</span>
                   </p>
                 </Card>
               );

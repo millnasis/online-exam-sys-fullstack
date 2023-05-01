@@ -35,4 +35,9 @@ public class ResourceController {
         return "exam_client.html";
     }
 
+    @RequestMapping("/exam-controller")
+    public String examController() {
+        return "exam_controller.html";
+    }
+
 }

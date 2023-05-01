@@ -480,6 +480,7 @@ class App extends React.Component {
   }
 
   startExam() {
+    this.rtc.dojoin();
     window.onblur = () => {
       request(
         axios.post("/exam-papers/screenoff/" + this.state.paperData.ep_id),
