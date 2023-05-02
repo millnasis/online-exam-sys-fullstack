@@ -471,7 +471,13 @@ class App extends React.Component {
     this.rtc = new MultiZeroRtc(
       "/gs-guide",
       () => {},
-      () => {}
+      () => {},
+      () => {
+        notification.error({ message: "您已被老师判定作弊，即将结束答题" });
+        setTimeout(() => {
+          location.href = "./student";
+        }, 1500);
+      }
     );
 
     this.changeInputC = this.changeInputC.bind(this);
@@ -480,38 +486,6 @@ class App extends React.Component {
   }
 
   startExam() {
-    this.rtc.dojoin();
-    window.onblur = () => {
-      request(
-        axios.post("/exam-papers/screenoff/" + this.state.paperData.ep_id),
-        () => {
-          this.setState({
-            paperData: {
-              ...this.state.paperData,
-              ep_screenoff_count: this.state.paperData.ep_screenoff_count + 1,
-            },
-          });
-        },
-        () => null
-      );
-    };
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "hidden") {
-        request(
-          axios.post("/exam-papers/screenoff/" + this.state.paperData.ep_id),
-          () => {
-            this.setState({
-              paperData: {
-                ...this.state.paperData,
-                ep_screenoff_count: this.state.paperData.ep_screenoff_count + 1,
-              },
-            });
-          },
-          () => null
-        );
-      }
-    });
-
     request(
       axios.get("/exam-papers", {
         params: { pa_id: this.state.pa_id, st_id: this.state.userInfo.st_id },
@@ -527,14 +501,52 @@ class App extends React.Component {
               location.href = "./student";
             }, 1500);
           } else {
-            this.setState({
-              paperData: response.data.data,
-              questionList: this.handleQuestionsData(
-                response.data.data.ep_question,
-                response.data.data
-              ),
-              check: true,
-            });
+            this.setState(
+              {
+                paperData: response.data.data,
+                questionList: this.handleQuestionsData(
+                  response.data.data.ep_question,
+                  response.data.data
+                ),
+                check: true,
+              },
+              () => {
+                // 发送join信令
+                this.rtc.dojoin();
+                // 网页聚焦切屏检测
+                window.onblur = () => {
+                  this.rtc.sendSetScreenoff(
+                    this.state.paperData.ep_id,
+                    this.state.paperData.pa_id
+                  );
+
+                  this.setState({
+                    paperData: {
+                      ...this.state.paperData,
+                      ep_screenoff_count:
+                        this.state.paperData.ep_screenoff_count + 1,
+                    },
+                  });
+                };
+                // 窗口可视切屏检测
+                document.addEventListener("visibilitychange", () => {
+                  if (document.visibilityState === "hidden") {
+                    this.rtc.sendSetScreenoff(
+                      this.state.paperData.ep_id,
+                      this.state.paperData.pa_id
+                    );
+
+                    this.setState({
+                      paperData: {
+                        ...this.state.paperData,
+                        ep_screenoff_count:
+                          this.state.paperData.ep_screenoff_count + 1,
+                      },
+                    });
+                  }
+                });
+              }
+            );
           }
         }
       },
@@ -644,8 +656,10 @@ class App extends React.Component {
   }
 
   switchSelectQuestion(index) {
+    // 将当前已答完的题目序号保存下来并获取
     const preI = this.state.selectQuestion;
     const question = this.state.questionList[preI];
+    // 如果已经作答并且序号不是-1则执行
     if (preI !== -1 && question.finish) {
       let answerN =
         question.qu_type === constant.question_type.choose

@@ -59,6 +59,18 @@ body {
       .list {
         flex: 1;
         width: 100%;
+        .list-action {
+          color: black;
+          &.leave {
+            color: orange;
+          }
+          &.screenoff {
+            color: red;
+          }
+          &.handin {
+            color: blue;
+          }
+        }
       }
     }
     .content {
@@ -70,11 +82,11 @@ body {
       align-items: start;
       flex-flow: row wrap;
       .control-window {
-        .name{
+        .name {
           position: absolute;
           right: 0;
           top: 0;
-          background-color: rgba(0, 0, 0, .2);
+          background-color: rgba(0, 0, 0, 0.2);
           color: #fff;
           padding: 0 2px;
         }

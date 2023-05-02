@@ -42,7 +42,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public boolean update(Teacher teacher) {
-        int ret = teacherDao.update(teacher, null);
+        int ret = teacherDao.updateById(teacher);
         return ret > 0;
     }
 
@@ -56,7 +56,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public String getPwd(int id) {
-        
+
         return teacherDao.getPwd(id);
     }
 

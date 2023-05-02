@@ -5,7 +5,6 @@ import { CameraOutlined } from "@ant-design/icons";
 function checkFunc(back) {
   //检测电脑设备是否已经安装了摄像头
   if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
-    // Firefox 38+ seems having support of enumerateDevicesx
     navigator.enumerateDevices = function (callback) {
       navigator.mediaDevices.enumerateDevices().then(callback);
     };
@@ -109,7 +108,6 @@ function checkFunc(back) {
           hasWebcam = true;
         }
 
-        // there is no 'videoouput' in the spec.
 
         MediaDevices.push(device);
       });
@@ -119,8 +117,8 @@ function checkFunc(back) {
       }
     });
   }
-  //end
 
+  // 该函数已提前封装
   checkDeviceSupport(function () {
     if (hasWebcam == false) {
       console.log("没有摄像头！");

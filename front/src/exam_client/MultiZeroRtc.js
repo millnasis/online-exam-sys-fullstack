@@ -7,7 +7,7 @@ const respPrefix = "/ws-resp/";
 const sendPrefix = "/signal/";
 
 export default class MultiZeroRtc {
-  constructor(url, joinCallBack, exitCallBack) {
+  constructor(url, joinCallBack, exitCallBack, cheatCallBack) {
     this.url = url;
     this.stompClient = null;
     this.localUserId = null;
@@ -23,6 +23,7 @@ export default class MultiZeroRtc {
     this.reopenLocalStream = this.reopenLocalStream.bind(this);
     this.setlocalUserId = this.setlocalUserId.bind(this);
     this.dojoin = this.dojoin.bind(this);
+    this.cheatCallBack = cheatCallBack;
   }
 
   setLocalVideo(element) {
@@ -121,11 +122,27 @@ export default class MultiZeroRtc {
           await peerConnection.addIceCandidate(candidate);
         }
       );
+      this.stompClient.subscribe(
+        respPrefix + "cheat" + "/" + this.localUserId,
+        (resp) => {
+          const msg = JSON.parse(resp.body);
+          this.cheatCallBack();
+        }
+      );
     });
   }
 
   sendMessage(url, message) {
     this.stompClient.send(url, {}, message);
+  }
+
+  sendSetScreenoff(ep_id, pa_id) {
+    const jsonMsg = {
+      ep_id,
+    };
+
+    const message = JSON.stringify(jsonMsg);
+    this.sendMessage(sendPrefix + "screenoff" + "/" + pa_id, message);
   }
 
   async initLocalStream(roomid) {
@@ -148,7 +165,7 @@ export default class MultiZeroRtc {
     console.log("开启本地流");
     this.localStream = stream;
     this.localVideo.srcObject = stream;
-    // 创建多个peerConnection
+    // 创建存放多个peerConnection的集合，一个peerConnection对应一个端对端连接
     this.peerConnectionMap = new Map();
   }
 

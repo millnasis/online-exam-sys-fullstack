@@ -125,7 +125,9 @@ function GradeListItem(props) {
               <List
                 header={
                   <div>
-                    <span className="grade-modal-info-title">班级成员(50)</span>
+                    <span className="grade-modal-info-title">
+                      班级成员({member.length})
+                    </span>
                   </div>
                 }
                 dataSource={member}

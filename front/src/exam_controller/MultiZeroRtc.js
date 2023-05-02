@@ -7,7 +7,7 @@ const respPrefix = "/ws-resp/";
 const sendPrefix = "/signal/";
 
 export default class MultiZeroRtc {
-  constructor(url, joinCallBack, exitCallBack) {
+  constructor(url, joinCallBack, exitCallBack, screenoffCallBack) {
     this.url = url;
     this.stompClient = null;
     this.localUserId = null;
@@ -18,6 +18,7 @@ export default class MultiZeroRtc {
     this.peerConnectionMap = null;
     this.joinCallBack = joinCallBack;
     this.exitCallBack = exitCallBack;
+    this.screenoffCallBack = screenoffCallBack;
 
     this.setlocalUserId = this.setlocalUserId.bind(this);
   }
@@ -133,6 +134,13 @@ export default class MultiZeroRtc {
           await peerConnection.addIceCandidate(candidate);
         }
       );
+      this.stompClient.subscribe(
+        respPrefix + "screenoff/" + this.localUserId,
+        (resp) => {
+          const msg = JSON.parse(resp.body);
+          this.screenoffCallBack(msg.st_id);
+        }
+      );
       this.initLocalStream(pa_id);
     });
   }
@@ -148,6 +156,15 @@ export default class MultiZeroRtc {
     } catch (error) {
       console.error(error);
     }
+  }
+
+  sendSetCheat(ep_id, st_id) {
+    const jsonMsg = {
+      ep_id,
+    };
+
+    const message = JSON.stringify(jsonMsg);
+    this.sendMessage(sendPrefix + "cheat" + "/" + st_id, message);
   }
 
   openLocalStream() {

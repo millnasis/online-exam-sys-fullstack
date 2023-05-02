@@ -51,7 +51,7 @@ public class GradeServiceImpl implements GradeService {
 
     @Override
     public boolean update(Grade grade) {
-        int ret = gradeDao.update(grade, null);
+        int ret = gradeDao.updateById(grade);
         return ret > 0;
     }
 

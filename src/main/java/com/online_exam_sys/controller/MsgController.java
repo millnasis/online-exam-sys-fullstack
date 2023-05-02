@@ -1,23 +1,27 @@
 package com.online_exam_sys.controller;
 
-import java.time.LocalDateTime;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.HtmlUtils;
 
-import com.online_exam_sys.pojo.Hello;
-import com.online_exam_sys.pojo.HelloMessage;
+import com.online_exam_sys.pojo.Ex_paper;
+import com.online_exam_sys.pojo.Grade;
+import com.online_exam_sys.pojo.Paper;
 import com.online_exam_sys.pojo.signal.AnswerSignal;
 import com.online_exam_sys.pojo.signal.CandidateSignal;
+import com.online_exam_sys.pojo.signal.CheatSignal;
 import com.online_exam_sys.pojo.signal.JoinSignal;
 import com.online_exam_sys.pojo.signal.LeaveSignal;
 import com.online_exam_sys.pojo.signal.NewPeerSignal;
 import com.online_exam_sys.pojo.signal.OfferSignal;
 import com.online_exam_sys.pojo.signal.PeerLeaveSignal;
 import com.online_exam_sys.pojo.signal.RespJoinSignal;
+import com.online_exam_sys.pojo.signal.ScreenoffSignal;
+import com.online_exam_sys.service.ex_paper.ExamPaperService;
+import com.online_exam_sys.service.grade.GradeService;
+import com.online_exam_sys.service.paper.PaperService;
 import com.online_exam_sys.util.Constant;
 
 import io.swagger.annotations.Api;
@@ -31,6 +35,16 @@ import java.util.concurrent.ConcurrentSkipListSet;
 @RestController
 @Slf4j
 public class MsgController {
+
+    @Autowired
+    private ExamPaperService examPaperService;
+
+    @Autowired
+    private PaperService paperService;
+
+    @Autowired
+    private GradeService gradeService;
+
     // 用于转发消息的对象
     private SimpMessagingTemplate template;
 
@@ -59,6 +73,42 @@ public class MsgController {
 
     public static Map<String, String> getTeacherUserRoomMap() {
         return TEACHER_USER_ROOM_MAP;
+    }
+
+    @MessageMapping("/" + "cheat" + "/{st_id}")
+    public void cheat(CheatSignal msgCheat, @DestinationVariable String st_id) {
+        log.info("join " + st_id + " 操作，消息：{}", msgCheat);
+        Ex_paper ep = examPaperService.queryById(msgCheat.getEp_id());
+        if (ep == null) {
+            return;
+        }
+        ep.setEp_state(Constant.exam_paper_state.cheating);
+        examPaperService.updateById(ep);
+        this.template.convertAndSend("/ws-resp/" + "cheat/" + st_id, msgCheat);
+
+    }
+
+    @MessageMapping("/" + "screenoff" + "/{pa_id}")
+    public void screenoff(ScreenoffSignal msgScreenoff, @DestinationVariable int pa_id) {
+        log.info("join " + pa_id + " 操作，消息：{}", msgScreenoff);
+        Ex_paper ep = examPaperService.queryById(msgScreenoff.getEp_id());
+        if (ep == null) {
+            return;
+        }
+        ep.setEp_screenoff_count(ep.getEp_screenoff_count() + 1);
+        examPaperService.updateById(ep);
+        Paper pa = paperService.queryById(pa_id);
+        if (pa == null) {
+            return;
+        }
+        Grade gr = gradeService.queryGradeById(pa.getGr_id());
+        if (gr == null) {
+            return;
+        }
+        msgScreenoff.setSt_id(ep.getSt_id());
+
+        this.template.convertAndSend("/ws-resp/" + "screenoff/" + gr.getTe_id(), msgScreenoff);
+
     }
 
     @MessageMapping("/" + Constant.signal.SIGNAL_TYPE_JOIN + "/{roomid}")

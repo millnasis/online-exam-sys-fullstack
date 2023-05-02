@@ -12,6 +12,8 @@ import {
   List,
   Badge,
   Button,
+  Modal,
+  Popconfirm,
 } from "antd";
 const { Countdown } = Statistic;
 const { Content, Footer, Header, Sider } = Layout;
@@ -48,6 +50,9 @@ function MyCamera(props) {
 function ExamStudentState(props) {
   const { ep } = props;
   const { online } = ep;
+  if (ep.ep_state === constant.exam_paper_state.cheating) {
+    return <Badge count="作弊" style={{ backgroundColor: "red" }}></Badge>;
+  }
   if (ep.ep_begindate === null) {
     return <Badge count="未加入" color="black"></Badge>;
   } else {
@@ -57,8 +62,6 @@ function ExamStudentState(props) {
       ) : (
         <Badge count="离线" style={{ backgroundColor: "orange" }}></Badge>
       );
-    } else if (ep.ep_state === constant.exam_paper_state.cheating) {
-      return <Badge count="作弊" style={{ backgroundColor: "red" }}></Badge>;
     } else {
       return <Badge count="已交卷" style={{ backgroundColor: "blue" }}></Badge>;
     }
@@ -77,17 +80,25 @@ class App extends React.Component {
         pa_duringtime: 120,
       },
       epList: [],
-      windowSize: "small",
+      windowSize: "big",
+      modalStId: -1,
+      modalObj: {},
+      msgList: [],
     };
+
+    this.switchModalStId = this.switchModalStId.bind(this);
+    this.unshiftMsg = this.unshiftMsg.bind(this);
 
     this.rtc = new MultiZeroRtc(
       "/gs-guide",
       (arg) => {
+        const data = [];
         if (Array.isArray(arg)) {
           arg = arg.map((v) => +v);
           this.setState({
             epList: this.state.epList.map((v) => {
               if (arg.findIndex((f) => f === v.st_id) !== -1) {
+                data.push(v);
                 return {
                   ...v,
                   ep_begindate: new Date(),
@@ -102,6 +113,7 @@ class App extends React.Component {
           this.setState({
             epList: this.state.epList.map((v) => {
               if (v.st_id === arg) {
+                data.push(v);
                 return {
                   ...v,
                   ep_begindate: new Date(),
@@ -112,12 +124,15 @@ class App extends React.Component {
             }),
           });
         }
+        this.unshiftMsg(data, "join", this.state.msgList);
       },
       (rid) => {
+        const data = [];
         rid = +rid;
         this.setState({
           epList: this.state.epList.map((v) => {
             if (v.st_id === rid) {
+              data.push(v);
               return {
                 ...v,
                 online: false,
@@ -126,8 +141,86 @@ class App extends React.Component {
             return v;
           }),
         });
+        this.unshiftMsg(data, "leave", this.state.msgList);
+      },
+      (rid) => {
+        const data = [];
+        rid = +rid;
+        this.setState({
+          epList: this.state.epList.map((v) => {
+            if (v.st_id === rid) {
+              data.push(v);
+              return {
+                ...v,
+                ep_screenoff_count: v.ep_screenoff_count + 1,
+              };
+            }
+            return v;
+          }),
+        });
+        this.unshiftMsg(data, "screenoff", this.state.msgList);
       }
     );
+  }
+
+  unshiftMsg(data, action, arr) {
+    data.forEach((v) => {
+      switch (action) {
+        case "join":
+          arr = [
+            {
+              st_id: v.st_id,
+              st_name: v.st_name,
+              msg: "加入了考试",
+              action,
+              date: new Date(),
+            },
+            ...arr,
+          ];
+          break;
+        case "screenoff":
+          arr = [
+            {
+              st_id: v.st_id,
+              st_name: v.st_name,
+              msg: "切屏了一次",
+              action,
+              date: new Date(),
+            },
+            ...arr,
+          ];
+          break;
+        case "leave":
+          arr = [
+            {
+              st_id: v.st_id,
+              st_name: v.st_name,
+              msg: "离开了考试",
+              action,
+              date: new Date(),
+            },
+            ...arr,
+          ];
+          break;
+        case "handin":
+          arr = [
+            {
+              st_id: v.st_id,
+              st_name: v.st_name,
+              msg: "交卷了",
+              action,
+              date: new Date(),
+            },
+            ...arr,
+          ];
+          break;
+
+        default:
+          break;
+      }
+    });
+    localStorage.setItem("msglist", JSON.stringify(arr));
+    this.setState({ msgList: arr });
   }
 
   componentDidMount() {
@@ -155,6 +248,7 @@ class App extends React.Component {
     }
     const pa_id = localStorage.getItem("pa_id");
     const parseUserInfo = JSON.parse(userInfo);
+    const msgList = JSON.parse(localStorage.getItem("msglist"));
     this.rtc.setlocalUserId(parseUserInfo.te_id);
     if (pa_id === null) {
       notification.error({ message: "未知的考卷id，请重试" });
@@ -165,6 +259,7 @@ class App extends React.Component {
     this.setState({
       userInfo: parseUserInfo,
       pa_id,
+      msgList: msgList ? msgList : [],
     });
 
     request(
@@ -184,6 +279,20 @@ class App extends React.Component {
     );
 
     console.log(parseUserInfo, pa_id);
+  }
+
+  switchModalStId(ep) {
+    const { st_id } = ep;
+    this.setState({ modalStId: st_id, modalObj: ep }, () => {
+      if (st_id !== -1) {
+        const remoteStream = this.rtc.remoteStreamMap.get(st_id + "");
+        if (remoteStream) {
+          const videoE = document.querySelector("#camera-window-big");
+          videoE.srcObject = remoteStream;
+        }
+        console.log(st_id, remoteStream, this.rtc.remoteStreamMap);
+      }
+    });
   }
 
   render() {
@@ -234,12 +343,86 @@ class App extends React.Component {
                 ]}
               />
             </div>
-            <List className="list"></List>
+            <List
+              className="list"
+              dataSource={this.state.msgList}
+              renderItem={(item, i) => {
+                return (
+                  <List.Item
+                    key={i}
+                    onClick={() => {
+                      const ep = this.state.epList.find((v) => {
+                        return v.st_id === item.st_id;
+                      });
+                      this.switchModalStId(ep);
+                    }}
+                  >
+                    学生 <strong>{item.st_name}</strong>{" "}
+                    <strong className={"list-action " + item.action}>
+                      {item.msg}
+                    </strong>
+                    <br />
+                    {dayjs(item.date).format("HH时mm分ss秒").toString()}
+                  </List.Item>
+                );
+              }}
+            ></List>
           </div>
           <Content className="content">
+            <Modal
+              open={this.state.modalStId !== -1}
+              width={"50vw"}
+              onCancel={() => {
+                this.setState({
+                  modalStId: -1,
+                });
+              }}
+              footer={[
+                <Popconfirm
+                  title="判定该考试作弊"
+                  description="你确定吗，该考试会被直接强制交卷"
+                  onConfirm={() => {
+                    this.rtc.sendSetCheat(
+                      this.state.modalObj.ep_id,
+                      this.state.modalStId
+                    );
+                  }}
+                  okText="确定"
+                  cancelText="取消"
+                >
+                  <Button danger>判定作弊</Button>
+                </Popconfirm>,
+                <Button
+                  key={"closeBtn"}
+                  onClick={() => {
+                    this.setState({
+                      modalStId: -1,
+                    });
+                  }}
+                >
+                  关闭
+                </Button>,
+              ]}
+            >
+              <p>
+                学生 <strong>{this.state.modalObj.st_name}</strong> 切屏次数：
+                {this.state.modalObj.ep_screenoff_count}
+              </p>
+              <video
+                id={"camera-window-big"}
+                autoPlay
+                playsInline
+                style={{
+                  width: "90%",
+                }}
+              ></video>
+            </Modal>
             {this.state.epList.map((ep, i) => {
               return (
                 <Card
+                  onClick={() => {
+                    this.switchModalStId(ep);
+                  }}
                   className={"control-window " + this.state.windowSize}
                   key={i}
                   bodyStyle={{ padding: "0" }}
