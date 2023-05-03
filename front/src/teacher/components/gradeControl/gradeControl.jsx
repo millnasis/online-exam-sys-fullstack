@@ -327,7 +327,9 @@ function GradeListItem(props) {
               </p>
               <p>
                 <span className="grade-modal-info-title">创建时间</span>
-                {item.gr_founddate}
+                {dayjs(item.gr_founddate)
+                  .format("YYYY年MM月DD日HH时MM分")
+                  .toString()}
               </p>
               <p>
                 <span className="grade-modal-info-title">加入时间</span>

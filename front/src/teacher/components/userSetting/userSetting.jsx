@@ -19,6 +19,7 @@ import { CameraOutlined } from "@ant-design/icons";
 import "./userSetting.scss";
 import { bindActionCreators } from "redux";
 import request from "../../../request.js";
+import dayjs from "dayjs";
 
 class UserSetting extends React.Component {
   constructor(props) {
@@ -183,8 +184,10 @@ class UserSetting extends React.Component {
             </p>
             <Divider></Divider>
             <p>
-              <span className="title">注册日期</span>
-              {userInfo.te_registerdate}
+              <span className="title">注册时间</span>
+              {dayjs(userInfo.te_registerdate)
+                .format("YYYY年MM月DD日HH时MM分")
+                .toString()}
             </p>
             {this.state.edit && (
               <p className="control-btn">

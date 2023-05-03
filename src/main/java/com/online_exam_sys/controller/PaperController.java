@@ -133,6 +133,7 @@ public class PaperController {
                 : new Result(null, "删除失败，请联系管理员", Constant.code.error);
     }
 
+    // 发布考试相关接口，考试发布后开始时间就不可修改，想修改只能删除该考试
     @ApiOperation("发布考试")
     @PostMapping("/waiting/{id}")
     public Result waiting(@PathVariable int id) throws SchedulerException {
@@ -142,14 +143,15 @@ public class PaperController {
         }
         // Date start = pa.getPa_begintime();
         Date start = new Date(System.currentTimeMillis() + 30 * 1000);
+        // 设置延时任务任务的标识
         JobDetail jobDetail = JobBuilder.newJob(BoardPaperDelayJob.class)
                 .usingJobData("pa_id", pa.getPa_id())
                 .withIdentity(Integer.toString(pa.getPa_id()))
                 .build();
+        // 延时任务的触发器，里面设置了开始时间
         Trigger trigger = TriggerBuilder.newTrigger()
                 .usingJobData("pa_id", pa.getPa_id())
                 .withIdentity(Integer.toString(pa.getPa_id()))
-                // .startAt(start)
                 .startAt(start)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule())
                 .build();

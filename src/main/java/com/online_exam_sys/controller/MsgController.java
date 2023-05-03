@@ -76,19 +76,24 @@ public class MsgController {
     }
 
     @MessageMapping("/" + "cheat" + "/{st_id}")
+    // 判定作弊
     public void cheat(CheatSignal msgCheat, @DestinationVariable String st_id) {
         log.info("join " + st_id + " 操作，消息：{}", msgCheat);
+        // 检查数据是否存在
         Ex_paper ep = examPaperService.queryById(msgCheat.getEp_id());
         if (ep == null) {
             return;
         }
+        // 对数据库进行相应更改
         ep.setEp_state(Constant.exam_paper_state.cheating);
         examPaperService.updateById(ep);
+        // 将消息转发给学生
         this.template.convertAndSend("/ws-resp/" + "cheat/" + st_id, msgCheat);
 
     }
 
     @MessageMapping("/" + "screenoff" + "/{pa_id}")
+    // 切屏通知
     public void screenoff(ScreenoffSignal msgScreenoff, @DestinationVariable int pa_id) {
         log.info("join " + pa_id + " 操作，消息：{}", msgScreenoff);
         Ex_paper ep = examPaperService.queryById(msgScreenoff.getEp_id());

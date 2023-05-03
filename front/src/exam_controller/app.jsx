@@ -91,9 +91,11 @@ class App extends React.Component {
 
     this.rtc = new MultiZeroRtc(
       "/gs-guide",
+      // 有人加入考试时的回调
       (arg) => {
         const data = [];
         if (Array.isArray(arg)) {
+          // 传入是数组的情况
           arg = arg.map((v) => +v);
           this.setState({
             epList: this.state.epList.map((v) => {
@@ -109,6 +111,7 @@ class App extends React.Component {
             }),
           });
         } else {
+          // 传入是单个id的情况
           arg = +arg;
           this.setState({
             epList: this.state.epList.map((v) => {
@@ -126,6 +129,7 @@ class App extends React.Component {
         }
         this.unshiftMsg(data, "join", this.state.msgList);
       },
+      // 有人离开考试时的回调
       (rid) => {
         const data = [];
         rid = +rid;
@@ -143,6 +147,7 @@ class App extends React.Component {
         });
         this.unshiftMsg(data, "leave", this.state.msgList);
       },
+      // 有学生切屏时的回调
       (rid) => {
         const data = [];
         rid = +rid;

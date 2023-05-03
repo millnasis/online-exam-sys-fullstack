@@ -20,6 +20,7 @@ import "./userSetting.scss";
 import constant from "../../../constant";
 import { bindActionCreators } from "redux";
 import request from "../../../request.js";
+import dayjs from "dayjs";
 
 class UserSetting extends React.Component {
   constructor(props) {
@@ -184,8 +185,10 @@ class UserSetting extends React.Component {
             </p>
             <Divider></Divider>
             <p>
-              <span className="title">注册日期</span>
-              {userInfo.st_registerdate}
+              <span className="title">注册时间</span>
+              {dayjs(userInfo.st_registerdate)
+                .format("YYYY年MM月DD日HH时MM分")
+                .toString()}
             </p>
             {this.state.edit && (
               <p className="control-btn">

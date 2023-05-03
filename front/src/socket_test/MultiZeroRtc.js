@@ -8,9 +8,12 @@ const sendPrefix = "/signal/";
 
 export default class MultiZeroRtc {
   constructor(url, joinCallBack, exitCallBack) {
+    // 与WebSocket服务器建立连接的url地址
     this.url = url;
     this.stompClient = null;
+    // 用户id，这里使用的是随机生成的id，使用时对应数据库中的用户id
     this.localUserId = Math.random().toString(36).substring(2);
+    // 多人音视频通信，远端用户有多个
     this.remoteUserIdList = [];
     this.roomId = -1;
     this.localStream = null;
@@ -18,6 +21,7 @@ export default class MultiZeroRtc {
     this.localVideo = document.querySelector("#localVideo");
     this.remoteVideoMap = new Map();
     this.peerConnectionMap = null;
+    // 有人加入房间或退出时，前端执行的回调
     this.joinCallBack = joinCallBack;
     this.exitCallBack = exitCallBack;
   }
@@ -26,6 +30,7 @@ export default class MultiZeroRtc {
     return this.remoteUserIdList;
   }
 
+  // 连接WebSocket服务器，并监听各信令接口
   createWebsocket() {
     const socket = new SockJS(this.url, null, {
       sessionId: () => this.localUserId,
@@ -43,6 +48,7 @@ export default class MultiZeroRtc {
           );
           this.remoteVideoMap.set(msg.remoteUid, remoteVideo);
           // console.log(signal.SIGNAL_TYPE_NEW_PEER, msg);
+          // 有新成员加入时，发送offer给他
           this.doOffer(msg.remoteUid);
         }
       );
@@ -84,6 +90,7 @@ export default class MultiZeroRtc {
           const msg = JSON.parse(resp.body);
           const remoteUid = msg.uid;
           const desc = JSON.parse(msg.msg);
+          // 收到offer时候，将msg的内容设置为远端连接的接口标准，并回复Answer
           if (!this.peerConnectionMap.has(remoteUid)) {
             console.log("订阅到了offer，id是" + remoteUid);
             await this.createPeerConnection(remoteUid);
@@ -102,6 +109,7 @@ export default class MultiZeroRtc {
           const desc = JSON.parse(msg.msg);
           const remoteUid = msg.uid;
           const peerConnection = this.peerConnectionMap.get(remoteUid);
+          // 收到Answer
           if (peerConnection.remoteDescription === null) {
             await peerConnection.setRemoteDescription(desc);
           }
@@ -113,6 +121,7 @@ export default class MultiZeroRtc {
           const msg = JSON.parse(resp.body);
           const candidate = JSON.parse(msg.msg);
           const remoteUid = msg.uid;
+          // 收到Candidate
           const peerConnection = this.peerConnectionMap.get(remoteUid);
           console.log(this);
           await peerConnection.addIceCandidate(candidate);
@@ -143,7 +152,7 @@ export default class MultiZeroRtc {
     this.dojoin(this.roomId);
     this.localStream = stream;
     this.localVideo.srcObject = stream;
-    // 创建多个peerConnection
+    // 一个端对端连接就对应一个peerConnection，所以创建一个Map来存放多个该对象，使用用户id进行索引
     this.peerConnectionMap = new Map();
   }
 
@@ -169,7 +178,9 @@ export default class MultiZeroRtc {
   }
 
   async createPeerConnection(remoteUid) {
+    // 创建peerConnection对象
     const peerConnection = new RTCPeerConnection(null);
+    // candidate事件处理
     peerConnection.onicecandidate = (e) => {
       if (e.candidate) {
         const jsonMsg = {
@@ -187,6 +198,7 @@ export default class MultiZeroRtc {
         console.log(this);
       }
     };
+    // 获取远程视频码流
     peerConnection.ontrack = (e) => {
       this.remoteStreamMap.set(remoteUid, e.streams[0]);
       const remoteVideo = this.remoteVideoMap.get(remoteUid);

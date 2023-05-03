@@ -41,7 +41,7 @@ public class BoardPaperDelayJob implements Job {
         examPaperService.generateExamPaperByPaper(pa);
         pa.setPa_state(Constant.paper_state.starting);
         paperService.update(pa);
-        // 先删除原先的延迟任务
+        // 延时任务默认是重复执行，所以需要先删除原先的延迟任务
         try {
             scheduler.pauseTrigger(TriggerKey.triggerKey(Integer.toString(pa_id)));
             scheduler.unscheduleJob(TriggerKey.triggerKey(Integer.toString(pa_id)));
@@ -61,7 +61,6 @@ public class BoardPaperDelayJob implements Job {
         Trigger trigger = TriggerBuilder.newTrigger()
                 .usingJobData("pa_id", pa.getPa_id())
                 .withIdentity(Integer.toString(pa_id))
-                // .startAt(start)
                 .startAt(start)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule())
                 .build();

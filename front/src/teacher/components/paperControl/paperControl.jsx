@@ -91,6 +91,7 @@ const disabledDate = (current) => {
   return current && current < dayjs().endOf("day");
 };
 
+// 变量转数据
 function transformStateToData({
   describe,
   answer,
@@ -129,6 +130,7 @@ function transformStateToData({
   };
 }
 
+// 数据转变量
 function Question(props) {
   const { question, queue, getQuestion } = props;
 
@@ -533,12 +535,18 @@ const RowD = (props) => {
   );
 };
 
+const quTypeMao = new Map();
+quTypeMao.set(constant.question_type.choose, "选择题");
+quTypeMao.set(constant.question_type.choose, "填空题");
+quTypeMao.set(constant.question_type.choose, "主观题");
+
 const DragTable = (props) => {
   const { data, hookData } = props;
   const [dataSource, setDataSource] = useState(
     data.map((v) => {
       return {
         ...v,
+        qu_type: quTypeMao.get(v.qu_type),
         key: v.qu_id,
       };
     })
