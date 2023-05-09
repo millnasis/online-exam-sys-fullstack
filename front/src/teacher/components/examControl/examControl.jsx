@@ -11,6 +11,7 @@ import dayjs from "dayjs";
 
 function Exam(props) {
   const { paper, menuselect } = props;
+  console.log(paper);
   const paperstate = paper.pa_state;
   const [open, setOpen] = useState(false);
   const begintime = dayjs(paper.pa_begintime)
@@ -104,33 +105,60 @@ function Exam(props) {
         </Card>
       );
 
-    case constant.paper_state.end:
-      return (
-        <Card className="exam-card end" {...props} title={paper.pa_name}>
-          <strong className="state-font">考试已结束</strong>
-          <strong
-            className="des-font"
-            onClick={() => {
-              setOpen(true);
-            }}
-          >
-            点击查看成绩
-          </strong>
-          <Modal
-            title={"查询成绩"}
-            open={open}
-            onCancel={() => {
-              setOpen(false);
-            }}
-            onOk={() => {
-              setOpen(false);
-            }}
-          ></Modal>
-          <Divider></Divider>
-          结束时间：{endtime}
-        </Card>
+    case constant.paper_state.end: {
+      const correctingPaList = paper.ep_list.filter(
+        (v) => v.ep_state === constant.exam_paper_state.correcting
       );
-
+      if (correctingPaList.length > 0) {
+        return (
+          <Card
+            className="exam-card correcting"
+            {...props}
+            title={paper.pa_name}
+          >
+            <strong className="state-font">
+              考卷未批改({correctingPaList.length})
+            </strong>
+            <strong
+              className="des-font"
+              onClick={() => {
+                menuselect("correct", paper.pa_id);
+              }}
+            >
+              点击批改
+            </strong>
+            <Divider></Divider>
+            结束时间:{endtime}
+          </Card>
+        );
+      } else {
+        return (
+          <Card className="exam-card end" {...props} title={paper.pa_name}>
+            <strong className="state-font">考试已结束</strong>
+            <strong
+              className="des-font"
+              onClick={() => {
+                setOpen(true);
+              }}
+            >
+              点击查看成绩
+            </strong>
+            <Modal
+              title={"查询成绩"}
+              open={open}
+              onCancel={() => {
+                setOpen(false);
+              }}
+              onOk={() => {
+                setOpen(false);
+              }}
+            ></Modal>
+            <Divider></Divider>
+            结束时间：{endtime}
+          </Card>
+        );
+      }
+    }
     default:
       return <Card>x_x出错啦</Card>;
   }
@@ -191,6 +219,22 @@ const fakeData = [
     gr_info: "123",
     gr_name: "223班",
     te_id: "123",
+    ep_list: [],
+    gr_founddate: new Date(),
+  },
+  {
+    pa_id: "127",
+    gr_id: "223",
+    pa_name: "大学几把",
+    pa_founddate: new Date(),
+    pa_state: constant.paper_state.end,
+    pa_begintime: new Date(),
+    pa_duringtime: 60 * 60 * 2,
+    pa_order: "123",
+    gr_info: "123",
+    gr_name: "223班",
+    te_id: "123",
+    ep_list: [{ ep_state: constant.exam_paper_state.correcting }],
     gr_founddate: new Date(),
   },
 ];
@@ -252,7 +296,6 @@ class ExamControl extends React.Component {
 
   componentDidMount() {
     this.getExamInfo();
-    console.log(this.state);
   }
 
   render() {

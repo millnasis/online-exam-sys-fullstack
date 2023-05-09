@@ -10,6 +10,7 @@ import UserSetting from "./components/userSetting/userSetting.jsx";
 import GradeControl from "./components/gradeControl/gradeControl.jsx";
 import ExamControl from "./components/examControl/examControl.jsx";
 import PaperControl from "./components/PaperControl/paperControl.jsx";
+import CorrectPaper from "./components/correctPaper/correctPaper.jsx";
 const { set_user_info } = actions;
 
 const { Header, Content, Footer } = Layout;
@@ -57,7 +58,13 @@ function RenderContent(props) {
   let e = null;
   switch (menukey) {
     case "paper-control":
-      e = <PaperControl key={paperId} paperId={paperId} menuselect={menuselect}></PaperControl>;
+      e = (
+        <PaperControl
+          key={paperId}
+          paperId={paperId}
+          menuselect={menuselect}
+        ></PaperControl>
+      );
       break;
     case "exam-control":
       e = <ExamControl menuselect={menuselect}></ExamControl>;
@@ -77,6 +84,15 @@ function RenderContent(props) {
       break;
     case "welcome":
       e = <Welcome></Welcome>;
+      break;
+    case "correct":
+      e = (
+        <CorrectPaper
+          key={paperId}
+          paperId={paperId}
+          menuselect={menuselect}
+        ></CorrectPaper>
+      );
       break;
 
     default:

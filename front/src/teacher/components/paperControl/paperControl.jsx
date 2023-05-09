@@ -31,6 +31,7 @@ import {
 import { PlusOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import constant from "../../../constant";
+import EditorWarp from "../../../EditorWarp.jsx";
 
 const { Paragraph, Title } = Typography;
 
@@ -396,13 +397,38 @@ function Question(props) {
       case constant.question_type.subject:
         return (
           <>
-            <Title level={3}>
-              {`${queue}. 主观题 (${score}分)`}
-              <br />
-            </Title>
-            <div
-              dangerouslySetInnerHTML={{ __html: question.qu_describe }}
-            ></div>
+            {!edit ? (
+              <Title level={3}>
+                {`${queue}. 主观题 (${score}分)`}
+                <br />
+              </Title>
+            ) : (
+              <>
+                <Title level={3}>
+                  {`${queue}. 主观题`}
+                  <br />
+                </Title>
+                <Input
+                  addonBefore={"分值"}
+                  style={{ width: "80%" }}
+                  value={score}
+                  onChange={(e) => setScore(e.currentTarget.value)}
+                ></Input>
+              </>
+            )}
+
+            {edit || (
+              <div
+                dangerouslySetInnerHTML={{ __html: question.qu_describe }}
+              ></div>
+            )}
+            {edit && (
+              <EditorWarp
+                value={question.qu_describe}
+                onChange={(v) => setDescribe(v)}
+                quid={question.qu_id}
+              ></EditorWarp>
+            )}
           </>
         );
 
@@ -453,25 +479,36 @@ function Question(props) {
             修改
           </Button>
         )}
-        <Popconfirm
-          title="删除题目"
-          description="确定删除吗"
-          onConfirm={() => {
-            request(
-              axios.delete("/questions/" + question.qu_id),
-              (response) => {
-                getQuestion(true);
-              },
-              () => {}
-            );
-          }}
-          okText="确定"
-          cancelText="取消"
-        >
-          <Button danger className="deleteBtn">
-            删除
+        {edit ? (
+          <Button
+            className="deleteBtn"
+            onClick={() => {
+              setEdit(false);
+            }}
+          >
+            取消
           </Button>
-        </Popconfirm>
+        ) : (
+          <Popconfirm
+            title="删除题目"
+            description="确定删除吗"
+            onConfirm={() => {
+              request(
+                axios.delete("/questions/" + question.qu_id),
+                (response) => {
+                  getQuestion(true);
+                },
+                () => {}
+              );
+            }}
+            okText="确定"
+            cancelText="取消"
+          >
+            <Button danger className="deleteBtn">
+              删除
+            </Button>
+          </Popconfirm>
+        )}
         {renderFunc(question)}
       </Paragraph>
     </>
@@ -604,6 +641,7 @@ class PaperControl extends React.Component {
       editOrder: false,
       paperData: {},
       modalOpen: false,
+      fetching: false,
       newQuestionType: constant.question_type.choose,
     };
 
@@ -684,26 +722,42 @@ class PaperControl extends React.Component {
           title="新建题目"
           open={this.state.modalOpen}
           onCancel={() => this.setState({ modalOpen: false })}
-          onOk={() => {
-            const R = this;
-            request(
-              axios.put("/questions", {
-                pa_id: paperData.pa_id,
-                qu_type: this.state.newQuestionType,
-              }),
-              (response) => {
-                if (response.data.code === constant.code.success) {
-                  this.getQuestion(true);
-                }
-              },
-              () => {
-                R.setState({
-                  modalOpen: false,
-                  newQuestionType: constant.question_type.choose,
-                });
-              }
-            );
-          }}
+          footer={[
+            <Button
+              key={"cancelBtn"}
+              onClick={() => this.setState({ modalOpen: false })}
+            >
+              取消
+            </Button>,
+            <Button
+              type="primary"
+              loading={this.state.fetching}
+              onClick={() => {
+                const R = this;
+                this.setState({ fetching: true });
+                request(
+                  axios.put("/questions", {
+                    pa_id: paperData.pa_id,
+                    qu_type: this.state.newQuestionType,
+                  }),
+                  async (response) => {
+                    if (response.data.code === constant.code.success) {
+                      await this.getQuestion(true);
+                    }
+                  },
+                  () => {
+                    R.setState({
+                      modalOpen: false,
+                      fetching: false,
+                      newQuestionType: constant.question_type.choose,
+                    });
+                  }
+                );
+              }}
+            >
+              确定
+            </Button>,
+          ]}
         >
           <Divider></Divider>
           <p>选择题目类型</p>

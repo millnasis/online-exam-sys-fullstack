@@ -69,9 +69,25 @@ public class PaperController {
     @GetMapping("/teacher/{id}")
     public Result queryByTeacherId(@PathVariable int id) {
         List<Paper> data = paperService.queryPaperListByTeacherId(id);
+        data.forEach(pa -> {
+            if (Constant.paper_state.end.equals(pa.getPa_state())) {
+                List<Ex_paper> eplist = examPaperService.queryListByPaperId(pa.getPa_id());
+                pa.setEp_list(eplist);
+            }
+        });
+
         return data != null ? new Result(data, "成功", Constant.code.success)
                 : new Result(null, "未找到", Constant.code.not_found);
+    }
 
+    @ApiOperation("根据id查询考试以及附属考卷")
+    @GetMapping("/ep/{pa_id}")
+    public Result queryPaperAndEpListById(@PathVariable int pa_id){
+        Paper data = paperService.queryById(pa_id);
+        List<Ex_paper> eplist = examPaperService.queryExamPaperListByPaperId(pa_id);
+        data.setEp_list(eplist);
+        return data != null ? new Result(data, "成功", Constant.code.success)
+                : new Result(null, "未找到", Constant.code.not_found);
     }
 
     @ApiOperation("根据id查询考试")
@@ -124,9 +140,11 @@ public class PaperController {
         data.forEach((v) -> {
             ids.add(v.getQu_id());
         });
-        boolean deleteMany = questionService.deleteMany(ids);
-        if (!deleteMany) {
-            return new Result(null, "删除失败，请联系管理员", Constant.code.error);
+        if (ids.size() > 0) {
+            boolean deleteMany = questionService.deleteMany(ids);
+            if (!deleteMany) {
+                return new Result(null, "删除失败，请联系管理员", Constant.code.error);
+            }
         }
         boolean delete = paperService.delete(id);
         return delete ? new Result(null, "成功", Constant.code.success)
@@ -181,4 +199,31 @@ public class PaperController {
 
     }
 
+    @ApiOperation("立刻开启考试（仅管理员）")
+    @GetMapping("/exam/admin/start/{id}")
+    public Result startExamNow(@PathVariable int id) {
+        Paper pa = paperService.queryById(id);
+        if (pa == null) {
+            return new Result(null, "考试不存在", Constant.code.not_found);
+        }
+        examPaperService.generateExamPaperByPaper(pa);
+        pa.setPa_state(Constant.paper_state.starting);
+        paperService.update(pa);
+        System.out.println("考试开始啦！！！");
+        return new Result(pa, "成功", Constant.code.success);
+    }
+
+    @ApiOperation("立刻结束考试（仅管理员）")
+    @GetMapping("/exam/admin/end/{id}")
+    public Result endExamNow(@PathVariable int id) {
+        Paper pa = paperService.queryById(id);
+        if (pa == null) {
+            return new Result(null, "考试不存在", Constant.code.not_found);
+        }
+        pa.setPa_state(Constant.paper_state.end);
+        paperService.update(pa);
+        examPaperService.handInPaperByPaper(pa);
+        System.out.println("交卷啦！！！");
+        return new Result(pa, "成功", Constant.code.success);
+    }
 }

@@ -35,6 +35,18 @@
           color: darkred;
         }
       }
+      &.correcting {
+        strong {
+          color: darken($color: darkorange, $amount: 5);
+        }
+        .des-font {
+          color: orange;
+          cursor: pointer;
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
       &.end {
         color: gray;
         .des-font {

@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.online_exam_sys.pojo.WangEditorInnerData;
+import com.online_exam_sys.pojo.WangEditorUploadFormat;
 import com.online_exam_sys.util.Constant;
 import com.online_exam_sys.util.Result;
 
@@ -139,5 +141,35 @@ public class FileUploadController {
         img.transferTo(file);
         return new Result("/img/questions/" + qu_id + "/" + newFileName, "上传成功",
                 Constant.code.success);
+    }
+
+    @ApiOperation("主观题")
+    @PostMapping("/questions/subject/{qu_id}")
+    public WangEditorUploadFormat QuestionsSubjectImage(MultipartFile img, HttpServletRequest req,
+            @PathVariable int qu_id)
+            throws IllegalStateException, IOException {
+        HttpSession session = req.getSession();
+        if (session.getAttribute("user_id") == null) {
+            WangEditorUploadFormat weuf = new WangEditorUploadFormat();
+            weuf.setErrno(-1);
+            weuf.setMessage("无权限");
+            return weuf;
+        }
+        File destFile = new File(staticPathHome + "/img/questions/" + qu_id);
+        if (!destFile.exists()) {
+            destFile.mkdir();
+        }
+        String fileName = UUID.randomUUID().toString().replaceAll("-", "");
+        String extension = FilenameUtils.getExtension(img.getOriginalFilename());
+        String newFileName = fileName + "." + extension;
+        File file = new File(destFile, newFileName);
+        img.transferTo(file);
+        WangEditorUploadFormat weuf = new WangEditorUploadFormat();
+        WangEditorInnerData weid = new WangEditorInnerData();
+        weid.setUrl("/img/questions/" + qu_id + "/" + newFileName);
+        weuf.setErrno(0);
+        weuf.setData(weid);
+        return weuf;
+
     }
 }

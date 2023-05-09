@@ -1,6 +1,7 @@
 package com.online_exam_sys.controller;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,10 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.online_exam_sys.pojo.Ex_paper;
+import com.online_exam_sys.pojo.Ex_question;
 import com.online_exam_sys.pojo.Paper;
 import com.online_exam_sys.pojo.Student;
 import com.online_exam_sys.pojo.Teacher;
 import com.online_exam_sys.service.ex_paper.ExamPaperService;
+import com.online_exam_sys.service.ex_question.ExamQuestionService;
 import com.online_exam_sys.service.paper.PaperService;
 import com.online_exam_sys.service.student.StudentService;
 import com.online_exam_sys.service.teacher.TeacherService;
@@ -38,6 +41,9 @@ public class ExamPaperController {
 
     @Autowired
     private PaperService paperService;
+
+    @Autowired
+    private ExamQuestionService examQuestionService;
 
     @ApiOperation("根据试卷id和学生id获取考卷与考题")
     @GetMapping

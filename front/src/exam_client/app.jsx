@@ -23,6 +23,7 @@ import request from "../request.js";
 import axios from "axios";
 import Check from "./check.jsx";
 import MultiZeroRtc from "./MultiZeroRtc";
+import EditorWarp from "../EditorWarp.jsx";
 
 const { Paragraph, Title } = Typography;
 
@@ -442,7 +443,25 @@ function RenderQuestionContent(props) {
         </Typography>
       );
     case constant.question_type.subject:
-      return <div></div>;
+      return (
+        <Typography>
+          <Title level={5}>{`${queue}. 主观题 (${question.qu_score}分)`}</Title>
+          <Paragraph>
+            <div
+              dangerouslySetInnerHTML={{ __html: question.qu_describe }}
+            ></div>
+          </Paragraph>
+          <Paragraph>
+            <EditorWarp
+              quid={question.qu_id}
+              value={question.inputC}
+              onChange={(v) => {
+                changeInputC(v);
+              }}
+            ></EditorWarp>
+          </Paragraph>
+        </Typography>
+      );
   }
 }
 
@@ -473,10 +492,20 @@ class App extends React.Component {
       () => {},
       () => {},
       () => {
-        notification.error({ message: "您已被老师判定作弊，即将结束答题" });
-        setTimeout(() => {
-          location.href = "./student";
-        }, 1500);
+        this.setState(
+          {
+            paperData: {
+              ...this.state.paperData,
+              ep_state: constant.exam_paper_state.cheating,
+            },
+          },
+          () => {
+            notification.error({ message: "您已被老师判定作弊，即将结束答题" });
+            setTimeout(() => {
+              location.href = "./student";
+            }, 1500);
+          }
+        );
       }
     );
 
@@ -624,6 +653,7 @@ class App extends React.Component {
             eq_answer === null ? new Array(answer.length).fill("") : eq_answer;
           break;
         case constant.question_type.subject:
+          inputC = eq_answer;
           break;
 
         default:
@@ -779,9 +809,15 @@ class App extends React.Component {
                           item.finish && <CheckOutlined></CheckOutlined>,
                         ]}
                       >
-                        <strong>{`${index + 1}. ${overFlowHandle(
-                          item.qu_describe
-                        )}`}</strong>
+                        {item.qu_type === constant.question_type.subject ? (
+                          <strong>{`${index + 1}. 主观题`}</strong>
+                        ) : (
+                          <>
+                            <strong>{`${index + 1}. ${overFlowHandle(
+                              item.qu_describe
+                            )}`}</strong>
+                          </>
+                        )}
                         {`(${item.qu_score}分)`}
                       </List.Item>
                     );
