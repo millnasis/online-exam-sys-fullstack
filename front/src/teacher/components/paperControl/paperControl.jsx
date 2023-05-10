@@ -166,7 +166,8 @@ function Question(props) {
       answerObj = answer;
       break;
     case constant.question_type.subject:
-      answerObj = null;
+      answer.push("");
+      answerObj = answer;
       break;
 
     default:
@@ -424,8 +425,18 @@ function Question(props) {
             )}
             {edit && (
               <EditorWarp
-                value={question.qu_describe}
+                value={describe}
                 onChange={(v) => setDescribe(v)}
+                quid={question.qu_id}
+              ></EditorWarp>
+            )}
+            <Title level={4}>正确答案（参考答案）</Title>
+            {edit && (
+              <EditorWarp
+                value={answerC[0]}
+                onChange={(v) => {
+                  setAnswerC([v]);
+                }}
                 quid={question.qu_id}
               ></EditorWarp>
             )}

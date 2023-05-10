@@ -1,10 +1,22 @@
-import { Typography } from "antd";
+import {
+  Affix,
+  Alert,
+  Badge,
+  Button,
+  Collapse,
+  Divider,
+  InputNumber,
+  Progress,
+  Typography,
+} from "antd";
 import React from "react";
 import request from "../../../request";
 import axios from "axios";
 import constant from "../../../constant";
-
-const { Title, Paragraph } = Typography;
+import { red, green } from "@ant-design/colors";
+import "./correctPaper.scss";
+const { Title, Paragraph, Text } = Typography;
+const { Panel } = Collapse;
 
 const fakeData = {
   pa_id: 21,
@@ -14,7 +26,7 @@ const fakeData = {
   pa_state: "END",
   pa_begintime: "2023-05-09T18:03:03.287+00:00",
   pa_duringtime: 120,
-  pa_order: "[45]",
+  pa_order: "[34,45,38,39,32,46]",
   ep_list: [
     {
       ep_id: 34,
@@ -24,7 +36,8 @@ const fakeData = {
       ep_finishdate: "2023-05-09T08:21:39.480+00:00",
       ep_state: "CORRECTING",
       ep_screenoff_count: 1,
-      st_name: null,
+      st_name: "个人信息修改测试",
+      st_card: "123",
       ep_score: null,
       ep_question: null,
       pa_order: null,
@@ -43,7 +56,8 @@ const fakeData = {
       ep_finishdate: "2023-05-09T08:36:13.497+00:00",
       ep_state: "CORRECTING",
       ep_screenoff_count: 0,
-      st_name: null,
+      st_name: "学生测试2",
+      st_card: "123123",
       ep_score: null,
       ep_question: null,
       pa_order: null,
@@ -62,7 +76,8 @@ const fakeData = {
       ep_finishdate: "2023-05-09T08:36:13.568+00:00",
       ep_state: "CORRECTING",
       ep_screenoff_count: 0,
-      st_name: null,
+      st_name: "学生测试3",
+      st_card: "1233",
       ep_score: null,
       ep_question: null,
       pa_order: null,
@@ -81,7 +96,8 @@ const fakeData = {
       ep_finishdate: "2023-05-09T08:36:13.668+00:00",
       ep_state: "CORRECTING",
       ep_screenoff_count: 0,
-      st_name: null,
+      st_name: "学生测试4",
+      st_card: "1234",
       ep_score: null,
       ep_question: null,
       pa_order: null,
@@ -100,7 +116,708 @@ const fakeData = {
       ep_finishdate: "2023-05-09T08:36:13.800+00:00",
       ep_state: "CORRECTING",
       ep_screenoff_count: 0,
-      st_name: null,
+      st_name: "学生测试5",
+      st_card: "1235",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 34,
+      st_id: 5,
+      pa_id: 21,
+      ep_begindate: "2023-05-09T08:18:26.585+00:00",
+      ep_finishdate: "2023-05-09T08:21:39.480+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 1,
+      st_name: "个人信息修改测试",
+      st_card: "123",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 35,
+      st_id: 6,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.497+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试2",
+      st_card: "123123",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 36,
+      st_id: 7,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.568+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试3",
+      st_card: "1233",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 37,
+      st_id: 8,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.668+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试4",
+      st_card: "1234",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 38,
+      st_id: 9,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.800+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试5",
+      st_card: "1235",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 34,
+      st_id: 5,
+      pa_id: 21,
+      ep_begindate: "2023-05-09T08:18:26.585+00:00",
+      ep_finishdate: "2023-05-09T08:21:39.480+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 1,
+      st_name: "个人信息修改测试",
+      st_card: "123",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 35,
+      st_id: 6,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.497+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试2",
+      st_card: "123123",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 36,
+      st_id: 7,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.568+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试3",
+      st_card: "1233",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 37,
+      st_id: 8,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.668+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试4",
+      st_card: "1234",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 38,
+      st_id: 9,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.800+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试5",
+      st_card: "1235",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 34,
+      st_id: 5,
+      pa_id: 21,
+      ep_begindate: "2023-05-09T08:18:26.585+00:00",
+      ep_finishdate: "2023-05-09T08:21:39.480+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 1,
+      st_name: "个人信息修改测试",
+      st_card: "123",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 35,
+      st_id: 6,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.497+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试2",
+      st_card: "123123",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 36,
+      st_id: 7,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.568+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试3",
+      st_card: "1233",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 37,
+      st_id: 8,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.668+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试4",
+      st_card: "1234",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 38,
+      st_id: 9,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.800+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试5",
+      st_card: "1235",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 34,
+      st_id: 5,
+      pa_id: 21,
+      ep_begindate: "2023-05-09T08:18:26.585+00:00",
+      ep_finishdate: "2023-05-09T08:21:39.480+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 1,
+      st_name: "个人信息修改测试",
+      st_card: "123",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 35,
+      st_id: 6,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.497+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试2",
+      st_card: "123123",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 36,
+      st_id: 7,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.568+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试3",
+      st_card: "1233",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 37,
+      st_id: 8,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.668+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试4",
+      st_card: "1234",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 38,
+      st_id: 9,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.800+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试5",
+      st_card: "1235",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 34,
+      st_id: 5,
+      pa_id: 21,
+      ep_begindate: "2023-05-09T08:18:26.585+00:00",
+      ep_finishdate: "2023-05-09T08:21:39.480+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 1,
+      st_name: "个人信息修改测试",
+      st_card: "123",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 35,
+      st_id: 6,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.497+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试2",
+      st_card: "123123",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 36,
+      st_id: 7,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.568+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试3",
+      st_card: "1233",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 37,
+      st_id: 8,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.668+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试4",
+      st_card: "1234",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 38,
+      st_id: 9,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.800+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试5",
+      st_card: "1235",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 34,
+      st_id: 5,
+      pa_id: 21,
+      ep_begindate: "2023-05-09T08:18:26.585+00:00",
+      ep_finishdate: "2023-05-09T08:21:39.480+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 1,
+      st_name: "个人信息修改测试",
+      st_card: "123",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 35,
+      st_id: 6,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.497+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试2",
+      st_card: "123123",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 36,
+      st_id: 7,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.568+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试3",
+      st_card: "1233",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 37,
+      st_id: 8,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.668+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试4",
+      st_card: "1234",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 38,
+      st_id: 9,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.800+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试5",
+      st_card: "1235",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 34,
+      st_id: 5,
+      pa_id: 21,
+      ep_begindate: "2023-05-09T08:18:26.585+00:00",
+      ep_finishdate: "2023-05-09T08:21:39.480+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 1,
+      st_name: "个人信息修改测试",
+      st_card: "123",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 35,
+      st_id: 6,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.497+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试2",
+      st_card: "123123",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 36,
+      st_id: 7,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.568+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试3",
+      st_card: "1233",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 37,
+      st_id: 8,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.668+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试4",
+      st_card: "1234",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+    {
+      ep_id: 38,
+      st_id: 9,
+      pa_id: 21,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-09T08:36:13.800+00:00",
+      ep_state: "CORRECTING",
+      ep_screenoff_count: 0,
+      st_name: "学生测试5",
+      st_card: "1235",
       ep_score: null,
       ep_question: null,
       pa_order: null,
@@ -114,13 +831,153 @@ const fakeData = {
   ],
 };
 
+const fakeQuestionData = [
+  {
+    eq_id: 53,
+    ep_id: 34,
+    qu_id: 45,
+    eq_answer:
+      '"<pre><code class=\\"language-javascript\\">function dofunc(str){\\n    console.log(\\"ans\\" + str);\\n}\\n\\ndofunc(\\"hello\\");</code></pre><p><br></p>"',
+    eq_score: 0,
+    qu_choose: "[]",
+    qu_describe:
+      '<h1><span style="color: rgb(51, 51, 51); background-color: rgb(255, 255, 255); font-size: 24px;">【罗马数字转整数】</span></h1><p><span style="font-size: 19px;"><strong>问题描述: 罗马数字包含以下七种字符: I， V， X， L，C，D 和 M, 分别对应数字：1，5， 10， 50，100，500，1000。例如， 罗马数字 2 写做 II ，即 为两个并列的 1。12 写做 XII ，即为 X + II 。 27 写做 XXVII, 即为 XX + V + II 。 通常情况下，罗马数字中小的数字在大的数字的右边。但也存在特例，例如 4 不写做 IIII，而是 IV。数字 1 在数字 5 的左边，所表示的数等于 大数 5 减小数 1 得到的数值 4 。同样地，数字 9 表示为 IX。这个特殊的规则只适用于以下六种情况：&nbsp;</strong></span></p><p><span style="font-size: 19px;"><strong>I 可以放在 V (5) 和 X (10) 的左边，来表示 4 和 9。&nbsp;</strong></span></p><p><span style="font-size: 19px;"><strong>X 可以放在 L (50) 和 C (100) 的左边，来表示 40 和 90。&nbsp;</strong></span></p><p><span style="font-size: 19px;"><strong>C 可以放在 D (500) 和 M (1000) 的左边，来表示 400 和 900。&nbsp;</strong></span></p><p><span style="font-size: 19px;"><strong>给定一个罗马数字，将其转换成整数。输入确保在 1 到 3999 的范围内。&nbsp;</strong></span></p><p><span style="font-size: 19px;"><strong>输入描述：</strong></span></p><blockquote><span style="color: rgb(0, 0, 0); background-color: rgb(245, 245, 245); font-size: 13px;">输入：字符串s </span></blockquote><p><span style="color: rgb(51, 51, 51); background-color: rgb(255, 255, 255); font-size: 19px;"><strong>输出描述: </strong></span></p><blockquote><span style="color: rgb(0, 0, 0); background-color: rgb(245, 245, 245); font-size: 13px;">输出：字符串ans </span></blockquote><p><span style="font-size: 19px;"><strong>输入样例:&nbsp;</strong></span></p><p><span style="font-size: 19px;"><strong>M&nbsp;</strong></span></p><p><span style="font-size: 19px;"><strong>输出样例:&nbsp;</strong></span></p><p><span style="font-size: 19px;"><strong>1000</strong></span></p>',
+    qu_score: 50,
+    qu_answer: "null",
+    qu_image: "[]",
+    qu_type: "SUB",
+  },
+  {
+    eq_id: 53,
+    ep_id: 34,
+    qu_id: 46,
+    eq_answer:
+      '"<pre><code class=\\"language-javascript\\">function dofunc(str){\\n    console.log(\\"ans\\" + str);\\n}\\n\\ndofunc(\\"hello\\");</code></pre><p><br></p>"',
+    eq_score: 0,
+    qu_choose: "[]",
+    qu_describe:
+      '<h1><span style="color: rgb(51, 51, 51); background-color: rgb(255, 255, 255); font-size: 24px;">【罗马数字转整数】</span></h1><p><span style="font-size: 19px;"><strong>问题描述: 罗马数字包含以下七种字符: I， V， X， L，C，D 和 M, 分别对应数字：1，5， 10， 50，100，500，1000。例如， 罗马数字 2 写做 II ，即 为两个并列的 1。12 写做 XII ，即为 X + II 。 27 写做 XXVII, 即为 XX + V + II 。 通常情况下，罗马数字中小的数字在大的数字的右边。但也存在特例，例如 4 不写做 IIII，而是 IV。数字 1 在数字 5 的左边，所表示的数等于 大数 5 减小数 1 得到的数值 4 。同样地，数字 9 表示为 IX。这个特殊的规则只适用于以下六种情况：&nbsp;</strong></span></p><p><span style="font-size: 19px;"><strong>I 可以放在 V (5) 和 X (10) 的左边，来表示 4 和 9。&nbsp;</strong></span></p><p><span style="font-size: 19px;"><strong>X 可以放在 L (50) 和 C (100) 的左边，来表示 40 和 90。&nbsp;</strong></span></p><p><span style="font-size: 19px;"><strong>C 可以放在 D (500) 和 M (1000) 的左边，来表示 400 和 900。&nbsp;</strong></span></p><p><span style="font-size: 19px;"><strong>给定一个罗马数字，将其转换成整数。输入确保在 1 到 3999 的范围内。&nbsp;</strong></span></p><p><span style="font-size: 19px;"><strong>输入描述：</strong></span></p><blockquote><span style="color: rgb(0, 0, 0); background-color: rgb(245, 245, 245); font-size: 13px;">输入：字符串s </span></blockquote><p><span style="color: rgb(51, 51, 51); background-color: rgb(255, 255, 255); font-size: 19px;"><strong>输出描述: </strong></span></p><blockquote><span style="color: rgb(0, 0, 0); background-color: rgb(245, 245, 245); font-size: 13px;">输出：字符串ans </span></blockquote><p><span style="font-size: 19px;"><strong>输入样例:&nbsp;</strong></span></p><p><span style="font-size: 19px;"><strong>M&nbsp;</strong></span></p><p><span style="font-size: 19px;"><strong>输出样例:&nbsp;</strong></span></p><p><span style="font-size: 19px;"><strong>1000</strong></span></p>',
+    qu_score: 50,
+    qu_answer: "null",
+    qu_image: "[]",
+    qu_type: "SUB",
+  },
+  {
+    eq_id: 51,
+    ep_id: 33,
+    qu_id: 38,
+    eq_answer: "[0]",
+    eq_score: 0,
+    qu_choose: '["[2,3]和[2,3]","[2,3]和[2]"]',
+    qu_describe: "输入题目描述以下代码输出",
+    qu_score: 10,
+    qu_answer: "[1]",
+    qu_image: '["/img/questions/38/c1de06fa6bf64c629dc9032f10f4b0bd.jpg"]',
+    qu_type: "CHO",
+  },
+  {
+    eq_id: 52,
+    ep_id: 33,
+    qu_id: 39,
+    eq_answer: '["87.5%"]',
+    eq_score: 10,
+    qu_choose: "[]",
+    qu_describe:
+      "假定某次上线，1小时内出bug的概率为50%，那么3小时内出bug的概率是？",
+    qu_score: 10,
+    qu_answer: '["87.5%"]',
+    qu_image: "[]",
+    qu_type: "FIL",
+  },
+  {
+    eq_id: 29,
+    ep_id: 17,
+    qu_id: 32,
+    eq_answer: "[1]",
+    eq_score: 10,
+    qu_choose: '["测试1","测试2","测试3"]',
+    qu_describe: "选择题测试",
+    qu_score: 10,
+    qu_answer: "[1]",
+    qu_image: '["/img/questions/32/5ea609a007fe40c6aeb998379fc6a653.jpeg"]',
+    qu_type: "CHO",
+  },
+  {
+    eq_id: 30,
+    ep_id: 17,
+    qu_id: 34,
+    eq_answer: '["哈哈","填空题测试2"]',
+    eq_score: 5,
+    qu_choose: "[]",
+    qu_describe: "填空题测试",
+    qu_score: 10,
+    qu_answer: '["填空题测试1","填空题测试2"]',
+    qu_image: "[]",
+    qu_type: "FIL",
+  },
+];
+
+/**
+ *
+ * @param {Array} questions
+ * @param {String} order
+ */
+function handleQuestionData(questions, order) {
+  order = JSON.parse(order).map((v) => +v);
+  const cho = [];
+  const fil = [];
+  const sub = [];
+  order.forEach((o, i) => {
+    const qu = questions.find((v) => v.qu_id === o);
+    qu.order = i + 1;
+    switch (qu.qu_type) {
+      case constant.question_type.choose:
+        cho.push(qu);
+        break;
+      case constant.question_type.fill:
+        fil.push(qu);
+        break;
+      case constant.question_type.subject:
+        sub.push(qu);
+        break;
+    }
+  });
+  return [cho, fil, sub];
+}
+
+const map = new Map();
+map.set(0, "A");
+map.set(1, "B");
+map.set(2, "C");
+map.set(3, "D");
+map.set(4, "E");
+map.set(5, "F");
+/**
+ *
+ * @param {Array} choose
+ * @param {String} type
+ */
+function handleChooseAnswer(choose, type) {
+  console.log(choose, type);
+  let output = "";
+  choose = JSON.parse(choose);
+  choose.forEach((v) => {
+    if (type === constant.question_type.choose) {
+      output += map.get(+v) + " ";
+    } else {
+      output += v + ",";
+    }
+  });
+  return output;
+}
+
 class CorrectPaper extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       paperData: fakeData,
       examPaperData: {},
-      examPaperQuestionData: [],
+      examPaperQuestionData: fakeQuestionData,
       currentExPaperId: -1,
       fetching: false,
     };
@@ -165,6 +1022,7 @@ class CorrectPaper extends React.Component {
   }
 
   async componentDidMount() {
+    window.scrollTo(0, 0);
     await this.getPaperData();
     if (this.state.paperData.ep_list.length > 0) {
       await this.switchExPaper(
@@ -177,16 +1035,200 @@ class CorrectPaper extends React.Component {
 
   render() {
     const { menuselect } = this.props;
-    const { paperData, examPaperData } = this.state;
+    const { paperData, examPaperData, examPaperQuestionData } = this.state;
+    let unfinishPaper = 0,
+      totalPaper = paperData.ep_list.length;
+    paperData.ep_list.forEach((v) => {
+      if (v.ep_state === constant.exam_paper_state.correcting) {
+        unfinishPaper++;
+      }
+    });
+    const progressPercent = ((totalPaper - unfinishPaper) / totalPaper) * 100;
+    const [cho, fil, sub] = handleQuestionData(
+      examPaperQuestionData,
+      paperData.pa_order
+    );
+    const choScore = cho.reduce((pre, cur) => {
+      return pre + cur.eq_score;
+    }, 0);
+    const choTotal = cho.reduce((pre, cur) => {
+      return pre + cur.qu_score;
+    }, 0);
+    const filScore = fil.reduce((pre, cur) => {
+      return pre + cur.eq_score;
+    }, 0);
+    const filTotal = fil.reduce((pre, cur) => {
+      return pre + cur.qu_score;
+    }, 0);
     return (
       <div className="correct-paper">
-        <Typography>
+        <Collapse>
+          <Panel
+            header={`共${totalPaper}份试卷 ${unfinishPaper}份未完成批改`}
+            className="panel"
+          >
+            {paperData.ep_list.map((v, i) => {
+              return <Button className="btn">{i}</Button>;
+            })}
+          </Panel>
+        </Collapse>
+        <Typography className="body">
           <Title>
             批改试卷{" "}
             <span style={{ textDecoration: "underline" }}>
               {paperData.pa_name}
             </span>
+            <br />
+            <Text type="secondary">
+              学号：{examPaperData.st_id} 名称：{examPaperData.st_name}
+            </Text>
           </Title>
+          <Affix offsetTop={10} className="affix">
+            <>
+              <strong>未批改的主观题</strong>
+              <br />
+              <Button.Group>
+                {sub.map((v) => {
+                  return <Button>{v.order}</Button>;
+                })}
+              </Button.Group>
+            </>
+          </Affix>
+          <Divider orientation="left">选择题</Divider>
+          <Text type="secondary">
+            总分：<Text type="warning">{choTotal}</Text>&nbsp; 得分：
+            <Text type="success">{choScore}</Text>&nbsp; 扣分：
+            <Text type="danger">{choTotal - choScore}</Text>&nbsp;
+          </Text>
+          <Paragraph>
+            <table border={"1"} cellPadding={5} cellSpacing={0}>
+              {[
+                ["题号", "order"],
+                ["正确答案", "qu_answer"],
+                ["学生答案", "eq_answer"],
+                ["得分", "eq_score"],
+              ].map((v, i) => (
+                <tr>
+                  <td style={{ fontWeight: "bold", backgroundColor: "#eee" }}>
+                    {v[0]}
+                  </td>
+                  {cho.map((c) => (
+                    <td>
+                      {i === 1 || i === 2
+                        ? handleChooseAnswer(
+                            c[v[1]],
+                            constant.question_type.choose
+                          )
+                        : c[v[1]]}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </table>
+          </Paragraph>
+          <Divider orientation="left">填空题</Divider>
+          <Text type="secondary">
+            总分：<Text type="warning">{filTotal}</Text>&nbsp; 得分：
+            <Text type="success">{filScore}</Text>&nbsp; 扣分：
+            <Text type="danger">{filTotal - filScore}</Text>&nbsp;
+          </Text>
+          <Paragraph>
+            <table border={"1"} cellPadding={5} cellSpacing={0}>
+              {[
+                ["题号", "order"],
+                ["正确答案", "qu_answer"],
+                ["学生答案", "eq_answer"],
+                ["得分", "eq_score"],
+              ].map((v, i) => (
+                <tr>
+                  <td style={{ fontWeight: "bold", backgroundColor: "#eee" }}>
+                    {v[0]}
+                  </td>
+                  {fil.map((c) => (
+                    <td>
+                      {i === 1 || i === 2
+                        ? handleChooseAnswer(
+                            c[v[1]],
+                            constant.question_type.fill
+                          )
+                        : c[v[1]]}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </table>
+          </Paragraph>
+          <Divider orientation="left">主观题</Divider>
+          {sub.map((v, i) => {
+            return (
+              <Badge.Ribbon text="未阅" color="red">
+                <Paragraph key={i}>
+                  <Title level={4}>
+                    主观题{i + 1}（题号：{v.order}）
+                  </Title>
+                  <div
+                    dangerouslySetInnerHTML={{ __html: v.qu_describe }}
+                  ></div>
+                  <Alert
+                    type="info"
+                    message={
+                      <>
+                        <Title level={4}>标准答案</Title>
+                        <div
+                          dangerouslySetInnerHTML={{ __html: v.qu_answer }}
+                        ></div>
+                      </>
+                    }
+                  ></Alert>
+                  <Alert
+                    type="success"
+                    message={
+                      <>
+                        <Title level={4}>学生答案</Title>
+                        <div
+                          dangerouslySetInnerHTML={{ __html: v.eq_answer }}
+                        ></div>
+                      </>
+                    }
+                  ></Alert>
+                  <Alert
+                    type="warning"
+                    message={
+                      <>
+                        <Title level={4}>打分</Title>
+                        <Title level={5}>
+                          总分：{v.qu_score} 得分：
+                          <InputNumber
+                            min={0}
+                            max={v.qu_score}
+                            defaultValue={0}
+                            style={{ marginRight: "20px" }}
+                          ></InputNumber>
+                          <Button.Group>
+                            <Button>0%</Button>
+                            <Button>33%</Button>
+                            <Button>50%</Button>
+                            <Button>66%</Button>
+                            <Button>100%</Button>
+                          </Button.Group>
+                        </Title>
+                      </>
+                    }
+                  ></Alert>
+                </Paragraph>
+              </Badge.Ribbon>
+            );
+          })}
+          <Divider orientation="left">批改进度</Divider>
+          <p>
+            完成{totalPaper - unfinishPaper}/{totalPaper}份 &nbsp;&nbsp;&nbsp;
+            <Progress
+              percent={progressPercent}
+              steps={totalPaper}
+              strokeColor={green[6]}
+            />
+            <Button type="primary">下一份</Button>
+          </p>
         </Typography>
       </div>
     );

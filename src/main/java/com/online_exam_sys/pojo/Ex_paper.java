@@ -23,6 +23,8 @@ public class Ex_paper {
     @TableField(exist = false)
     private String st_name;
     @TableField(exist = false)
+    private String st_card;
+    @TableField(exist = false)
     private Float ep_score;
     @TableField(exist = false)
     private List<Ex_question> ep_question;
