@@ -151,40 +151,47 @@ public class ExamPaperServiceImpl implements ExamPaperService {
             if (Constant.question_type.subject.equals(eq.getQu_type())) {
                 finish[0] = 0;
             } else {
-                switch (eq.getQu_type()) {
-                    case Constant.question_type.choose: {
-                        String answer = map.get(eq.getQu_id());
-                        if (answer.equals(eq.getEq_answer())) {
-                            eq.setEq_score(eq.getQu_score());
-                        } else {
-                            eq.setEq_score(0F);
-                        }
-                    }
-                        break;
-                    case Constant.question_type.fill: {
-                        float score = 0F;
-                        ObjectMapper om = new ObjectMapper();
-                        String answerS = map.get(eq.getQu_id());
-                        try {
-                            List<String> answerArr = om.readValue(answerS, new TypeReference<List<String>>() {
-                            });
-                            List<String> inputArr = om.readValue(eq.getEq_answer(), new TypeReference<List<String>>() {
-                            });
-                            float scoreUnit = eq.getQu_score() / (float) answerArr.size();
-                            for (int x = 0; x < answerArr.size(); x++) {
-                                if (answerArr.get(x).equals(inputArr.get(x))) {
-                                    score += scoreUnit;
-                                }
+                if (eq.getEq_answer() == null) {
+                    eq.setEq_answer("[]");
+                    eq.setEq_score(0F);
+                } else {
+                    switch (eq.getQu_type()) {
+                        case Constant.question_type.choose: {
+                            String answer = map.get(eq.getQu_id());
+                            if (answer.equals(eq.getEq_answer())) {
+                                eq.setEq_score(eq.getQu_score());
+                            } else {
+                                eq.setEq_score(0F);
                             }
-                            eq.setEq_score(score);
-                        } catch (JsonProcessingException e) {
-                            e.printStackTrace();
                         }
+                            break;
+                        case Constant.question_type.fill: {
+                            float score = 0F;
+                            ObjectMapper om = new ObjectMapper();
+                            String answerS = map.get(eq.getQu_id());
+                            try {
+                                List<String> answerArr = om.readValue(answerS, new TypeReference<List<String>>() {
+                                });
+                                List<String> inputArr = om.readValue(eq.getEq_answer(),
+                                        new TypeReference<List<String>>() {
+                                        });
+                                float scoreUnit = eq.getQu_score() / (float) answerArr.size();
+                                for (int x = 0; x < answerArr.size(); x++) {
+                                    if (answerArr.get(x).equals(inputArr.get(x))) {
+                                        score += scoreUnit;
+                                    }
+                                }
+                                eq.setEq_score(score);
+                            } catch (JsonProcessingException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                            break;
+                        default:
+                            break;
                     }
-                        break;
-                    default:
-                        break;
                 }
+
                 ex_questionDao.updateById(eq);
             }
         });

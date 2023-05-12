@@ -18,6 +18,7 @@ public interface Constant {
         String preparing = "PREPARING";
         String waiting = "WAITING";
         String starting = "STARTING";
+        String correcting = "CORRECTING";
         String end = "END";
     }
 

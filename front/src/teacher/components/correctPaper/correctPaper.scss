@@ -10,18 +10,21 @@
       }
     }
     position: relative;
-    .affix{
+    .affix {
       position: absolute;
       right: 10px;
       top: 10px;
     }
   }
-  .panel{
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    .btn{
-      margin: 5px;
+  .panel {
+    .panel-item-warp {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      .btn {
+        margin: 5px;
+      }
     }
   }
 }

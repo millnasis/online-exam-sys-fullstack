@@ -93,6 +93,9 @@ body {
 .exam-control .transition-warp .exam-card.starting strong {
   color: darkred;
 }
+.exam-control .transition-warp .exam-card.correcting strong {
+  color: #e67e00;
+}
 .exam-control .transition-warp .exam-card.end {
   color: gray;
 }

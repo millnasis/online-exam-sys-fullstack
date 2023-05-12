@@ -31,7 +31,7 @@ public class EndPaperDelayJob implements Job {
         if (pa == null) {
             return;
         }
-        pa.setPa_state(Constant.paper_state.end);
+        pa.setPa_state(Constant.paper_state.correcting);
         paperService.update(pa);
         examPaperService.handInPaperByPaper(pa);
 

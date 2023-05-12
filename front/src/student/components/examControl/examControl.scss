@@ -35,6 +35,11 @@
           color: darkred;
         }
       }
+      &.correcting {
+        strong {
+          color: darken($color: darkorange, $amount: 5);
+        }
+      }
       &.end {
         color: gray;
         .des-font {

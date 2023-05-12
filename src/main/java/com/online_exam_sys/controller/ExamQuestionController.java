@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.online_exam_sys.pojo.CorrectEq;
 import com.online_exam_sys.pojo.Ex_paper;
 import com.online_exam_sys.pojo.Ex_question;
 import com.online_exam_sys.service.ex_paper.ExamPaperService;
@@ -51,6 +52,24 @@ public class ExamQuestionController {
                 : new Result(null, "更新失败，请联系管理员", Constant.code.error);
     }
 
-    
+    @ApiOperation("批改题目")
+    @PostMapping("/correct")
+    public Result correct(@RequestBody CorrectEq ce) {
+        System.out.println(ce);
+        Ex_question eq = ce.getEq();
+        boolean update = examQuestionService.update(eq);
+        if (!update) {
+            return new Result(null, "更新失败，请联系管理员", Constant.code.error);
+        }
+        if (ce.isFinish()) {
+            Ex_paper ep = examPaperService.queryById(eq.getEp_id());
+            ep.setEp_state(Constant.exam_paper_state.finished);
+            boolean updateById = examPaperService.updateById(ep);
+            if (!updateById) {
+                return new Result(null, "更新失败，请联系管理员", Constant.code.error);
+            }
+        }
+        return new Result(null, "成功", Constant.code.success);
+    }
 
 }

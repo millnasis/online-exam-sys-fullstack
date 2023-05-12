@@ -105,60 +105,57 @@ function Exam(props) {
         </Card>
       );
 
-    case constant.paper_state.end: {
+    case constant.paper_state.correcting: {
       const correctingPaList = paper.ep_list.filter(
         (v) => v.ep_state === constant.exam_paper_state.correcting
       );
-      if (correctingPaList.length > 0) {
-        return (
-          <Card
-            className="exam-card correcting"
-            {...props}
-            title={paper.pa_name}
+      return (
+        <Card className="exam-card correcting" {...props} title={paper.pa_name}>
+          <strong className="state-font">
+            考卷未批改({correctingPaList.length})
+          </strong>
+          <strong
+            className="des-font"
+            onClick={() => {
+              menuselect("correct", paper.pa_id);
+            }}
           >
-            <strong className="state-font">
-              考卷未批改({correctingPaList.length})
-            </strong>
-            <strong
-              className="des-font"
-              onClick={() => {
-                menuselect("correct", paper.pa_id);
-              }}
-            >
-              点击批改
-            </strong>
-            <Divider></Divider>
-            结束时间:{endtime}
-          </Card>
-        );
-      } else {
-        return (
-          <Card className="exam-card end" {...props} title={paper.pa_name}>
-            <strong className="state-font">考试已结束</strong>
-            <strong
-              className="des-font"
-              onClick={() => {
-                setOpen(true);
-              }}
-            >
-              点击查看成绩
-            </strong>
-            <Modal
-              title={"查询成绩"}
-              open={open}
-              onCancel={() => {
-                setOpen(false);
-              }}
-              onOk={() => {
-                setOpen(false);
-              }}
-            ></Modal>
-            <Divider></Divider>
-            结束时间：{endtime}
-          </Card>
-        );
-      }
+            点击批改
+          </strong>
+          <Divider></Divider>
+          结束时间:{endtime}
+        </Card>
+      );
     }
+
+    case constant.paper_state.end: {
+      return (
+        <Card className="exam-card end" {...props} title={paper.pa_name}>
+          <strong className="state-font">考试已结束</strong>
+          <strong
+            className="des-font"
+            onClick={() => {
+              setOpen(true);
+            }}
+          >
+            点击查看成绩
+          </strong>
+          <Modal
+            title={"查询成绩"}
+            open={open}
+            onCancel={() => {
+              setOpen(false);
+            }}
+            onOk={() => {
+              setOpen(false);
+            }}
+          ></Modal>
+          <Divider></Divider>
+          结束时间：{endtime}
+        </Card>
+      );
+    }
+
     default:
       return <Card>x_x出错啦</Card>;
   }

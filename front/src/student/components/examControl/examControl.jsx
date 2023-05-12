@@ -78,6 +78,15 @@ function Exam(props) {
         </Card>
       );
 
+    case constant.paper_state.correcting:
+      return (
+        <Card className="exam-card correcting" {...props} title={paper.pa_name}>
+          <strong className="state-font">等待考卷批改</strong>
+          <Divider></Divider>
+          结束时间:{endtime}
+        </Card>
+      );
+
     case constant.paper_state.end:
       return (
         <Card className="exam-card end" {...props} title={paper.pa_name}>

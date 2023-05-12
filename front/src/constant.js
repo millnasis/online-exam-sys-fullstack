@@ -21,6 +21,7 @@ export default {
     preparing: "PREPARING",
     waiting: "WAITING",
     starting: "STARTING",
+    correcting: "CORRECTING",
     end: "END",
   },
 

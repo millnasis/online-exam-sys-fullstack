@@ -78,8 +78,8 @@ body {
       position: relative;
       overflow-y: scroll;
       display: flex;
-      justify-content: start;
-      align-items: start;
+      justify-content: flex-start;
+      align-items: flex-start;
       flex-flow: row wrap;
       .control-window {
         .name {

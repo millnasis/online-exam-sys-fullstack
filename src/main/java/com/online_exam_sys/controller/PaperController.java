@@ -70,12 +70,12 @@ public class PaperController {
     public Result queryByTeacherId(@PathVariable int id) {
         List<Paper> data = paperService.queryPaperListByTeacherId(id);
         data.forEach(pa -> {
-            if (Constant.paper_state.end.equals(pa.getPa_state())) {
+            if (Constant.paper_state.correcting.equals(pa.getPa_state())) {
                 List<Ex_paper> eplist = examPaperService.queryListByPaperId(pa.getPa_id());
                 pa.setEp_list(eplist);
             }
         });
-
+        
         return data != null ? new Result(data, "成功", Constant.code.success)
                 : new Result(null, "未找到", Constant.code.not_found);
     }
@@ -220,7 +220,7 @@ public class PaperController {
         if (pa == null) {
             return new Result(null, "考试不存在", Constant.code.not_found);
         }
-        pa.setPa_state(Constant.paper_state.end);
+        pa.setPa_state(Constant.paper_state.correcting);
         paperService.update(pa);
         examPaperService.handInPaperByPaper(pa);
         System.out.println("交卷啦！！！");

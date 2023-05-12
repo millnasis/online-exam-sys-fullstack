@@ -440,6 +440,11 @@ function Question(props) {
                 quid={question.qu_id}
               ></EditorWarp>
             )}
+            {edit || (
+              <div
+                dangerouslySetInnerHTML={{ __html: answerC[0] }}
+              ></div>
+            )}
           </>
         );
 
