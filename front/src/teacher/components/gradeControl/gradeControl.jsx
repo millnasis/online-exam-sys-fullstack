@@ -13,6 +13,7 @@ import {
   Skeleton,
   Form,
   DatePicker,
+  InputNumber,
 } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -122,7 +123,7 @@ function StartAnExamModal(props) {
         <Form.Item name={"pa_begintime"} label={<strong>开始时间</strong>}>
           <DatePicker
             format="YYYY-MM-DD HH:mm:ss"
-            disabledDate={disabledDate}
+            // disabledDate={disabledDate}
             showTime={{ defaultValue: dayjs("00:00:00", "HH:mm:ss") }}
             value={form.pa_begintime}
             onChange={(v) => {
@@ -131,13 +132,16 @@ function StartAnExamModal(props) {
           />
         </Form.Item>
         <Form.Item name={"pa_duringtime"} label={<strong>考试时长</strong>}>
-          <Input
+          <InputNumber
             value={form.pa_duringtime}
-            onChange={(e) => {
-              setForm({ ...form, pa_duringtime: e.currentTarget.value });
+            min={1}
+            max={360}
+            controls={false}
+            onChange={(value) => {
+              setForm({ ...form, pa_duringtime: value });
             }}
             addonAfter="分钟"
-          ></Input>
+          ></InputNumber>
         </Form.Item>
       </Form>
     </Modal>

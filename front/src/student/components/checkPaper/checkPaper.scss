@@ -1,0 +1,13 @@
+.check-paper {
+  padding: 20px 30px;
+  background-color: darken($color: #fff, $amount: 2%);
+  .body {
+    table {
+      td {
+        background-color: #fff;
+        min-width: 50px;
+        text-align: center;
+      }
+    }
+  }
+}

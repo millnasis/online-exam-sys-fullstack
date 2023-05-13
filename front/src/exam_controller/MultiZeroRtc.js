@@ -7,7 +7,7 @@ const respPrefix = "/ws-resp/";
 const sendPrefix = "/signal/";
 
 export default class MultiZeroRtc {
-  constructor(url, joinCallBack, exitCallBack, screenoffCallBack) {
+  constructor(url) {
     this.url = url;
     this.stompClient = null;
     this.localUserId = null;
@@ -16,9 +16,10 @@ export default class MultiZeroRtc {
     this.remoteStreamMap = new Map();
     this.remoteVideoMap = new Map();
     this.peerConnectionMap = null;
-    this.joinCallBack = joinCallBack;
-    this.exitCallBack = exitCallBack;
-    this.screenoffCallBack = screenoffCallBack;
+    this.joinCallBack = null;
+    this.exitCallBack = null;
+    this.screenoffCallBack = null;
+    this.handinCallback = null;
 
     this.setlocalUserId = this.setlocalUserId.bind(this);
   }
@@ -139,6 +140,13 @@ export default class MultiZeroRtc {
         (resp) => {
           const msg = JSON.parse(resp.body);
           this.screenoffCallBack(msg.st_id);
+        }
+      );
+      this.stompClient.subscribe(
+        respPrefix + "handin/" + this.localUserId,
+        (resp) => {
+          const msg = JSON.parse(resp.body);
+          this.handinCallback(msg.st_id, msg.ep_id);
         }
       );
       this.initLocalStream(pa_id);

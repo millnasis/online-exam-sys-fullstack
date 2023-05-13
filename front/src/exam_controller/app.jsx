@@ -14,6 +14,7 @@ import {
   Button,
   Modal,
   Popconfirm,
+  notification,
 } from "antd";
 const { Countdown } = Statistic;
 const { Content, Footer, Header, Sider } = Layout;
@@ -89,83 +90,101 @@ class App extends React.Component {
     this.switchModalStId = this.switchModalStId.bind(this);
     this.unshiftMsg = this.unshiftMsg.bind(this);
 
-    this.rtc = new MultiZeroRtc(
-      "/gs-guide",
-      // 有人加入考试时的回调
-      (arg) => {
-        const data = [];
-        if (Array.isArray(arg)) {
-          // 传入是数组的情况
-          arg = arg.map((v) => +v);
-          this.setState({
-            epList: this.state.epList.map((v) => {
-              if (arg.findIndex((f) => f === v.st_id) !== -1) {
-                data.push(v);
-                return {
-                  ...v,
-                  ep_begindate: new Date(),
-                  online: true,
-                };
-              }
-              return v;
-            }),
-          });
-        } else {
-          // 传入是单个id的情况
-          arg = +arg;
-          this.setState({
-            epList: this.state.epList.map((v) => {
-              if (v.st_id === arg) {
-                data.push(v);
-                return {
-                  ...v,
-                  ep_begindate: new Date(),
-                  online: true,
-                };
-              }
-              return v;
-            }),
-          });
-        }
-        this.unshiftMsg(data, "join", this.state.msgList);
-      },
-      // 有人离开考试时的回调
-      (rid) => {
-        const data = [];
-        rid = +rid;
+    this.rtc = new MultiZeroRtc("/gs-guide");
+    // 有人加入考试时的回调
+    this.rtc.joinCallBack = (arg) => {
+      const data = [];
+      if (Array.isArray(arg)) {
+        // 传入是数组的情况
+        arg = arg.map((v) => +v);
         this.setState({
           epList: this.state.epList.map((v) => {
-            if (v.st_id === rid) {
+            if (arg.findIndex((f) => f === v.st_id) !== -1) {
               data.push(v);
               return {
                 ...v,
-                online: false,
+                ep_begindate: new Date(),
+                online: true,
               };
             }
             return v;
           }),
         });
-        this.unshiftMsg(data, "leave", this.state.msgList);
-      },
-      // 有学生切屏时的回调
-      (rid) => {
-        const data = [];
-        rid = +rid;
+      } else {
+        // 传入是单个id的情况
+        arg = +arg;
         this.setState({
           epList: this.state.epList.map((v) => {
-            if (v.st_id === rid) {
+            if (v.st_id === arg) {
               data.push(v);
               return {
                 ...v,
-                ep_screenoff_count: v.ep_screenoff_count + 1,
+                ep_begindate: new Date(),
+                online: true,
               };
             }
             return v;
           }),
         });
-        this.unshiftMsg(data, "screenoff", this.state.msgList);
       }
-    );
+      this.unshiftMsg(data, "join", this.state.msgList);
+    };
+    // 有人离开考试时的回调
+    this.rtc.exitCallBack = (rid) => {
+      const data = [];
+      rid = +rid;
+      this.setState({
+        epList: this.state.epList.map((v) => {
+          if (v.st_id === rid) {
+            data.push(v);
+            return {
+              ...v,
+              online: false,
+            };
+          }
+          return v;
+        }),
+      });
+      if (data[0].ep_state === constant.exam_paper_state.correcting) {
+        return;
+      }
+      this.unshiftMsg(data, "leave", this.state.msgList);
+    };
+    // 有学生切屏时的回调
+    this.rtc.screenoffCallBack = (rid) => {
+      const data = [];
+      rid = +rid;
+      this.setState({
+        epList: this.state.epList.map((v) => {
+          if (v.st_id === rid) {
+            data.push(v);
+            return {
+              ...v,
+              ep_screenoff_count: v.ep_screenoff_count + 1,
+            };
+          }
+          return v;
+        }),
+      });
+      this.unshiftMsg(data, "screenoff", this.state.msgList);
+    };
+    this.rtc.handinCallback = (rid) => {
+      const data = [];
+      rid = +rid;
+      this.setState({
+        epList: this.state.epList.map((v) => {
+          if (v.st_id === rid) {
+            data.push(v);
+            return {
+              ...v,
+              ep_state: constant.exam_paper_state.correcting,
+            };
+          }
+          return v;
+        }),
+      });
+      this.unshiftMsg(data, "handin", this.state.msgList);
+    };
   }
 
   unshiftMsg(data, action, arr) {
@@ -321,6 +340,12 @@ class App extends React.Component {
             距离考试结束时间还有：
             <div className="count-down">
               <Countdown
+                onFinish={() => {
+                  notification.info({ message: "考试已结束，即将跳转" });
+                  setTimeout(() => {
+                    location.href = "./teacher";
+                  }, 500);
+                }}
                 value={deadline}
                 valueStyle={{
                   fontSize: "14px",

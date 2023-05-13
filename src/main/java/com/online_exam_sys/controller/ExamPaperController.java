@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,11 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.online_exam_sys.pojo.Ex_paper;
 import com.online_exam_sys.pojo.Ex_question;
+import com.online_exam_sys.pojo.Grade;
 import com.online_exam_sys.pojo.Paper;
 import com.online_exam_sys.pojo.Student;
 import com.online_exam_sys.pojo.Teacher;
+import com.online_exam_sys.pojo.signal.HandinSignal;
 import com.online_exam_sys.service.ex_paper.ExamPaperService;
 import com.online_exam_sys.service.ex_question.ExamQuestionService;
+import com.online_exam_sys.service.grade.GradeService;
 import com.online_exam_sys.service.paper.PaperService;
 import com.online_exam_sys.service.student.StudentService;
 import com.online_exam_sys.service.teacher.TeacherService;
@@ -43,7 +47,10 @@ public class ExamPaperController {
     private PaperService paperService;
 
     @Autowired
-    private ExamQuestionService examQuestionService;
+    private SimpMessagingTemplate template;
+
+    @Autowired
+    private GradeService gradeService;
 
     @ApiOperation("根据试卷id和学生id获取考卷与考题")
     @GetMapping
@@ -90,6 +97,11 @@ public class ExamPaperController {
         data = examPaperService.autoCorrectPaperByPaper(data);
         data.setEp_finishdate(new Date(System.currentTimeMillis()));
         boolean update = examPaperService.updateById(data);
+        Grade gr = gradeService.queryGradeById(data.getGr_id());
+        HandinSignal his = new HandinSignal();
+        his.setEp_id(data.getEp_id());
+        his.setSt_id(data.getSt_id());
+        this.template.convertAndSend("/ws-resp/handin/" + gr.getTe_id(), his);
         return update ? new Result(null, "成功", Constant.code.success)
                 : new Result(null, "更新失败，请联系管理员", Constant.code.error);
     }

@@ -441,9 +441,7 @@ function Question(props) {
               ></EditorWarp>
             )}
             {edit || (
-              <div
-                dangerouslySetInnerHTML={{ __html: answerC[0] }}
-              ></div>
+              <div dangerouslySetInnerHTML={{ __html: answerC[0] }}></div>
             )}
           </>
         );
@@ -924,6 +922,8 @@ class PaperControl extends React.Component {
                     },
                   });
                 }}
+                min={1}
+                max={360}
                 controls={false}
                 addonAfter="分钟"
                 disabled={!this.state.editTime}

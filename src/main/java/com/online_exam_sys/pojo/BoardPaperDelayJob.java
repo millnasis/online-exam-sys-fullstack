@@ -51,9 +51,9 @@ public class BoardPaperDelayJob implements Job {
             e.printStackTrace();
         }
         // 开启考试到点停止的延迟任务
-        // Date start = new Date(pa.getPa_begintime().getTime() + (pa.getPa_duringtime()
-        // * 1000 * 60));
-        Date start = new Date(System.currentTimeMillis() + 1000 * 60 * 30);
+        Date start = new Date(pa.getPa_begintime().getTime() + (pa.getPa_duringtime()
+        * 1000 * 60));
+        // Date start = new Date(System.currentTimeMillis() + 1000 * 60 * 30);
         JobDetail jobDetail = JobBuilder.newJob(EndPaperDelayJob.class)
                 .usingJobData("pa_id", pa.getPa_id())
                 .withIdentity(Integer.toString(pa_id))

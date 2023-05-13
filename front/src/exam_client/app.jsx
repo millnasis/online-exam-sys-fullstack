@@ -472,6 +472,13 @@ function overFlowHandle(content) {
   return content;
 }
 
+function cancelScreenoffCheck(func) {
+  // 网页聚焦切屏检测
+  window.onblur = null;
+  // 窗口可视切屏检测
+  document.removeEventListener("visibilitychange", func);
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -487,27 +494,27 @@ class App extends React.Component {
       pa_id: null,
     };
 
-    this.rtc = new MultiZeroRtc(
-      "/gs-guide",
-      () => {},
-      () => {},
-      () => {
-        this.setState(
-          {
-            paperData: {
-              ...this.state.paperData,
-              ep_state: constant.exam_paper_state.cheating,
-            },
+    this.rtc = new MultiZeroRtc("/gs-guide");
+    this.rtc.joinCallBack = () => {};
+    this.rtc.exitCallBack = () => {};
+    this.rtc.cheatCallBack = () => {
+      this.setState(
+        {
+          paperData: {
+            ...this.state.paperData,
+            ep_state: constant.exam_paper_state.cheating,
           },
-          () => {
-            notification.error({ message: "您已被老师判定作弊，即将结束答题" });
-            setTimeout(() => {
-              location.href = "./student";
-            }, 1500);
-          }
-        );
-      }
-    );
+        },
+        () => {
+          notification.error({ message: "您已被老师判定作弊，即将结束答题" });
+          setTimeout(() => {
+            location.href = "./student";
+          }, 1500);
+        }
+      );
+    };
+
+    this.visibilitychangeFunc = null;
 
     this.changeInputC = this.changeInputC.bind(this);
     this.switchSelectQuestion = this.switchSelectQuestion.bind(this);
@@ -558,7 +565,7 @@ class App extends React.Component {
                   });
                 };
                 // 窗口可视切屏检测
-                document.addEventListener("visibilitychange", () => {
+                const visibilitychangeFunc = () => {
                   if (document.visibilityState === "hidden") {
                     this.rtc.sendSetScreenoff(
                       this.state.paperData.ep_id,
@@ -573,7 +580,12 @@ class App extends React.Component {
                       },
                     });
                   }
-                });
+                };
+                this.visibilitychangeFunc = visibilitychangeFunc;
+                document.addEventListener(
+                  "visibilitychange",
+                  visibilitychangeFunc
+                );
               }
             );
           }
@@ -744,6 +756,13 @@ class App extends React.Component {
               距离考试结束时间还有：
               <div className="count-down">
                 <Countdown
+                  onFinish={() => {
+                    cancelScreenoffCheck(this.visibilitychangeFunc);
+                    notification.info({ message: "考试已结束，即将跳转" });
+                    setTimeout(() => {
+                      location.href = "./student";
+                    }, 500);
+                  }}
                   value={deadline}
                   valueStyle={{
                     fontSize: "14px",
@@ -854,6 +873,7 @@ class App extends React.Component {
                         }),
                         (response) => {
                           if (response.data.code === constant.code.success) {
+                            cancelScreenoffCheck(this.visibilitychangeFunc);
                             notification.success({
                               message: "交卷成功，即将跳转",
                             });

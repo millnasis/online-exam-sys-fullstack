@@ -10,7 +10,7 @@ import { connect } from "react-redux";
 import dayjs from "dayjs";
 
 function Exam(props) {
-  const { paper, menuselect } = props;
+  const { paper, menuselect, changestate } = props;
   const paperstate = paper.pa_state;
   const begintime = dayjs(paper.pa_begintime)
     .format("YYYY年MM月DD日HH时mm分ss秒")
@@ -27,6 +27,9 @@ function Exam(props) {
           <strong className="state-font">等待考试开始</strong>
           <strong className="des-font">
             <Countdown
+              onFinish={() => {
+                changestate(paper.pa_id, constant.paper_state.starting);
+              }}
               valueStyle={{ fontSize: "14px", color: "darkcyan" }}
               value={begindeadline}
               format="D 天 H 时 m 分 s 秒"
@@ -333,7 +336,23 @@ class ExamControl extends React.Component {
                   node.addEventListener("transitionend", done, false);
                 }}
               >
-                <Exam paper={v} menuselect={this.props.menuselect}></Exam>
+                <Exam
+                  paper={v}
+                  changestate={(pa_id, pa_state) => {
+                    this.setState({
+                      filterData: this.state.filterData.map((v) => {
+                        if (v.pa_id !== pa_id) {
+                          return v;
+                        }
+                        return {
+                          ...v,
+                          pa_state,
+                        };
+                      }),
+                    });
+                  }}
+                  menuselect={this.props.menuselect}
+                ></Exam>
               </CSSTransition>
             );
           })}

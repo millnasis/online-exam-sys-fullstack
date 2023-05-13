@@ -284,3 +284,15 @@ body {
   font-size: unset;
   font-weight: unset;
 }
+/*!***************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[0].oneOf[0].use[3]!./src/student/components/checkPaper/checkPaper.scss ***!
+  \***************************************************************************************************************************************************************************************************************************/
+.check-paper {
+  padding: 20px 30px;
+  background-color: #fafafa;
+}
+.check-paper .body table td {
+  background-color: #fff;
+  min-width: 50px;
+  text-align: center;
+}
