@@ -10,6 +10,8 @@ import {
   Typography,
   DatePicker,
   Skeleton,
+  Popconfirm,
+  notification,
 } from "antd";
 import React from "react";
 import request from "../../../request";
@@ -76,7 +78,7 @@ const fakeData = {
       pa_id: 21,
       ep_begindate: null,
       ep_finishdate: "2023-05-09T08:36:13.568+00:00",
-      ep_state: "CORRECTING",
+      ep_state: "CHEATING",
       ep_screenoff_count: 0,
       st_name: "学生测试3",
       st_card: "1233",
@@ -265,13 +267,15 @@ map.set(5, "F");
 function handleChooseAnswer(choose, type) {
   let output = "";
   choose = JSON.parse(choose);
-  choose.forEach((v) => {
-    if (type === constant.question_type.choose) {
-      output += map.get(+v) + " ";
-    } else {
-      output += v + ",";
-    }
-  });
+  if (Array.isArray(choose)) {
+    choose.forEach((v) => {
+      if (type === constant.question_type.choose) {
+        output += map.get(+v) + " ";
+      } else {
+        output += v + ",";
+      }
+    });
+  }
   return output;
 }
 
@@ -431,9 +435,16 @@ class CorrectPaper extends React.Component {
                 return (
                   <Badge
                     offset={[-10, 30]}
-                    style={{ backgroundColor: "green" }}
+                    style={{
+                      backgroundColor:
+                        v.ep_state === constant.exam_paper_state.cheating
+                          ? "red"
+                          : "green",
+                    }}
                     count={
-                      v.ep_state === constant.exam_paper_state.finished
+                      v.ep_state === constant.exam_paper_state.cheating
+                        ? "x"
+                        : v.ep_state === constant.exam_paper_state.finished
                         ? "√"
                         : 0
                     }
@@ -444,7 +455,7 @@ class CorrectPaper extends React.Component {
                         this.switchExPaper(v.ep_id);
                       }}
                     >
-                      {i}
+                      {i + 1}
                     </Button>
                   </Badge>
                 );
@@ -461,12 +472,42 @@ class CorrectPaper extends React.Component {
               <span style={{ textDecoration: "underline" }}>
                 {paperData.pa_name}
               </span>
-              <Button type="primary" disabled style={{ marginLeft: "20px" }}>
-                结束批改
-              </Button>
+              <Popconfirm
+                title="结束批改试卷"
+                description="确定要结束吗，结束后试卷不可再修改"
+                onConfirm={() => {
+                  request(
+                    axios.post("/papers/finish/" + paperData.pa_id),
+                    (response) => {
+                      if (response.data.code === constant.code.success) {
+                        notification.success({ message: "结束成功，即将跳转" });
+                        setTimeout(() => {
+                          menuselect("welcome");
+                        }, 500);
+                      }
+                    },
+                    () => {}
+                  );
+                }}
+                okText="确定"
+                cancelText="取消"
+              >
+                <Button
+                  type="primary"
+                  disabled={unfinishPaper > 0}
+                  style={{ marginLeft: "20px" }}
+                >
+                  结束批改
+                </Button>
+              </Popconfirm>
               <br />
               <Text type="secondary">
-                学号：{examPaperData.st_id} 名称：{examPaperData.st_name}
+                {/* 应该改为st_card */}
+                学号：{examPaperData.st_id} 名称：{examPaperData.st_name}{" "}
+                {examPaperData.ep_state ===
+                  constant.exam_paper_state.cheating && (
+                  <Text type="danger">已作弊</Text>
+                )}
               </Text>
             </Title>
             <Affix offsetTop={10} className="affix">
@@ -480,7 +521,14 @@ class CorrectPaper extends React.Component {
                       <Badge
                         offset={[-10, 30]}
                         style={{ backgroundColor: "green", zIndex: 1000 }}
-                        count={sign.length > 0 ? "√" : 0}
+                        count={
+                          examPaperData.ep_state ===
+                          constant.exam_paper_state.cheating
+                            ? 0
+                            : sign.length > 0
+                            ? "√"
+                            : 0
+                        }
                       >
                         <Button
                           onClick={() => {
@@ -609,84 +657,87 @@ class CorrectPaper extends React.Component {
                         </>
                       }
                     ></Alert>
-                    <Alert
-                      type="warning"
-                      message={
-                        <>
-                          <Title level={4}>打分</Title>
-                          <Title level={5}>
-                            总分：{v.qu_score} 得分：
-                            <InputNumber
-                              value={v.eq_score}
-                              min={0}
-                              max={v.qu_score}
-                              defaultValue={0}
-                              style={{ marginRight: "20px" }}
-                              onChange={(value) => {
-                                this.correctQuestion(sign, v, value, sub);
-                              }}
-                            ></InputNumber>
-                            <Button.Group>
-                              <Button
-                                onClick={() => {
-                                  this.correctQuestion(sign, v, 0, sub);
+                    {examPaperData.ep_state ===
+                      constant.exam_paper_state.cheating || (
+                      <Alert
+                        type="warning"
+                        message={
+                          <>
+                            <Title level={4}>打分</Title>
+                            <Title level={5}>
+                              总分：{v.qu_score} 得分：
+                              <InputNumber
+                                value={v.eq_score}
+                                min={0}
+                                max={v.qu_score}
+                                defaultValue={0}
+                                style={{ marginRight: "20px" }}
+                                onChange={(value) => {
+                                  this.correctQuestion(sign, v, value, sub);
                                 }}
-                              >
-                                0%
-                              </Button>
-                              <Button
-                                onClick={() => {
-                                  this.correctQuestion(
-                                    sign,
-                                    v,
-                                    Math.floor(v.qu_score / 3),
-                                    sub
-                                  );
-                                }}
-                              >
-                                33%
-                              </Button>
-                              <Button
-                                onClick={() => {
-                                  this.correctQuestion(
-                                    sign,
-                                    v,
-                                    Math.floor(v.qu_score / 2),
-                                    sub
-                                  );
-                                }}
-                              >
-                                50%
-                              </Button>
-                              <Button
-                                onClick={() => {
-                                  this.correctQuestion(
-                                    sign,
-                                    v,
-                                    Math.floor((v.qu_score * 3) / 5),
-                                    sub
-                                  );
-                                }}
-                              >
-                                66%
-                              </Button>
-                              <Button
-                                onClick={() => {
-                                  this.correctQuestion(
-                                    sign,
-                                    v,
-                                    v.qu_score,
-                                    sub
-                                  );
-                                }}
-                              >
-                                100%
-                              </Button>
-                            </Button.Group>
-                          </Title>
-                        </>
-                      }
-                    ></Alert>
+                              ></InputNumber>
+                              <Button.Group>
+                                <Button
+                                  onClick={() => {
+                                    this.correctQuestion(sign, v, 0, sub);
+                                  }}
+                                >
+                                  0%
+                                </Button>
+                                <Button
+                                  onClick={() => {
+                                    this.correctQuestion(
+                                      sign,
+                                      v,
+                                      Math.floor(v.qu_score / 3),
+                                      sub
+                                    );
+                                  }}
+                                >
+                                  33%
+                                </Button>
+                                <Button
+                                  onClick={() => {
+                                    this.correctQuestion(
+                                      sign,
+                                      v,
+                                      Math.floor(v.qu_score / 2),
+                                      sub
+                                    );
+                                  }}
+                                >
+                                  50%
+                                </Button>
+                                <Button
+                                  onClick={() => {
+                                    this.correctQuestion(
+                                      sign,
+                                      v,
+                                      Math.floor((v.qu_score * 3) / 5),
+                                      sub
+                                    );
+                                  }}
+                                >
+                                  66%
+                                </Button>
+                                <Button
+                                  onClick={() => {
+                                    this.correctQuestion(
+                                      sign,
+                                      v,
+                                      v.qu_score,
+                                      sub
+                                    );
+                                  }}
+                                >
+                                  100%
+                                </Button>
+                              </Button.Group>
+                            </Title>
+                          </>
+                        }
+                      ></Alert>
+                    )}
                   </Paragraph>
                 </Badge.Ribbon>
               );
@@ -702,15 +753,19 @@ class CorrectPaper extends React.Component {
               <Button
                 type="primary"
                 onClick={() => {
-                  this.switchExPaper(
-                    this.state.paperData.ep_list.find(
-                      (v) => v.ep_state === constant.exam_paper_state.correcting
-                    ).ep_id
+                  const ep = this.state.paperData.ep_list.find(
+                    (v) => v.ep_state === constant.exam_paper_state.correcting
                   );
+                  let epid =
+                    typeof ep === "object"
+                      ? ep.ep_id
+                      : this.state.paperData.ep_list[0].ep_id;
+
+                  this.switchExPaper(epid);
                   window.scrollTo(0, 0);
                 }}
               >
-                下一份
+                下一份未批改试卷
               </Button>
             </p>
           </Typography>

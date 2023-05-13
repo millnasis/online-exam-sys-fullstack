@@ -195,10 +195,12 @@ public class ExamPaperServiceImpl implements ExamPaperService {
                 ex_questionDao.updateById(eq);
             }
         });
-        if (finish[0] == 1) {
-            ex_paper.setEp_state(Constant.exam_paper_state.finished);
-        } else {
-            ex_paper.setEp_state(Constant.exam_paper_state.correcting);
+        if (!Constant.exam_paper_state.cheating.equals(ex_paper.getEp_state())) {
+            if (finish[0] == 1) {
+                ex_paper.setEp_state(Constant.exam_paper_state.finished);
+            } else {
+                ex_paper.setEp_state(Constant.exam_paper_state.correcting);
+            }
         }
         return ex_paper;
     }

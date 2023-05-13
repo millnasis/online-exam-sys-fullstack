@@ -10,9 +10,8 @@ import { connect } from "react-redux";
 import dayjs from "dayjs";
 
 function Exam(props) {
-  const { paper } = props;
+  const { paper, menuselect } = props;
   const paperstate = paper.pa_state;
-  const [open, setOpen] = useState(false);
   const begintime = dayjs(paper.pa_begintime)
     .format("YYYY年MM月DD日HH时mm分ss秒")
     .toString();
@@ -94,21 +93,11 @@ function Exam(props) {
           <strong
             className="des-font"
             onClick={() => {
-              setOpen(true);
+              menuselect("check-paper", paper.pa_id);
             }}
           >
             点击查看成绩
           </strong>
-          <Modal
-            title={"查询成绩"}
-            open={open}
-            onCancel={() => {
-              setOpen(false);
-            }}
-            onOk={() => {
-              setOpen(false);
-            }}
-          ></Modal>
           <Divider></Divider>
           结束时间：{endtime}
         </Card>
@@ -344,7 +333,7 @@ class ExamControl extends React.Component {
                   node.addEventListener("transitionend", done, false);
                 }}
               >
-                <Exam paper={v}></Exam>
+                <Exam paper={v} menuselect={this.props.menuselect}></Exam>
               </CSSTransition>
             );
           })}

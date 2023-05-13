@@ -75,14 +75,14 @@ public class PaperController {
                 pa.setEp_list(eplist);
             }
         });
-        
+
         return data != null ? new Result(data, "成功", Constant.code.success)
                 : new Result(null, "未找到", Constant.code.not_found);
     }
 
     @ApiOperation("根据id查询考试以及附属考卷")
     @GetMapping("/ep/{pa_id}")
-    public Result queryPaperAndEpListById(@PathVariable int pa_id){
+    public Result queryPaperAndEpListById(@PathVariable int pa_id) {
         Paper data = paperService.queryById(pa_id);
         List<Ex_paper> eplist = examPaperService.queryExamPaperListByPaperId(pa_id);
         data.setEp_list(eplist);
@@ -224,6 +224,18 @@ public class PaperController {
         paperService.update(pa);
         examPaperService.handInPaperByPaper(pa);
         System.out.println("交卷啦！！！");
+        return new Result(pa, "成功", Constant.code.success);
+    }
+
+    @ApiOperation("结束考试的批改")
+    @PostMapping("/finish/{pa_id}")
+    public Result finishExamCorrect(@PathVariable int pa_id) {
+        Paper pa = paperService.queryById(pa_id);
+        if (pa == null) {
+            return new Result(null, "考试不存在", Constant.code.not_found);
+        }
+        pa.setPa_state(Constant.paper_state.end);
+        paperService.update(pa);
         return new Result(pa, "成功", Constant.code.success);
     }
 }

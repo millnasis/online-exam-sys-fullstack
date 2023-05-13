@@ -9,6 +9,7 @@ import axios from "axios";
 import { actions } from "./reducers/root";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import CheckPaper from "./components/checkPaper/checkPaper.jsx";
 const { set_user_info } = actions;
 
 const { Header, Content, Footer } = Layout;
@@ -52,17 +53,17 @@ async function logout() {
 }
 
 function RenderContent(props) {
-  const { menukey } = props;
+  const { menukey, paperId, menuselect } = props;
   let e = null;
   switch (menukey) {
     case "exam-control":
-      e = <ExamControl></ExamControl>;
+      e = <ExamControl menuselect={menuselect}></ExamControl>;
       break;
     case "grade-control":
       e = <GradeControl></GradeControl>;
       break;
-    case "start-exam":
-      e = <div></div>;
+    case "check-paper":
+      e = <CheckPaper paperId={paperId} menuselect={menuselect}></CheckPaper>;
       break;
     case "user-setting":
       e = <UserSetting></UserSetting>;
@@ -88,6 +89,7 @@ class App extends React.Component {
 
     this.state = {
       menuSelect: ["welcome"],
+      paperId: -1,
     };
   }
 
@@ -146,7 +148,13 @@ class App extends React.Component {
           />
         </Header>
         <Content className="content">
-          <RenderContent menukey={this.state.menuSelect[0]}></RenderContent>
+          <RenderContent
+            menukey={this.state.menuSelect[0]}
+            paperId={this.state.paperId}
+            menuselect={(key, paperId = -1) => {
+              this.setState({ menuSelect: [key], paperId });
+            }}
+          ></RenderContent>
         </Content>
         <Footer className="footer">Ant Design ©2023 Created by Ant UED</Footer>
       </Layout>

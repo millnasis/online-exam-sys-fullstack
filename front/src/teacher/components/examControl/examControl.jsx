@@ -138,7 +138,7 @@ function Exam(props) {
               setOpen(true);
             }}
           >
-            点击查看成绩
+            查看成绩分析
           </strong>
           <Modal
             title={"查询成绩"}
@@ -224,7 +224,7 @@ const fakeData = [
     gr_id: "223",
     pa_name: "大学几把",
     pa_founddate: new Date(),
-    pa_state: constant.paper_state.end,
+    pa_state: constant.paper_state.correcting,
     pa_begintime: new Date(),
     pa_duringtime: 60 * 60 * 2,
     pa_order: "123",

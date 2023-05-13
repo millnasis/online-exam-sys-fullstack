@@ -72,9 +72,6 @@ function RenderContent(props) {
     case "grade-control":
       e = <GradeControl></GradeControl>;
       break;
-    case "start-exam":
-      e = <div></div>;
-      break;
     case "user-setting":
       e = <UserSetting></UserSetting>;
       break;
