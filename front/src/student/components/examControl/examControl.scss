@@ -1,6 +1,81 @@
+.paper-info-modal {
+  .check-paper-info {
+    text-align: center;
+    .paper-info {
+      text-align: left;
+      padding: 0 40px;
+      .head {
+        display: inline-block;
+        width: 120px;
+        font-weight: bold;
+      }
+    }
+  }
+}
 .exam-control {
   padding: 20px 30px;
   background-color: darken($color: #fff, $amount: 2%);
+  .welcome {
+    display: flex;
+    flex-direction: column;
+    .up {
+      min-height: 260px;
+      height: 48vh;
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      margin: 5px;
+      .main {
+        height: 100%;
+        flex: 1;
+        margin: 5px;
+        border: 1px solid yellow;
+      }
+      @media screen and (max-width: 900px) {
+        .calendar {
+          display: none;
+        }
+      }
+      .calendar {
+        width: 30%;
+        min-width: 250px;
+        max-width: 360px;
+        border: 1px solid black;
+        height: 100%;
+        margin: 5px;
+      }
+    }
+    .down {
+      margin: 5px;
+      height: 36vh;
+      min-height: 180px;
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      .preparing {
+        border: 1px solid red;
+        margin: 5px;
+        min-width: 300px;
+        min-height: 240px;
+        flex: 1;
+      }
+      .correcting {
+        border: 1px solid green;
+        min-width: 300px;
+        margin: 5px;
+        min-height: 240px;
+        flex: 1;
+      }
+      .finished {
+        margin: 5px;
+        min-width: 300px;
+        min-height: 240px;
+        flex: 1;
+        border: 1px solid blue;
+      }
+    }
+  }
   .transition-warp {
     display: flex;
     align-items: center;
@@ -9,6 +84,17 @@
       width: 28vw;
       margin: 10px 10px;
       min-width: 420px;
+      position: relative;
+      .more-btn {
+        position: absolute;
+        right: 10px;
+        top: 15px;
+        cursor: pointer;
+        font-size: 0.7em;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
       .state-font {
         font-size: 4vmin;
         margin: 2vmin 0;

@@ -26,10 +26,12 @@ import com.online_exam_sys.pojo.Ex_paper;
 import com.online_exam_sys.pojo.Grade;
 import com.online_exam_sys.pojo.Paper;
 import com.online_exam_sys.pojo.Question;
+import com.online_exam_sys.pojo.Teacher;
 import com.online_exam_sys.service.ex_paper.ExamPaperService;
 import com.online_exam_sys.service.grade.GradeService;
 import com.online_exam_sys.service.paper.PaperService;
 import com.online_exam_sys.service.question.QuestionService;
+import com.online_exam_sys.service.teacher.TeacherService;
 import com.online_exam_sys.util.Constant;
 import com.online_exam_sys.util.Result;
 
@@ -56,6 +58,17 @@ public class PaperController {
 
     @Autowired
     private ExamPaperService examPaperService;
+
+
+    @ApiOperation("根据id查询考试及其详细信息")
+    @GetMapping("/join/{id}")
+    public Result joinQueryPaperById(@PathVariable int id) {
+        Paper pa = paperService.joinQueryById(id);
+        if (pa == null) {
+            return new Result(null, "考试不存在", Constant.code.not_found);
+        }
+        return new Result(pa, "成功", Constant.code.success);
+    }
 
     @ApiOperation("根据学生id查询考试")
     @GetMapping("/student/{id}")

@@ -1,5 +1,15 @@
 import React, { useState } from "react";
-import { Card, Col, Divider, Statistic, Input, Modal, Row, Select } from "antd";
+import {
+  Card,
+  Col,
+  Divider,
+  Statistic,
+  Typography,
+  Input,
+  Modal,
+  Row,
+  Select,
+} from "antd";
 const { Countdown } = Statistic;
 import "./examControl.scss";
 import constant from "../../../constant";
@@ -9,8 +19,10 @@ import axios from "axios";
 import { connect } from "react-redux";
 import dayjs from "dayjs";
 
+const { Text } = Typography;
+
 function Exam(props) {
-  const { paper, menuselect, changestate } = props;
+  const { paper, menuselect, changestate, openModal } = props;
   console.log(paper);
   const paperstate = paper.pa_state;
   const [open, setOpen] = useState(false);
@@ -39,6 +51,14 @@ function Exam(props) {
             </a>,
           ]}
         >
+          <span
+            className="more-btn"
+            onClick={() => {
+              openModal(paper.pa_id);
+            }}
+          >
+            详细信息
+          </span>
           <strong className="state-font">等待考试开始</strong>
           <strong className="des-font">
             <Countdown
@@ -71,6 +91,14 @@ function Exam(props) {
             </a>,
           ]}
         >
+          <span
+            className="more-btn"
+            onClick={() => {
+              openModal(paper.pa_id);
+            }}
+          >
+            详细信息
+          </span>
           <strong className="state-font">未开始</strong>
           <strong className="des-font">尚未完成出题</strong>
           <Divider></Divider>
@@ -82,6 +110,14 @@ function Exam(props) {
     case constant.paper_state.starting:
       return (
         <Card className="exam-card starting" {...props} title={paper.pa_name}>
+          <span
+            className="more-btn"
+            onClick={() => {
+              openModal(paper.pa_id);
+            }}
+          >
+            详细信息
+          </span>
           <strong
             className="des-font"
             onClick={() => {
@@ -114,6 +150,14 @@ function Exam(props) {
       );
       return (
         <Card className="exam-card correcting" {...props} title={paper.pa_name}>
+          <span
+            className="more-btn"
+            onClick={() => {
+              openModal(paper.pa_id);
+            }}
+          >
+            详细信息
+          </span>
           <strong className="state-font">
             考卷未批改({correctingPaList.length})
           </strong>
@@ -134,6 +178,14 @@ function Exam(props) {
     case constant.paper_state.end: {
       return (
         <Card className="exam-card end" {...props} title={paper.pa_name}>
+          <span
+            className="more-btn"
+            onClick={() => {
+              openModal(paper.pa_id);
+            }}
+          >
+            详细信息
+          </span>
           <strong className="state-font">考试已结束</strong>
           <strong
             className="des-font"
@@ -255,6 +307,7 @@ function handleGradeOptions(data) {
   map.forEach((v, k) => {
     ret.push({ label: v, value: k });
   });
+  console.log(ret);
   return ret;
 }
 
@@ -274,6 +327,8 @@ class ExamControl extends React.Component {
       search: "",
       grade: "all",
       pa_state: "all",
+      modalVisable: false,
+      modalObj: { pa_order: "[]" },
     };
   }
 
@@ -282,9 +337,17 @@ class ExamControl extends React.Component {
     request(
       axios.get("/papers/teacher/" + userInfo.te_id),
       (response) => {
-        this.originData = response.data.data;
+        this.originData = response.data.data
+          .map((v) => {
+            return { ...v, pa_founddate: dayjs(v.pa_founddate) };
+          })
+          .sort(
+            (a, b) =>
+              b.pa_founddate.toDate().getTime() -
+              a.pa_founddate.toDate().getTime()
+          );
         this.setState({
-          filterData: response.data.data,
+          filterData: this.originData,
           search: "",
           grade: "all",
           pa_state: "all",
@@ -299,6 +362,13 @@ class ExamControl extends React.Component {
   }
 
   render() {
+    const exam = this.state.modalObj;
+    const founddate = dayjs(exam.pa_founddate);
+    const begintime = dayjs(exam.pa_begintime);
+    const endtime = dayjs(
+      begintime.toDate().getTime() + exam.pa_duringtime * 1000 * 60
+    );
+    const format = "YYYY年MM月DD日 HH时mm分";
     return (
       <div className="exam-control">
         <Row gutter={16} style={{ width: "100%" }}>
@@ -394,6 +464,78 @@ class ExamControl extends React.Component {
             ></Select>
           </Col>
         </Row>
+        <Modal
+          open={this.state.modalVisable}
+          onCancel={() => {
+            this.setState({ modalVisable: false });
+          }}
+          onOk={() => {
+            this.setState({ modalVisable: false });
+          }}
+          className="paper-info-modal"
+        >
+          <Card
+            title={<span style={{ fontSize: "2em" }}>{exam.pa_name}</span>}
+            className="check-paper-info"
+            bodyStyle={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "column",
+            }}
+          >
+            <div className="paper-info">
+              <p>
+                <Text>
+                  <span className="head">当前考试状态：</span>
+                  {exam.pa_state}
+                </Text>
+              </p>
+              <p>
+                <Text>
+                  <span className="head">考试创建时间</span>
+                  {founddate.format(format).toString()}
+                </Text>
+              </p>
+              <p>
+                <Text>
+                  <span className="head">考试开始时间</span>
+                  {begintime.format(format).toString()}
+                </Text>
+              </p>
+              <p>
+                <Text>
+                  <span className="head">考试结束时间</span>
+                  {endtime.format(format).toString()}
+                </Text>
+              </p>
+              <p>
+                <Text>
+                  <span className="head">考试持续</span>
+                  {exam.pa_duringtime}分钟
+                </Text>
+              </p>
+              <p>
+                <Text>
+                  <span className="head">监考老师</span>
+                  {exam.te_name}
+                </Text>
+              </p>
+              <p>
+                <Text>
+                  <span className="head">所属班级</span>
+                  {exam.gr_name}
+                </Text>
+              </p>
+              <p>
+                <Text>
+                  <span className="head">题目数量</span>
+                  {JSON.parse(exam.pa_order).length}题
+                </Text>
+              </p>
+            </div>
+          </Card>
+        </Modal>
         <TransitionGroup className={"transition-warp"}>
           {this.state.filterData.map((v) => {
             return (
@@ -406,6 +548,20 @@ class ExamControl extends React.Component {
               >
                 <Exam
                   paper={v}
+                  openModal={(pa_id) => {
+                    request(
+                      axios.get("/papers/join/" + pa_id),
+                      (response) => {
+                        if (response.data.code === constant.code.success) {
+                          this.setState({
+                            modalVisable: true,
+                            modalObj: response.data.data,
+                          });
+                        }
+                      },
+                      () => {}
+                    );
+                  }}
                   changestate={(pa_id, pa_state) => {
                     this.setState({
                       filterData: this.state.filterData.map((v) => {

@@ -23,4 +23,10 @@ public class Paper {
     private String pa_order;
     @TableField(exist = false)
     private List<Ex_paper> ep_list;
+    @TableField(exist = false)
+    private String te_name;
+    @TableField(exist = false)
+    private String te_card;
+    @TableField(exist = false)
+    private String gr_name;
 }

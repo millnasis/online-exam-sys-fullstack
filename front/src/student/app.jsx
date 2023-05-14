@@ -38,14 +38,6 @@ const menuItem = [
   },
 ];
 
-function Welcome(props) {
-  return (
-    <div className="welcome">
-      <h1 className="welcome-big">欢迎您，今天没有考试</h1>
-    </div>
-  );
-}
-
 async function logout() {
   localStorage.removeItem("userinfo");
   await axios.delete("/session");
@@ -72,9 +64,6 @@ function RenderContent(props) {
       logout();
       e = <div></div>;
       break;
-    case "welcome":
-      e = <Welcome></Welcome>;
-      break;
 
     default:
       e = <div></div>;
@@ -88,7 +77,7 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      menuSelect: ["welcome"],
+      menuSelect: ["exam-control"],
       paperId: -1,
     };
   }
@@ -156,7 +145,6 @@ class App extends React.Component {
             }}
           ></RenderContent>
         </Content>
-        <Footer className="footer">Ant Design ©2023 Created by Ant UED</Footer>
       </Layout>
     );
   }

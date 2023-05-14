@@ -24,26 +24,8 @@ body {
 
 .content {
   padding: 0 50px;
-  .welcome {
-    text-align: center;
-    .welcome-big {
-      font-size: 8vmin;
-    }
-  }
 }
 
 .footer {
   text-align: center;
-}
-
-.welcome {
-  padding: 20px 30px;
-  background-color: darken($color: #fff, $amount: 2%);
-  display: flex;
-  align-items: center;
-  height: 80vh;
-  .welcome-big{
-    text-align: center;
-    width: 100%;
-  }
 }

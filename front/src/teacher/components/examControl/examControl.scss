@@ -9,6 +9,16 @@
       width: 28vw;
       margin: 10px 10px;
       min-width: 420px;
+      .more-btn {
+        position: absolute;
+        right: 10px;
+        top: 15px;
+        cursor: pointer;
+        font-size: 0.7em;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
       .state-font {
         font-size: 4vmin;
         margin: 2vmin 0;

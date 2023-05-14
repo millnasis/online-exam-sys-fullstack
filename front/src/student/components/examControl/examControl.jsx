@@ -1,5 +1,15 @@
 import React, { useState } from "react";
-import { Card, Col, Divider, Statistic, Input, Modal, Row, Select } from "antd";
+import {
+  Card,
+  Col,
+  Divider,
+  Statistic,
+  Input,
+  Typography,
+  Modal,
+  Row,
+  Select,
+} from "antd";
 const { Countdown } = Statistic;
 import "./examControl.scss";
 import constant from "../../../constant";
@@ -8,9 +18,11 @@ import request from "../../../request.js";
 import axios from "axios";
 import { connect } from "react-redux";
 import dayjs from "dayjs";
+import Welcome from "./welcome.jsx";
+const { Text } = Typography;
 
 function Exam(props) {
-  const { paper, menuselect, changestate } = props;
+  const { paper, menuselect, changestate, openModal } = props;
   const paperstate = paper.pa_state;
   const begintime = dayjs(paper.pa_begintime)
     .format("YYYY年MM月DD日HH时mm分ss秒")
@@ -24,6 +36,14 @@ function Exam(props) {
     case constant.paper_state.waiting:
       return (
         <Card className="exam-card waiting" {...props} title={paper.pa_name}>
+          <span
+            className="more-btn"
+            onClick={() => {
+              openModal(paper.pa_id);
+            }}
+          >
+            详细信息
+          </span>
           <strong className="state-font">等待考试开始</strong>
           <strong className="des-font">
             <Countdown
@@ -43,6 +63,14 @@ function Exam(props) {
     case constant.paper_state.preparing:
       return (
         <Card className="exam-card preparing" {...props} title={paper.pa_name}>
+          <span
+            className="more-btn"
+            onClick={() => {
+              openModal(paper.pa_id);
+            }}
+          >
+            详细信息
+          </span>
           <strong className="state-font">未开始</strong>
           <strong className="des-font">尚未完成出题</strong>
           <Divider></Divider>
@@ -54,6 +82,14 @@ function Exam(props) {
     case constant.paper_state.starting:
       return (
         <Card className="exam-card starting" {...props} title={paper.pa_name}>
+          <span
+            className="more-btn"
+            onClick={() => {
+              openModal(paper.pa_id);
+            }}
+          >
+            详细信息
+          </span>
           <strong
             className="des-font"
             onClick={() => {
@@ -83,6 +119,14 @@ function Exam(props) {
     case constant.paper_state.correcting:
       return (
         <Card className="exam-card correcting" {...props} title={paper.pa_name}>
+          <span
+            className="more-btn"
+            onClick={() => {
+              openModal(paper.pa_id);
+            }}
+          >
+            详细信息
+          </span>
           <strong className="state-font">等待考卷批改</strong>
           <Divider></Divider>
           结束时间:{endtime}
@@ -92,6 +136,14 @@ function Exam(props) {
     case constant.paper_state.end:
       return (
         <Card className="exam-card end" {...props} title={paper.pa_name}>
+          <span
+            className="more-btn"
+            onClick={() => {
+              openModal(paper.pa_id);
+            }}
+          >
+            详细信息
+          </span>
           <strong className="state-font">考试已结束</strong>
           <strong
             className="des-font"
@@ -205,6 +257,9 @@ class ExamControl extends React.Component {
       search: "",
       grade: "all",
       pa_state: "all",
+      modalVisable: false,
+      modalObj: { pa_order: "[]" },
+      welcome: true,
     };
   }
 
@@ -213,9 +268,17 @@ class ExamControl extends React.Component {
     request(
       axios.get("/papers/student/" + userInfo.st_id),
       (response) => {
-        this.originData = response.data.data;
+        this.originData = response.data.data
+          .map((v) => {
+            return { ...v, pa_founddate: dayjs(v.pa_founddate) };
+          })
+          .sort(
+            (a, b) =>
+              b.pa_founddate.toDate().getTime() -
+              a.pa_founddate.toDate().getTime()
+          );
         this.setState({
-          filterData: response.data.data,
+          filterData: this.originData,
           search: "",
           grade: "all",
           pa_state: "all",
@@ -231,132 +294,234 @@ class ExamControl extends React.Component {
   }
 
   render() {
+    const exam = this.state.modalObj;
+    const founddate = dayjs(exam.pa_founddate);
+    const begintime = dayjs(exam.pa_begintime);
+    const endtime = dayjs(
+      begintime.toDate().getTime() + exam.pa_duringtime * 1000 * 60
+    );
+    const format = "YYYY年MM月DD日 HH时mm分";
     return (
       <div className="exam-control">
-        <Row gutter={16} style={{ width: "100%" }}>
-          <Col span={16}>
-            <Input.Search
-              prefix={"搜索考试"}
-              placeholder={"输入科目名字搜索"}
-              value={this.state.search}
-              onChange={(e) => {
-                this.setState({ ...this.clearState, search: e.target.value });
-                if (this.timeout !== null) {
-                  clearTimeout(this.timeout);
-                }
-                this.timeout = setTimeout(() => {
-                  this.setState({
-                    ...this.clearState,
-                    search: e.target.value,
-                    filterData: this.originData.filter(
-                      (el) => el.pa_name.match(this.state.search) !== null
-                    ),
-                  });
-                }, 600);
-              }}
-            ></Input.Search>
-          </Col>
-          <Col span={3}>
-            <Select
-              onSelect={(value) => {
-                if (value === "all") {
-                  this.setState({
-                    ...this.clearState,
-                    filterData: this.originData,
-                    grade: value,
-                  });
-                  return;
-                }
-                this.setState({
-                  ...this.clearState,
-                  filterData: this.originData.filter((v) => {
-                    return v.gr_id === value;
-                  }),
-                  grade: value,
-                });
-              }}
-              style={{ width: "100%" }}
-              options={handleGradeOptions(this.originData)}
-              value={this.state.grade}
-            ></Select>
-          </Col>
-          <Col span={3}>
-            <Select
-              style={{ width: "100%" }}
-              value={this.state.pa_state}
-              onSelect={(value) => {
-                if (value === "all") {
-                  this.setState({
-                    ...this.clearState,
-                    filterData: this.originData,
-                    pa_state: value,
-                  });
-                  return;
-                }
-                this.setState({
-                  ...this.clearState,
-                  filterData: this.originData.filter((v) => {
-                    return v.pa_state === value;
-                  }),
-                  pa_state: value,
-                });
-              }}
-              options={[
-                {
-                  value: "all",
-                  label: "全部考试",
-                },
-                {
-                  value: constant.paper_state.preparing,
-                  label: "未开始",
-                },
-                {
-                  value: constant.paper_state.waiting,
-                  label: "等待中",
-                },
-                {
-                  value: constant.paper_state.starting,
-                  label: "进行中",
-                },
-                {
-                  value: constant.paper_state.end,
-                  label: "已结束",
-                },
-              ]}
-            ></Select>
-          </Col>
-        </Row>
-        <TransitionGroup className={"transition-warp"}>
-          {this.state.filterData.map((v) => {
-            return (
-              <CSSTransition
-                key={v.pa_id}
-                classNames="component-fade"
-                addEndListener={(node, done) => {
-                  node.addEventListener("transitionend", done, false);
-                }}
-              >
-                <Exam
-                  paper={v}
-                  changestate={(pa_id, pa_state) => {
+        <Modal
+          open={this.state.modalVisable}
+          onCancel={() => {
+            this.setState({ modalVisable: false });
+          }}
+          onOk={() => {
+            this.setState({ modalVisable: false });
+          }}
+          className="paper-info-modal"
+        >
+          <Card
+            title={<span style={{ fontSize: "2em" }}>{exam.pa_name}</span>}
+            className="check-paper-info"
+            bodyStyle={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "column",
+            }}
+          >
+            <div className="paper-info">
+              <p>
+                <Text>
+                  <span className="head">当前考试状态：</span>
+                  {exam.pa_state}
+                </Text>
+              </p>
+              <p>
+                <Text>
+                  <span className="head">考试创建时间</span>
+                  {founddate.format(format).toString()}
+                </Text>
+              </p>
+              <p>
+                <Text>
+                  <span className="head">考试开始时间</span>
+                  {begintime.format(format).toString()}
+                </Text>
+              </p>
+              <p>
+                <Text>
+                  <span className="head">考试结束时间</span>
+                  {endtime.format(format).toString()}
+                </Text>
+              </p>
+              <p>
+                <Text>
+                  <span className="head">考试持续</span>
+                  {exam.pa_duringtime}分钟
+                </Text>
+              </p>
+              <p>
+                <Text>
+                  <span className="head">监考老师</span>
+                  {exam.te_name}
+                </Text>
+              </p>
+              <p>
+                <Text>
+                  <span className="head">所属班级</span>
+                  {exam.gr_name}
+                </Text>
+              </p>
+              <p>
+                <Text>
+                  <span className="head">题目数量</span>
+                  {JSON.parse(exam.pa_order).length}题
+                </Text>
+              </p>
+            </div>
+          </Card>
+        </Modal>
+        {this.state.welcome ? (
+          <Welcome></Welcome>
+        ) : (
+          <>
+            <Row gutter={16} style={{ width: "100%" }}>
+              <Col span={16}>
+                <Input.Search
+                  prefix={"搜索考试"}
+                  placeholder={"输入科目名字搜索"}
+                  value={this.state.search}
+                  onChange={(e) => {
                     this.setState({
-                      filterData: this.state.filterData.map((v) => {
-                        if (v.pa_id !== pa_id) {
-                          return v;
-                        }
-                        return {
-                          ...v,
-                          pa_state,
-                        };
+                      ...this.clearState,
+                      search: e.target.value,
+                    });
+                    if (this.timeout !== null) {
+                      clearTimeout(this.timeout);
+                    }
+                    this.timeout = setTimeout(() => {
+                      this.setState({
+                        ...this.clearState,
+                        search: e.target.value,
+                        filterData: this.originData.filter(
+                          (el) => el.pa_name.match(this.state.search) !== null
+                        ),
+                      });
+                    }, 600);
+                  }}
+                ></Input.Search>
+              </Col>
+              <Col span={3}>
+                <Select
+                  onSelect={(value) => {
+                    if (value === "all") {
+                      this.setState({
+                        ...this.clearState,
+                        filterData: this.originData,
+                        grade: value,
+                      });
+                      return;
+                    }
+                    this.setState({
+                      ...this.clearState,
+                      filterData: this.originData.filter((v) => {
+                        return v.gr_id === value;
                       }),
+                      grade: value,
                     });
                   }}
-                  menuselect={this.props.menuselect}
-                ></Exam>
-              </CSSTransition>
-            );
-          })}
-        </TransitionGroup>
+                  style={{ width: "100%" }}
+                  options={handleGradeOptions(this.originData)}
+                  value={this.state.grade}
+                ></Select>
+              </Col>
+              <Col span={3}>
+                <Select
+                  style={{ width: "100%" }}
+                  value={this.state.pa_state}
+                  onSelect={(value) => {
+                    if (value === "all") {
+                      this.setState({
+                        ...this.clearState,
+                        filterData: this.originData,
+                        pa_state: value,
+                      });
+                      return;
+                    }
+                    this.setState({
+                      ...this.clearState,
+                      filterData: this.originData.filter((v) => {
+                        return v.pa_state === value;
+                      }),
+                      pa_state: value,
+                    });
+                  }}
+                  options={[
+                    {
+                      value: "all",
+                      label: "全部考试",
+                    },
+                    {
+                      value: constant.paper_state.preparing,
+                      label: "未开始",
+                    },
+                    {
+                      value: constant.paper_state.waiting,
+                      label: "等待中",
+                    },
+                    {
+                      value: constant.paper_state.starting,
+                      label: "进行中",
+                    },
+                    {
+                      value: constant.paper_state.end,
+                      label: "已结束",
+                    },
+                  ]}
+                ></Select>
+              </Col>
+            </Row>
+            <TransitionGroup className={"transition-warp"}>
+              {this.state.filterData.map((v) => {
+                return (
+                  <CSSTransition
+                    key={v.pa_id}
+                    classNames="component-fade"
+                    addEndListener={(node, done) => {
+                      node.addEventListener("transitionend", done, false);
+                    }}
+                  >
+                    <Exam
+                      paper={v}
+                      openModal={(pa_id) => {
+                        request(
+                          axios.get("/papers/join/" + pa_id),
+                          (response) => {
+                            if (response.data.code === constant.code.success) {
+                              this.setState({
+                                modalVisable: true,
+                                modalObj: response.data.data,
+                              });
+                            }
+                          },
+                          () => {}
+                        );
+                      }}
+                      changestate={(pa_id, pa_state) => {
+                        this.setState({
+                          filterData: this.state.filterData.map((v) => {
+                            if (v.pa_id !== pa_id) {
+                              return v;
+                            }
+                            return {
+                              ...v,
+                              pa_state,
+                            };
+                          }),
+                        });
+                      }}
+                      menuselect={this.props.menuselect}
+                    ></Exam>
+                  </CSSTransition>
+                );
+              })}
+            </TransitionGroup>
+          </>
+        )}
       </div>
     );
   }

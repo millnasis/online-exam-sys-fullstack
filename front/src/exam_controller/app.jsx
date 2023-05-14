@@ -26,6 +26,7 @@ import { CameraOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
 import constant from "../constant";
+import Check from "./check.jsx";
 
 function MyCamera(props) {
   const { vid } = props;
@@ -69,6 +70,119 @@ function ExamStudentState(props) {
   }
 }
 
+const fakedata = {
+  "pa_id": 22,
+  "gr_id": 3,
+  "pa_name": "考试测试",
+  "pa_founddate": "2023-05-11T07:54:57.662+00:00",
+  "pa_state": "END",
+  "pa_begintime": "2023-05-11T15:00:00.825+00:00",
+  "pa_duringtime": 120,
+  "pa_order": "[46,47,48]",
+  "ep_list": [
+    {
+      "ep_id": 49,
+      "st_id": 5,
+      "pa_id": 22,
+      "ep_begindate": "2023-05-12T02:55:02.130+00:00",
+      "ep_finishdate": "2023-05-12T02:56:16.361+00:00",
+      "ep_state": "FINISHED",
+      "ep_screenoff_count": 2,
+      "st_name": "个人信息修改测试",
+      "st_card": "123",
+      "ep_score": null,
+      "ep_question": null,
+      "pa_order": null,
+      "gr_id": 0,
+      "pa_name": null,
+      "pa_founddate": null,
+      "pa_state": null,
+      "pa_begintime": null,
+      "pa_duringtime": 0
+    },
+    {
+      "ep_id": 50,
+      "st_id": 6,
+      "pa_id": 22,
+      "ep_begindate": null,
+      "ep_finishdate": "2023-05-12T02:57:28.264+00:00",
+      "ep_state": "FINISHED",
+      "ep_screenoff_count": 0,
+      "st_name": "学生测试2",
+      "st_card": "123123",
+      "ep_score": null,
+      "ep_question": null,
+      "pa_order": null,
+      "gr_id": 0,
+      "pa_name": null,
+      "pa_founddate": null,
+      "pa_state": null,
+      "pa_begintime": null,
+      "pa_duringtime": 0
+    },
+    {
+      "ep_id": 51,
+      "st_id": 7,
+      "pa_id": 22,
+      "ep_begindate": null,
+      "ep_finishdate": "2023-05-12T02:57:28.554+00:00",
+      "ep_state": "FINISHED",
+      "ep_screenoff_count": 0,
+      "st_name": "学生测试3",
+      "st_card": "1233",
+      "ep_score": null,
+      "ep_question": null,
+      "pa_order": null,
+      "gr_id": 0,
+      "pa_name": null,
+      "pa_founddate": null,
+      "pa_state": null,
+      "pa_begintime": null,
+      "pa_duringtime": 0
+    },
+    {
+      "ep_id": 52,
+      "st_id": 8,
+      "pa_id": 22,
+      "ep_begindate": "2023-05-12T02:56:30.727+00:00",
+      "ep_finishdate": null,
+      "ep_state": "CHEATING",
+      "ep_screenoff_count": 2,
+      "st_name": "学生测试4",
+      "st_card": "1234",
+      "ep_score": null,
+      "ep_question": null,
+      "pa_order": null,
+      "gr_id": 0,
+      "pa_name": null,
+      "pa_founddate": null,
+      "pa_state": null,
+      "pa_begintime": null,
+      "pa_duringtime": 0
+    },
+    {
+      "ep_id": 53,
+      "st_id": 9,
+      "pa_id": 22,
+      "ep_begindate": "2023-05-13T03:11:02.714+00:00",
+      "ep_finishdate": "2023-05-12T02:57:29.023+00:00",
+      "ep_state": "FINISHED",
+      "ep_screenoff_count": 0,
+      "st_name": "学生测试5",
+      "st_card": "1235",
+      "ep_score": null,
+      "ep_question": null,
+      "pa_order": null,
+      "gr_id": 0,
+      "pa_name": null,
+      "pa_founddate": null,
+      "pa_state": null,
+      "pa_begintime": null,
+      "pa_duringtime": 0
+    }
+  ]
+};
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -76,15 +190,13 @@ class App extends React.Component {
     this.state = {
       userInfo: {},
       pa_id: null,
-      paperData: {
-        pa_begintime: new Date(),
-        pa_duringtime: 120,
-      },
+      paperData: fakedata,
       epList: [],
       windowSize: "big",
       modalStId: -1,
       modalObj: {},
       msgList: [],
+      check: false,
     };
 
     this.switchModalStId = this.switchModalStId.bind(this);
@@ -100,7 +212,6 @@ class App extends React.Component {
         this.setState({
           epList: this.state.epList.map((v) => {
             if (arg.findIndex((f) => f === v.st_id) !== -1) {
-              data.push(v);
               return {
                 ...v,
                 ep_begindate: new Date(),
@@ -238,6 +349,16 @@ class App extends React.Component {
             ...arr,
           ];
           break;
+        case "cheat":
+          arr = [
+            {
+              st_id: v.st_id,
+              st_name: v.st_name,
+              msg: "被您判定为作弊",
+              action,
+            },
+            ...arr,
+          ];
 
         default:
           break;
@@ -297,9 +418,7 @@ class App extends React.Component {
           }),
         });
       },
-      () => {
-        this.rtc.createWebsocket(pa_id);
-      }
+      () => {}
     );
 
     console.log(parseUserInfo, pa_id);
@@ -336,138 +455,168 @@ class App extends React.Component {
             ></Avatar>
             <span>{userInfo.te_name}</span>
           </div>
-          <div className="show-info">
-            距离考试结束时间还有：
-            <div className="count-down">
-              <Countdown
-                onFinish={() => {
-                  notification.info({ message: "考试已结束，即将跳转" });
-                  setTimeout(() => {
-                    location.href = "./teacher";
-                  }, 500);
-                }}
-                value={deadline}
-                valueStyle={{
-                  fontSize: "14px",
-                  color: "#fff",
-                  zIndex: "9999",
-                }}
-                format="D 天 H 时 m 分 s 秒"
-              ></Countdown>
+          {this.state.check && (
+            <div className="show-info">
+              距离考试结束时间还有：
+              <div className="count-down">
+                <Countdown
+                  onFinish={() => {
+                    notification.info({ message: "考试已结束，即将跳转" });
+                    setTimeout(() => {
+                      location.href = "./teacher";
+                    }, 500);
+                  }}
+                  value={deadline}
+                  valueStyle={{
+                    fontSize: "14px",
+                    color: "#fff",
+                    zIndex: "9999",
+                  }}
+                  format="D 天 H 时 m 分 s 秒"
+                ></Countdown>
+              </div>
             </div>
-          </div>
+          )}
         </Header>
-        <Layout className="body">
-          <div className="sider">
-            <div className="select">
-              <Select
-                value={this.state.windowSize}
-                style={{ width: "90%" }}
-                onChange={(v) => {
-                  this.setState({ windowSize: v });
+        {this.state.check ? (
+          <Layout className="body">
+            <div className="sider">
+              <div className="select">
+                <Select
+                  value={this.state.windowSize}
+                  style={{ width: "90%" }}
+                  onChange={(v) => {
+                    this.setState({ windowSize: v });
+                  }}
+                  options={[
+                    { value: "big", label: "大窗口" },
+                    { value: "mid", label: "中窗口" },
+                    { value: "small", label: "小窗口" },
+                  ]}
+                />
+              </div>
+              <List
+                className="list"
+                dataSource={this.state.msgList}
+                renderItem={(item, i) => {
+                  return (
+                    <List.Item
+                      key={i}
+                      onClick={() => {
+                        const ep = this.state.epList.find((v) => {
+                          return v.st_id === item.st_id;
+                        });
+                        this.switchModalStId(ep);
+                      }}
+                    >
+                      学生 <strong>{item.st_name}</strong>{" "}
+                      <strong className={"list-action " + item.action}>
+                        {item.msg}
+                      </strong>
+                      <br />
+                      {dayjs(item.date).format("HH时mm分ss秒").toString()}
+                    </List.Item>
+                  );
                 }}
-                options={[
-                  { value: "big", label: "大窗口" },
-                  { value: "mid", label: "中窗口" },
-                  { value: "small", label: "小窗口" },
-                ]}
-              />
+              ></List>
             </div>
-            <List
-              className="list"
-              dataSource={this.state.msgList}
-              renderItem={(item, i) => {
-                return (
-                  <List.Item
-                    key={i}
-                    onClick={() => {
-                      const ep = this.state.epList.find((v) => {
-                        return v.st_id === item.st_id;
+            <Content className="content">
+              <Modal
+                open={this.state.modalStId !== -1}
+                width={"50vw"}
+                onCancel={() => {
+                  this.setState({
+                    modalStId: -1,
+                  });
+                }}
+                footer={[
+                  <Popconfirm
+                    title="判定该考试作弊"
+                    description="你确定吗，该考试会被直接强制交卷"
+                    onConfirm={() => {
+                      this.rtc.sendSetCheat(
+                        this.state.modalObj.ep_id,
+                        this.state.modalStId
+                      );
+                      const data = [];
+                      this.setState({
+                        epList: this.state.epList.map((v) => {
+                          if (v.ep_id === this.state.modalObj.ep_id) {
+                            data.push(v);
+                            return {
+                              ...v,
+                              ep_state: constant.exam_paper_state.cheating,
+                            };
+                          }
+                          return v;
+                        }),
                       });
-                      this.switchModalStId(ep);
+                      this.unshiftMsg(data, "cheat", this.state.msgList);
+                    }}
+                    okText="确定"
+                    cancelText="取消"
+                  >
+                    <Button danger>判定作弊</Button>
+                  </Popconfirm>,
+                  <Button
+                    key={"closeBtn"}
+                    onClick={() => {
+                      this.setState({
+                        modalStId: -1,
+                      });
                     }}
                   >
-                    学生 <strong>{item.st_name}</strong>{" "}
-                    <strong className={"list-action " + item.action}>
-                      {item.msg}
-                    </strong>
-                    <br />
-                    {dayjs(item.date).format("HH时mm分ss秒").toString()}
-                  </List.Item>
+                    关闭
+                  </Button>,
+                ]}
+              >
+                <p>
+                  学生 <strong>{this.state.modalObj.st_name}</strong> 切屏次数：
+                  {this.state.modalObj.ep_screenoff_count}
+                </p>
+                <video
+                  id={"camera-window-big"}
+                  autoPlay
+                  playsInline
+                  style={{
+                    width: "90%",
+                  }}
+                ></video>
+              </Modal>
+              {this.state.epList.map((ep, i) => {
+                return (
+                  <Card
+                    onClick={() => {
+                      this.switchModalStId(ep);
+                    }}
+                    className={"control-window " + this.state.windowSize}
+                    key={i}
+                    bodyStyle={{ padding: "0" }}
+                    cover={<MyCamera vid={ep.st_id}></MyCamera>}
+                  >
+                    <span className="name">{ep.st_name}</span>
+                    <p>
+                      <ExamStudentState
+                        key={ep.ep_id}
+                        ep={ep}
+                      ></ExamStudentState>
+                      <span>切屏次数：{ep.ep_screenoff_count}</span>
+                    </p>
+                  </Card>
                 );
-              }}
-            ></List>
-          </div>
-          <Content className="content">
-            <Modal
-              open={this.state.modalStId !== -1}
-              width={"50vw"}
-              onCancel={() => {
-                this.setState({
-                  modalStId: -1,
-                });
-              }}
-              footer={[
-                <Popconfirm
-                  title="判定该考试作弊"
-                  description="你确定吗，该考试会被直接强制交卷"
-                  onConfirm={() => {
-                    this.rtc.sendSetCheat(
-                      this.state.modalObj.ep_id,
-                      this.state.modalStId
-                    );
-                  }}
-                  okText="确定"
-                  cancelText="取消"
-                >
-                  <Button danger>判定作弊</Button>
-                </Popconfirm>,
-                <Button
-                  key={"closeBtn"}
-                  onClick={() => {
-                    this.setState({
-                      modalStId: -1,
-                    });
-                  }}
-                >
-                  关闭
-                </Button>,
-              ]}
-            >
-              <p>
-                学生 <strong>{this.state.modalObj.st_name}</strong> 切屏次数：
-                {this.state.modalObj.ep_screenoff_count}
-              </p>
-              <video
-                id={"camera-window-big"}
-                autoPlay
-                playsInline
-                style={{
-                  width: "90%",
-                }}
-              ></video>
-            </Modal>
-            {this.state.epList.map((ep, i) => {
-              return (
-                <Card
-                  onClick={() => {
-                    this.switchModalStId(ep);
-                  }}
-                  className={"control-window " + this.state.windowSize}
-                  key={i}
-                  bodyStyle={{ padding: "0" }}
-                  cover={<MyCamera vid={ep.st_id}></MyCamera>}
-                >
-                  <span className="name">{ep.st_name}</span>
-                  <p>
-                    <ExamStudentState key={ep.ep_id} ep={ep}></ExamStudentState>
-                    <span>切屏次数：{ep.ep_screenoff_count}</span>
-                  </p>
-                </Card>
-              );
-            })}
-          </Content>
-        </Layout>
+              })}
+            </Content>
+          </Layout>
+        ) : (
+          <Check
+            exam={this.state.paperData}
+            opencamara={() => {
+              this.setState({ check: true }, () => {
+                this.rtc.createWebsocket(this.state.pa_id);
+              });
+            }}
+          ></Check>
+        )}
       </Layout>
     );
   }

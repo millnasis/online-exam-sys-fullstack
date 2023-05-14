@@ -60,4 +60,9 @@ public class PaperServiceImpl implements PaperService {
         return paperDao.queryPaperListByTeacherId(te_id);
     }
 
+    @Override
+    public Paper joinQueryById(int id) {
+        return paperDao.joinQueryPaperByPaperId(id);
+    }
+
 }

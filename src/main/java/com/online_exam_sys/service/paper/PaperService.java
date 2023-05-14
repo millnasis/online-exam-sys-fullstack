@@ -18,4 +18,6 @@ public interface PaperService {
     public boolean add(Paper paper);
 
     public boolean update(Paper paper);
+
+    public Paper joinQueryById(int id);
 }

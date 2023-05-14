@@ -55,6 +55,19 @@ body {
 /*!*****************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[0].oneOf[0].use[3]!./src/student/components/examControl/examControl.scss ***!
   \*****************************************************************************************************************************************************************************************************************************/
+.paper-info-modal .check-paper-info {
+  text-align: center;
+}
+.paper-info-modal .check-paper-info .paper-info {
+  text-align: left;
+  padding: 0 40px;
+}
+.paper-info-modal .check-paper-info .paper-info .head {
+  display: inline-block;
+  width: 120px;
+  font-weight: bold;
+}
+
 .exam-control {
   padding: 20px 30px;
   background-color: #fafafa;
@@ -68,6 +81,17 @@ body {
   width: 28vw;
   margin: 10px 10px;
   min-width: 420px;
+  position: relative;
+}
+.exam-control .transition-warp .exam-card .more-btn {
+  position: absolute;
+  right: 10px;
+  top: 15px;
+  cursor: pointer;
+  font-size: 0.7em;
+}
+.exam-control .transition-warp .exam-card .more-btn:hover {
+  text-decoration: underline;
 }
 .exam-control .transition-warp .exam-card .state-font {
   font-size: 4vmin;

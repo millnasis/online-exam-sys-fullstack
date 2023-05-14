@@ -757,6 +757,7 @@ class App extends React.Component {
               <div className="count-down">
                 <Countdown
                   onFinish={() => {
+                    this.switchSelectQuestion(-1);
                     cancelScreenoffCheck(this.visibilitychangeFunc);
                     notification.info({ message: "考试已结束，即将跳转" });
                     setTimeout(() => {

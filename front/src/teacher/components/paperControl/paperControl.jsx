@@ -187,12 +187,13 @@ function Question(props) {
                   style={{ width: "80%" }}
                 ></Input.TextArea>
                 <br />
-                <Input
+                <InputNumber
                   addonBefore={"分值"}
+                  min={0}
                   style={{ width: "80%" }}
                   value={score}
-                  onChange={(e) => setScore(e.currentTarget.value)}
-                ></Input>
+                  onChange={(e) => setScore(e)}
+                ></InputNumber>
               </>
             ) : (
               <Title level={3}>{`${queue}. ${describe} (${score}分)`}</Title>
@@ -304,12 +305,13 @@ function Question(props) {
                   style={{ width: "80%" }}
                 ></Input.TextArea>
                 <br />
-                <Input
+                <InputNumber
                   addonBefore={"分值"}
+                  min={0}
                   style={{ width: "80%" }}
                   value={score}
-                  onChange={(e) => setScore(e.currentTarget.value)}
-                ></Input>
+                  onChange={(e) => setScore(e)}
+                ></InputNumber>
               </>
             ) : (
               <Title level={3}>{`${queue}. ${describe} (${score}分)`}</Title>
@@ -409,12 +411,13 @@ function Question(props) {
                   {`${queue}. 主观题`}
                   <br />
                 </Title>
-                <Input
+                <InputNumber
                   addonBefore={"分值"}
+                  min={0}
                   style={{ width: "80%" }}
                   value={score}
-                  onChange={(e) => setScore(e.currentTarget.value)}
-                ></Input>
+                  onChange={(e) => setScore(e)}
+                ></InputNumber>
               </>
             )}
 
