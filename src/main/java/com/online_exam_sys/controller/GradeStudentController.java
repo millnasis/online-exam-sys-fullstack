@@ -24,9 +24,9 @@ public class GradeStudentController {
     private GradeStudentService gradeStudentService;
 
     @ApiOperation("学生加入班级")
-    @PostMapping("/grade/{gr_id}")
-    public Result studentJoinGradeByGrId(@PathVariable int gr_id, @RequestBody Student student) {
-        boolean ret = gradeStudentService.studentJoinGradeByGradeId(gr_id, student.getSt_id());
+    @PostMapping("/grade/{gr_password}")
+    public Result studentJoinGradeByGrId(@PathVariable String gr_password, @RequestBody Student student) {
+        boolean ret = gradeStudentService.studentJoinGradeByGradePassword(gr_password, student.getSt_id());
         return ret ? new Result(ret, "成功", Constant.code.success)
                 : new Result(null, "加入失败，请检查班级是否存在，或者您已在班级中", Constant.code.error);
     }

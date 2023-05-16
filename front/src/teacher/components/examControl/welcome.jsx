@@ -49,6 +49,7 @@ class Welcome extends React.Component {
           break;
       }
     });
+
     return (
       <div className="welcome">
         <div className="up">
@@ -129,12 +130,11 @@ class Welcome extends React.Component {
         </div>
         <div className="down">
           <div className="preparing">
-            <Card className="preparing-body" title={"未发布的考试"}>
+            <Card className="preparing-body" title={"未完成出题"}>
               {preparing.length > 0 ? (
                 preparing.map((v) => {
-                  const begintime = dayjs(v.pa_begintime)
-                    .format("YYYY年MM月DD日HH时mm分")
-                    .toString();
+                  let order = JSON.parse(v.pa_order);
+                  order = Array.isArray(order) ? order : [];
                   return (
                     <Title
                       level={4}
@@ -142,8 +142,8 @@ class Welcome extends React.Component {
                         switchfunc(v.pa_state);
                       }}
                     >
-                      考试 <span className="exam-name">{v.pa_name}</span> 预计在{" "}
-                      {begintime}开始
+                      考试 <span className="exam-name">{v.pa_name}</span>{" "}
+                      尚未完成出题，目前已有{order.length}道题目
                     </Title>
                   );
                 })
@@ -153,7 +153,7 @@ class Welcome extends React.Component {
             </Card>
           </div>
           <div className="correcting">
-            <Card className="correcting-body" title={"试卷批改中"}>
+            <Card className="correcting-body" title={"未完成批改"}>
               {correcting.length > 0 ? (
                 correcting.map((v) => {
                   const deadline = dayjs(
@@ -171,7 +171,7 @@ class Welcome extends React.Component {
                       }}
                     >
                       考试 <span className="exam-name">{v.pa_name}</span> 已在{" "}
-                      {deadline}结束，等待老师完成批卷
+                      {deadline}结束，尚未完成批改
                     </Title>
                   );
                 })
@@ -181,7 +181,7 @@ class Welcome extends React.Component {
             </Card>
           </div>
           <div className="finished">
-            <Card className="finished-body" title={"已出分的考试"}>
+            <Card className="finished-body" title={"已结束的考试"}>
               {finished.length > 0 ? (
                 finished.map((v) => {
                   return (
@@ -192,8 +192,7 @@ class Welcome extends React.Component {
                         switchfunc(v.pa_state);
                       }}
                     >
-                      考试 <span className="exam-name">{v.pa_name}</span>{" "}
-                      已出分，点击查看
+                      考试 <span className="exam-name">{v.pa_name}</span> 已结束
                     </Title>
                   );
                 })

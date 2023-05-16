@@ -19,6 +19,7 @@ public class Grade {
     private String gr_avatar;
     private Date gr_founddate;
     private Date gr_lastupdate;
+    private String gr_password;
     @TableField(exist = false)
     private Date gr_joindate;
 }

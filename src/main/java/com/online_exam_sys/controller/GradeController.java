@@ -2,6 +2,7 @@ package com.online_exam_sys.controller;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,8 +62,10 @@ public class GradeController {
     public Result add(@RequestBody Grade data) {
         data.setGr_founddate(new Date(System.currentTimeMillis()));
         data.setGr_lastupdate(new Date(System.currentTimeMillis()));
+        String[] split = UUID.randomUUID().toString().split("-");
+        data.setGr_password(split[split.length - 1]);
         boolean add = gradeService.add(data);
-        return add ? new Result(null, "成功", Constant.code.success)
+        return add ? new Result(data, "成功", Constant.code.success)
                 : new Result(null, "创建失败，请联系管理员", Constant.code.error);
     }
 }

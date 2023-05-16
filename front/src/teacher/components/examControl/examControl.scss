@@ -1,6 +1,133 @@
+.paper-info-modal {
+  .check-paper-info {
+    text-align: center;
+    .paper-info {
+      text-align: left;
+      padding: 0 40px;
+      .head {
+        display: inline-block;
+        width: 120px;
+        font-weight: bold;
+      }
+    }
+  }
+}
 .exam-control {
-  padding: 20px 30px;
+  padding: 10px 30px;
   background-color: darken($color: #fff, $amount: 2%);
+  .switch-welcome-btn {
+    font-size: 28px;
+    height: 42px;
+    margin: 5px;
+  }
+  .welcome {
+    display: flex;
+    flex-direction: column;
+    .exam-name {
+      text-decoration: underline;
+      cursor: pointer;
+      color: black;
+    }
+    .up {
+      min-height: 260px;
+      height: 48vh;
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      margin: 5px;
+      .main {
+        height: 100%;
+        flex: 1;
+        margin: 5px;
+        .main-body {
+          height: 100%;
+          overflow-y: auto;
+          .waiting-ul {
+            list-style: none;
+            .waiting-li {
+              color: #008b8b;
+            }
+          }
+          .ongoing-title {
+            text-align: center;
+          }
+        }
+      }
+      @media screen and (max-width: 900px) {
+        .calendar {
+          display: none;
+        }
+      }
+      .calendar {
+        width: 30%;
+        min-width: 250px;
+        max-width: 360px;
+        height: 100%;
+        min-height: 320px;
+        margin: 5px;
+      }
+    }
+    .down {
+      margin: 5px;
+      height: 36vh;
+      min-height: 180px;
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      .preparing {
+        margin: 5px;
+        min-width: 300px;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+        &:hover {
+          transform: translateY(-10px);
+        }
+        min-height: 240px;
+        flex: 1;
+        .preparing-body {
+          overflow-y: auto;
+          height: 100%;
+        }
+      }
+      .correcting {
+        min-width: 300px;
+        margin: 5px;
+        min-height: 240px;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+        &:hover {
+          transform: translateY(-10px);
+        }
+        flex: 1;
+        .correcting-body {
+          overflow-y: auto;
+          height: 100%;
+          .correcting-li {
+            color: #e67e00;
+          }
+        }
+      }
+      .finished {
+        margin: 5px;
+        min-width: 300px;
+        min-height: 240px;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+        &:hover {
+          transform: translateY(-10px);
+        }
+        flex: 1;
+        .finished-body {
+          overflow-y: auto;
+          height: 100%;
+          .finished-li {
+            color: #006400;
+          }
+        }
+      }
+    }
+  }
   .transition-warp {
     display: flex;
     align-items: center;

@@ -14,6 +14,7 @@ import {
   Form,
   DatePicker,
   InputNumber,
+  Typography,
 } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -25,6 +26,8 @@ import "./gradeControl.scss";
 import { CameraOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import constant from "../../../constant";
+const { Paragraph, Text } = Typography;
 
 const fakeData = [
   {
@@ -330,6 +333,10 @@ function GradeListItem(props) {
                 )}
               </p>
               <p>
+                <span className="grade-modal-info-title">班级口令</span>
+                <Paragraph copyable>{item.gr_password}</Paragraph>
+              </p>
+              <p>
                 <span className="grade-modal-info-title">创建时间</span>
                 {dayjs(item.gr_founddate)
                   .format("YYYY年MM月DD日HH时MM分")
@@ -440,7 +447,22 @@ class GradeControl extends React.Component {
                 ...this.state.gradeForm,
                 te_id: userInfo.te_id,
               }),
-              async () => {
+              async (response) => {
+                if (response.data.code === constant.code.success) {
+                  notification.success({
+                    message: "创建成功",
+                    placement: "top",
+                    duration: 0,
+                    description: (
+                      <Paragraph>
+                        该班级的口令是：
+                        <Paragraph copyable>
+                          {response.data.data.gr_password}
+                        </Paragraph>
+                      </Paragraph>
+                    ),
+                  });
+                }
                 await this.getGradeInfo();
               },
               () => {

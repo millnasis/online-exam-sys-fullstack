@@ -9,6 +9,8 @@ import {
   Modal,
   Row,
   Select,
+  Button,
+  notification,
 } from "antd";
 const { Countdown } = Statistic;
 import "./examControl.scss";
@@ -20,6 +22,14 @@ import { connect } from "react-redux";
 import dayjs from "dayjs";
 import Welcome from "./welcome.jsx";
 const { Text } = Typography;
+import { ArrowLeftOutlined, ArrowRightOutlined } from "@ant-design/icons";
+
+const paperStateMap = new Map();
+paperStateMap.set(constant.paper_state.correcting, "批改中");
+paperStateMap.set(constant.paper_state.end, "已结束");
+paperStateMap.set(constant.paper_state.preparing, "未发布");
+paperStateMap.set(constant.paper_state.starting, "进行中");
+paperStateMap.set(constant.paper_state.waiting, "等待开始");
 
 function Exam(props) {
   const { paper, menuselect, changestate, openModal } = props;
@@ -220,6 +230,20 @@ const fakeData = [
     te_id: "123",
     gr_founddate: new Date(),
   },
+  {
+    pa_id: "1233",
+    gr_id: "224323",
+    pa_name: "大学语文",
+    pa_founddate: new Date(),
+    pa_state: constant.paper_state.correcting,
+    pa_begintime: new Date(),
+    pa_duringtime: 60 * 60 * 2,
+    pa_order: "123",
+    gr_info: "123",
+    gr_name: "223班",
+    te_id: "123",
+    gr_founddate: new Date(),
+  },
 ];
 
 /**
@@ -288,9 +312,19 @@ class ExamControl extends React.Component {
     );
   }
 
+  componentDidUpdate(prev) {
+    if (
+      this.props.global.userInfo.st_id &&
+      this.props.global.userInfo.st_id !== prev.global.userInfo.st_id
+    ) {
+      this.getExamInfo();
+    }
+  }
+
   componentDidMount() {
-    this.getExamInfo();
-    console.log(this.state);
+    if (this.props.global.userInfo.st_id) {
+      this.getExamInfo();
+    }
   }
 
   render() {
@@ -303,6 +337,28 @@ class ExamControl extends React.Component {
     const format = "YYYY年MM月DD日 HH时mm分";
     return (
       <div className="exam-control">
+        <Button
+          className="switch-welcome-btn"
+          type="text"
+          onClick={() => {
+            this.setState({
+              welcome: !this.state.welcome,
+              filterData: this.state.welcome
+                ? this.state.filterData
+                : this.originData,
+            });
+          }}
+        >
+          {this.state.welcome ? (
+            <>
+              搜索考试<ArrowRightOutlined></ArrowRightOutlined>
+            </>
+          ) : (
+            <>
+              <ArrowLeftOutlined></ArrowLeftOutlined>返回主页
+            </>
+          )}
+        </Button>
         <Modal
           open={this.state.modalVisable}
           onCancel={() => {
@@ -327,7 +383,7 @@ class ExamControl extends React.Component {
               <p>
                 <Text>
                   <span className="head">当前考试状态：</span>
-                  {exam.pa_state}
+                  {paperStateMap.get(exam.pa_state)}
                 </Text>
               </p>
               <p>
@@ -376,7 +432,19 @@ class ExamControl extends React.Component {
           </Card>
         </Modal>
         {this.state.welcome ? (
-          <Welcome></Welcome>
+          <Welcome
+            exam={this.originData}
+            switchfunc={(pa_state = "all") => {
+              this.setState({
+                ...this.clearState,
+                filterData: this.originData.filter((v) => {
+                  return v.pa_state === pa_state;
+                }),
+                pa_state,
+                welcome: false,
+              });
+            }}
+          ></Welcome>
         ) : (
           <>
             <Row gutter={16} style={{ width: "100%" }}>
@@ -466,6 +534,10 @@ class ExamControl extends React.Component {
                     {
                       value: constant.paper_state.starting,
                       label: "进行中",
+                    },
+                    {
+                      value: constant.paper_state.correcting,
+                      label: "批改中",
                     },
                     {
                       value: constant.paper_state.end,

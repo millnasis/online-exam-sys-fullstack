@@ -30,27 +30,9 @@ body {
 .content {
   padding: 0 50px;
 }
-.content .welcome {
-  text-align: center;
-}
-.content .welcome .welcome-big {
-  font-size: 8vmin;
-}
 
 .footer {
   text-align: center;
-}
-
-.welcome {
-  padding: 20px 30px;
-  background-color: #fafafa;
-  display: flex;
-  align-items: center;
-  height: 80vh;
-}
-.welcome .welcome-big {
-  text-align: center;
-  width: 100%;
 }
 /*!*****************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[0].oneOf[0].use[3]!./src/student/components/examControl/examControl.scss ***!
@@ -69,8 +51,121 @@ body {
 }
 
 .exam-control {
-  padding: 20px 30px;
+  padding: 10px 30px;
   background-color: #fafafa;
+}
+.exam-control .switch-welcome-btn {
+  font-size: 28px;
+  height: 42px;
+  margin: 5px;
+}
+.exam-control .welcome {
+  display: flex;
+  flex-direction: column;
+}
+.exam-control .welcome .exam-name {
+  text-decoration: underline;
+  cursor: pointer;
+  color: black;
+}
+.exam-control .welcome .up {
+  min-height: 260px;
+  height: 48vh;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  margin: 5px;
+}
+.exam-control .welcome .up .main {
+  height: 100%;
+  flex: 1;
+  margin: 5px;
+}
+.exam-control .welcome .up .main .main-body {
+  height: 100%;
+  overflow-y: auto;
+}
+.exam-control .welcome .up .main .main-body .waiting-ul {
+  list-style: none;
+}
+.exam-control .welcome .up .main .main-body .waiting-ul .waiting-li {
+  color: #008b8b;
+}
+.exam-control .welcome .up .main .main-body .ongoing-title {
+  text-align: center;
+}
+@media screen and (max-width: 900px) {
+  .exam-control .welcome .up .calendar {
+    display: none;
+  }
+}
+.exam-control .welcome .up .calendar {
+  width: 30%;
+  min-width: 250px;
+  max-width: 360px;
+  height: 100%;
+  min-height: 320px;
+  margin: 5px;
+}
+.exam-control .welcome .down {
+  margin: 5px;
+  height: 36vh;
+  min-height: 180px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.exam-control .welcome .down .preparing {
+  margin: 5px;
+  min-width: 300px;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  min-height: 240px;
+  flex: 1;
+}
+.exam-control .welcome .down .preparing:hover {
+  transform: translateY(-10px);
+}
+.exam-control .welcome .down .preparing .preparing-body {
+  overflow-y: auto;
+  height: 100%;
+}
+.exam-control .welcome .down .correcting {
+  min-width: 300px;
+  margin: 5px;
+  min-height: 240px;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  flex: 1;
+}
+.exam-control .welcome .down .correcting:hover {
+  transform: translateY(-10px);
+}
+.exam-control .welcome .down .correcting .correcting-body {
+  overflow-y: auto;
+  height: 100%;
+}
+.exam-control .welcome .down .correcting .correcting-body .correcting-li {
+  color: #e67e00;
+}
+.exam-control .welcome .down .finished {
+  margin: 5px;
+  min-width: 300px;
+  min-height: 240px;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  flex: 1;
+}
+.exam-control .welcome .down .finished:hover {
+  transform: translateY(-10px);
+}
+.exam-control .welcome .down .finished .finished-body {
+  overflow-y: auto;
+  height: 100%;
+}
+.exam-control .welcome .down .finished .finished-body .finished-li {
+  color: #006400;
 }
 .exam-control .transition-warp {
   display: flex;

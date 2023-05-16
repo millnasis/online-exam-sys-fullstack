@@ -13,11 +13,21 @@
   }
 }
 .exam-control {
-  padding: 20px 30px;
+  padding: 10px 30px;
   background-color: darken($color: #fff, $amount: 2%);
+  .switch-welcome-btn {
+    font-size: 28px;
+    height: 42px;
+    margin: 5px;
+  }
   .welcome {
     display: flex;
     flex-direction: column;
+    .exam-name {
+      text-decoration: underline;
+      cursor: pointer;
+      color: black;
+    }
     .up {
       min-height: 260px;
       height: 48vh;
@@ -29,7 +39,19 @@
         height: 100%;
         flex: 1;
         margin: 5px;
-        border: 1px solid yellow;
+        .main-body {
+          height: 100%;
+          overflow-y: auto;
+          .waiting-ul {
+            list-style: none;
+            .waiting-li {
+              color: #008b8b;
+            }
+          }
+          .ongoing-title {
+            text-align: center;
+          }
+        }
       }
       @media screen and (max-width: 900px) {
         .calendar {
@@ -40,8 +62,8 @@
         width: 30%;
         min-width: 250px;
         max-width: 360px;
-        border: 1px solid black;
         height: 100%;
+        min-height: 320px;
         margin: 5px;
       }
     }
@@ -54,25 +76,55 @@
       flex-direction: row;
       flex-wrap: wrap;
       .preparing {
-        border: 1px solid red;
         margin: 5px;
         min-width: 300px;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+        &:hover {
+          transform: translateY(-10px);
+        }
         min-height: 240px;
         flex: 1;
+        .preparing-body {
+          overflow-y: auto;
+          height: 100%;
+        }
       }
       .correcting {
-        border: 1px solid green;
         min-width: 300px;
         margin: 5px;
         min-height: 240px;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+        &:hover {
+          transform: translateY(-10px);
+        }
         flex: 1;
+        .correcting-body {
+          overflow-y: auto;
+          height: 100%;
+          .correcting-li {
+            color: #e67e00;
+          }
+        }
       }
       .finished {
         margin: 5px;
         min-width: 300px;
         min-height: 240px;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+        &:hover {
+          transform: translateY(-10px);
+        }
         flex: 1;
-        border: 1px solid blue;
+        .finished-body {
+          overflow-y: auto;
+          height: 100%;
+          .finished-li {
+            color: #006400;
+          }
+        }
       }
     }
   }

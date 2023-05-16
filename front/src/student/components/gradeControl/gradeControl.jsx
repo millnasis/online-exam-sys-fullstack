@@ -10,12 +10,14 @@ import {
   Modal,
   notification,
   InputNumber,
+  Typography,
   Skeleton,
 } from "antd";
 import axios from "axios";
 import React, { useState } from "react";
 import { connect } from "react-redux";
 import request from "../../../request";
+const { Paragraph } = Typography;
 
 import "./gradeControl.scss";
 import dayjs from "dayjs";
@@ -116,6 +118,10 @@ function GradeListItem(props) {
                 <span className="grade-modal-info-des">{item.gr_info}</span>
               </p>
               <p>
+                <span className="grade-modal-info-title">班级口令</span>
+                <Paragraph copyable>{item.gr_password}</Paragraph>
+              </p>
+              <p>
                 <span className="grade-modal-info-title">创建时间</span>
                 {dayjs(item.gr_founddate)
                   .format("YYYY年MM月DD日HH时MM分")
@@ -201,7 +207,7 @@ class GradeControl extends React.Component {
           title="加入一个班级"
           onOk={async () => {
             if (this.state.gradeInput === "") {
-              notification.error({ message: "请输入班级id" });
+              notification.error({ message: "请输入班级口令" });
               return;
             }
             const { userInfo } = this.props.global;
@@ -222,15 +228,15 @@ class GradeControl extends React.Component {
           }}
           onCancel={() => this.setState({ showModal: false })}
         >
-          <InputNumber
-            addonBefore={"班级id"}
+          <Input
+            addonBefore={"班级口令"}
             value={this.state.gradeInput}
-            onChange={(v) => {
-              this.setState({ gradeInput: v });
+            onChange={(e) => {
+              this.setState({ gradeInput: e.currentTarget.value });
             }}
             style={{ width: "100%" }}
             controls={false}
-          ></InputNumber>
+          ></Input>
         </Modal>
         <Row gutter={16}>
           <Col span={12}>

@@ -2,6 +2,7 @@ package com.online_exam_sys;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,9 +69,16 @@ class OnlineExamSysApplicationTests {
 
 	}
 
-	@Test
+	// @Test
 	void mathTest() {
 		System.out.println(10F / (float) 3);
+	}
+
+	@Test
+	void uuidTest() {
+		String[] split = UUID.randomUUID().toString().split("-");
+
+		System.out.println(split[split.length - 1]);
 	}
 
 }
