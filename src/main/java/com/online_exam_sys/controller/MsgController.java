@@ -12,6 +12,7 @@ import com.online_exam_sys.pojo.Paper;
 import com.online_exam_sys.pojo.signal.AnswerSignal;
 import com.online_exam_sys.pojo.signal.CandidateSignal;
 import com.online_exam_sys.pojo.signal.CheatSignal;
+import com.online_exam_sys.pojo.signal.InfoSignal;
 import com.online_exam_sys.pojo.signal.JoinSignal;
 import com.online_exam_sys.pojo.signal.LeaveSignal;
 import com.online_exam_sys.pojo.signal.NewPeerSignal;
@@ -78,7 +79,7 @@ public class MsgController {
     @MessageMapping("/" + "cheat" + "/{st_id}")
     // 判定作弊
     public void cheat(CheatSignal msgCheat, @DestinationVariable String st_id) {
-        log.info("join " + st_id + " 操作，消息：{}", msgCheat);
+        log.info("cheat " + st_id + " 操作，消息：{}", msgCheat);
         // 检查数据是否存在
         Ex_paper ep = examPaperService.queryById(msgCheat.getEp_id());
         if (ep == null) {
@@ -92,10 +93,30 @@ public class MsgController {
 
     }
 
+    @MessageMapping("/" + "warning" + "/{st_id}")
+    public void warning(InfoSignal msgInfo, @DestinationVariable String st_id) {
+        log.info("warning " + st_id + " 操作，消息：{}", msgInfo);
+        // 将消息转发给学生
+        this.template.convertAndSend("/ws-resp/" + "warning/" + st_id, msgInfo);
+
+    }
+
+    @MessageMapping("/info/{roomid}")
+    public void info(InfoSignal msgInfo, @DestinationVariable String roomid) {
+        log.info("info " + " 操作，消息：{}", msgInfo);
+        Set<String> SroomSet = STUDENT_ROOM_TABLE_MAP.get(roomid);
+        if (SroomSet != null) {
+            SroomSet.forEach(st_id -> {
+                this.template.convertAndSend("/ws-resp/" + "info/" + st_id, msgInfo);
+            });
+        }
+
+    }
+
     @MessageMapping("/" + "screenoff" + "/{pa_id}")
     // 切屏通知
     public void screenoff(ScreenoffSignal msgScreenoff, @DestinationVariable int pa_id) {
-        log.info("join " + pa_id + " 操作，消息：{}", msgScreenoff);
+        log.info("screenoff " + pa_id + " 操作，消息：{}", msgScreenoff);
         Ex_paper ep = examPaperService.queryById(msgScreenoff.getEp_id());
         if (ep == null) {
             return;

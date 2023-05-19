@@ -513,6 +513,17 @@ class App extends React.Component {
         }
       );
     };
+    this.rtc.warningCallback = (msg) => {
+      notification.warning({ message: "警告", description: msg });
+    };
+    this.rtc.infoCallback = (msg) => {
+      notification.info({
+        message: "通知",
+        description: msg,
+        placement: "top",
+        duration: 0,
+      });
+    };
 
     this.visibilitychangeFunc = null;
 

@@ -488,7 +488,21 @@ class ExamControl extends React.Component {
         </Modal>
         {this.state.welcome ? (
           <Welcome
-            exam={this.originData}
+            exam={this.state.filterData}
+            onFinish={(pa_id, pa_state) => {
+              this.originData = this.originData.map((v) => {
+                if (v.pa_id !== pa_id) {
+                  return v;
+                }
+                return {
+                  ...v,
+                  pa_state,
+                };
+              });
+              this.setState({
+                filterData: this.originData,
+              });
+            }}
             switchfunc={(pa_state = "all") => {
               this.setState({
                 ...this.clearState,
@@ -629,16 +643,17 @@ class ExamControl extends React.Component {
                         );
                       }}
                       changestate={(pa_id, pa_state) => {
+                        this.originData = this.originData.map((v) => {
+                          if (v.pa_id !== pa_id) {
+                            return v;
+                          }
+                          return {
+                            ...v,
+                            pa_state,
+                          };
+                        });
                         this.setState({
-                          filterData: this.state.filterData.map((v) => {
-                            if (v.pa_id !== pa_id) {
-                              return v;
-                            }
-                            return {
-                              ...v,
-                              pa_state,
-                            };
-                          }),
+                          filterData: this.originData,
                         });
                       }}
                       menuselect={this.props.menuselect}

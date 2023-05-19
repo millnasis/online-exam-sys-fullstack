@@ -49,7 +49,7 @@ class Welcome extends React.Component {
           break;
       }
     });
-
+    const { onFinish } = this.props;
     return (
       <div className="welcome">
         <div className="up">
@@ -64,7 +64,14 @@ class Welcome extends React.Component {
                   return (
                     <Title level={1} type="danger" className="ongoing-title">
                       考试{" "}
-                      <span className="exam-name">{ongoing[0].pa_name}</span>{" "}
+                      <span
+                        className="exam-name"
+                        onClick={() => {
+                          switchfunc(ongoing[0].pa_state);
+                        }}
+                      >
+                        {ongoing[0].pa_name}
+                      </span>{" "}
                       正在进行，
                       <Countdown
                         style={{
@@ -76,8 +83,22 @@ class Welcome extends React.Component {
                         }}
                         value={deadline}
                         format="D 天 H 时 m 分 s 秒"
+                        onFinish={() =>
+                          onFinish(
+                            ongoing[0].pa_id,
+                            constant.paper_state.correcting
+                          )
+                        }
                       ></Countdown>
-                      后结束，<a>点击加入考试</a>
+                      后结束，
+                      <a
+                        onClick={() => {
+                          localStorage.setItem("pa_id", ongoing[0].pa_id);
+                          location.href = "./exam-client";
+                        }}
+                      >
+                        点击加入考试
+                      </a>
                     </Title>
                   );
                 } else if (waiting.length > 0) {
@@ -106,6 +127,12 @@ class Welcome extends React.Component {
                                 }}
                                 value={deadline}
                                 format="D 天 H 时 m 分 s 秒"
+                                onFinish={() =>
+                                  onFinish(
+                                    v.pa_id,
+                                    constant.paper_state.starting
+                                  )
+                                }
                               ></Countdown>
                               后开始考试
                             </Title>

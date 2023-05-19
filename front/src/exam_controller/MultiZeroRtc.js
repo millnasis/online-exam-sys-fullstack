@@ -166,6 +166,28 @@ export default class MultiZeroRtc {
     }
   }
 
+  sendWarning(ep_id, st_id, msg) {
+    const jsonMsg = {
+      ep_id,
+      st_id,
+      msg,
+    };
+
+    const message = JSON.stringify(jsonMsg);
+    this.sendMessage(sendPrefix + "warning" + "/" + st_id, message);
+  }
+
+  sendInfo(msg) {
+    const roomid = this.roomId;
+    const jsonMsg = {
+      roomid,
+      msg,
+    };
+
+    const message = JSON.stringify(jsonMsg);
+    this.sendMessage(sendPrefix + "info" + "/" + roomid, message);
+  }
+
   sendSetCheat(ep_id, st_id) {
     const jsonMsg = {
       ep_id,

@@ -11,7 +11,7 @@ import {
 } from "antd";
 import axios from "axios";
 import "./index.scss";
-import constant from "../constant";
+
 import request from "../request";
 
 const { Item } = Form;

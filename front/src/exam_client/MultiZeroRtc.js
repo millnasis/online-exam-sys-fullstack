@@ -25,6 +25,8 @@ export default class MultiZeroRtc {
     this.joinCallBack = null;
     this.exitCallBack = null;
     this.cheatCallBack = null;
+    this.warningCallback = null;
+    this.infoCallback = null;
   }
 
   setLocalVideo(element) {
@@ -128,6 +130,20 @@ export default class MultiZeroRtc {
         (resp) => {
           const msg = JSON.parse(resp.body);
           this.cheatCallBack();
+        }
+      );
+      this.stompClient.subscribe(
+        respPrefix + "warning" + "/" + this.localUserId,
+        (resp) => {
+          const msg = JSON.parse(resp.body);
+          this.warningCallback(msg.msg);
+        }
+      );
+      this.stompClient.subscribe(
+        respPrefix + "info" + "/" + this.localUserId,
+        (resp) => {
+          const msg = JSON.parse(resp.body);
+          this.infoCallback(msg.msg);
         }
       );
     });

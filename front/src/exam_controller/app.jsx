@@ -4,10 +4,7 @@ import {
   Avatar,
   Statistic,
   Input,
-  InputNumber,
   Card,
-  Row,
-  Col,
   Select,
   List,
   Badge,
@@ -15,6 +12,7 @@ import {
   Modal,
   Popconfirm,
   notification,
+  Typography,
 } from "antd";
 const { Countdown } = Statistic;
 const { Content, Footer, Header, Sider } = Layout;
@@ -71,116 +69,116 @@ function ExamStudentState(props) {
 }
 
 const fakedata = {
-  "pa_id": 22,
-  "gr_id": 3,
-  "pa_name": "考试测试",
-  "pa_founddate": "2023-05-11T07:54:57.662+00:00",
-  "pa_state": "END",
-  "pa_begintime": "2023-05-11T15:00:00.825+00:00",
-  "pa_duringtime": 120,
-  "pa_order": "[46,47,48]",
-  "ep_list": [
+  pa_id: 22,
+  gr_id: 3,
+  pa_name: "考试测试",
+  pa_founddate: "2023-05-11T07:54:57.662+00:00",
+  pa_state: "END",
+  pa_begintime: "2023-05-11T15:00:00.825+00:00",
+  pa_duringtime: 120,
+  pa_order: "[46,47,48]",
+  ep_list: [
     {
-      "ep_id": 49,
-      "st_id": 5,
-      "pa_id": 22,
-      "ep_begindate": "2023-05-12T02:55:02.130+00:00",
-      "ep_finishdate": "2023-05-12T02:56:16.361+00:00",
-      "ep_state": "FINISHED",
-      "ep_screenoff_count": 2,
-      "st_name": "个人信息修改测试",
-      "st_card": "123",
-      "ep_score": null,
-      "ep_question": null,
-      "pa_order": null,
-      "gr_id": 0,
-      "pa_name": null,
-      "pa_founddate": null,
-      "pa_state": null,
-      "pa_begintime": null,
-      "pa_duringtime": 0
+      ep_id: 49,
+      st_id: 5,
+      pa_id: 22,
+      ep_begindate: "2023-05-12T02:55:02.130+00:00",
+      ep_finishdate: "2023-05-12T02:56:16.361+00:00",
+      ep_state: "FINISHED",
+      ep_screenoff_count: 2,
+      st_name: "个人信息修改测试",
+      st_card: "123",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
     },
     {
-      "ep_id": 50,
-      "st_id": 6,
-      "pa_id": 22,
-      "ep_begindate": null,
-      "ep_finishdate": "2023-05-12T02:57:28.264+00:00",
-      "ep_state": "FINISHED",
-      "ep_screenoff_count": 0,
-      "st_name": "学生测试2",
-      "st_card": "123123",
-      "ep_score": null,
-      "ep_question": null,
-      "pa_order": null,
-      "gr_id": 0,
-      "pa_name": null,
-      "pa_founddate": null,
-      "pa_state": null,
-      "pa_begintime": null,
-      "pa_duringtime": 0
+      ep_id: 50,
+      st_id: 6,
+      pa_id: 22,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-12T02:57:28.264+00:00",
+      ep_state: "FINISHED",
+      ep_screenoff_count: 0,
+      st_name: "学生测试2",
+      st_card: "123123",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
     },
     {
-      "ep_id": 51,
-      "st_id": 7,
-      "pa_id": 22,
-      "ep_begindate": null,
-      "ep_finishdate": "2023-05-12T02:57:28.554+00:00",
-      "ep_state": "FINISHED",
-      "ep_screenoff_count": 0,
-      "st_name": "学生测试3",
-      "st_card": "1233",
-      "ep_score": null,
-      "ep_question": null,
-      "pa_order": null,
-      "gr_id": 0,
-      "pa_name": null,
-      "pa_founddate": null,
-      "pa_state": null,
-      "pa_begintime": null,
-      "pa_duringtime": 0
+      ep_id: 51,
+      st_id: 7,
+      pa_id: 22,
+      ep_begindate: null,
+      ep_finishdate: "2023-05-12T02:57:28.554+00:00",
+      ep_state: "FINISHED",
+      ep_screenoff_count: 0,
+      st_name: "学生测试3",
+      st_card: "1233",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
     },
     {
-      "ep_id": 52,
-      "st_id": 8,
-      "pa_id": 22,
-      "ep_begindate": "2023-05-12T02:56:30.727+00:00",
-      "ep_finishdate": null,
-      "ep_state": "CHEATING",
-      "ep_screenoff_count": 2,
-      "st_name": "学生测试4",
-      "st_card": "1234",
-      "ep_score": null,
-      "ep_question": null,
-      "pa_order": null,
-      "gr_id": 0,
-      "pa_name": null,
-      "pa_founddate": null,
-      "pa_state": null,
-      "pa_begintime": null,
-      "pa_duringtime": 0
+      ep_id: 52,
+      st_id: 8,
+      pa_id: 22,
+      ep_begindate: "2023-05-12T02:56:30.727+00:00",
+      ep_finishdate: null,
+      ep_state: "CHEATING",
+      ep_screenoff_count: 2,
+      st_name: "学生测试4",
+      st_card: "1234",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
     },
     {
-      "ep_id": 53,
-      "st_id": 9,
-      "pa_id": 22,
-      "ep_begindate": "2023-05-13T03:11:02.714+00:00",
-      "ep_finishdate": "2023-05-12T02:57:29.023+00:00",
-      "ep_state": "FINISHED",
-      "ep_screenoff_count": 0,
-      "st_name": "学生测试5",
-      "st_card": "1235",
-      "ep_score": null,
-      "ep_question": null,
-      "pa_order": null,
-      "gr_id": 0,
-      "pa_name": null,
-      "pa_founddate": null,
-      "pa_state": null,
-      "pa_begintime": null,
-      "pa_duringtime": 0
-    }
-  ]
+      ep_id: 53,
+      st_id: 9,
+      pa_id: 22,
+      ep_begindate: "2023-05-13T03:11:02.714+00:00",
+      ep_finishdate: "2023-05-12T02:57:29.023+00:00",
+      ep_state: "FINISHED",
+      ep_screenoff_count: 0,
+      st_name: "学生测试5",
+      st_card: "1235",
+      ep_score: null,
+      ep_question: null,
+      pa_order: null,
+      gr_id: 0,
+      pa_name: null,
+      pa_founddate: null,
+      pa_state: null,
+      pa_begintime: null,
+      pa_duringtime: 0,
+    },
+  ],
 };
 
 class App extends React.Component {
@@ -191,11 +189,14 @@ class App extends React.Component {
       userInfo: {},
       pa_id: null,
       paperData: fakedata,
-      epList: [],
+      epList: fakedata.ep_list,
       windowSize: "big",
       modalStId: -1,
       modalObj: {},
       msgList: [],
+      warningMsg: "",
+      infoModal: false,
+      infoMsg: "",
       check: false,
     };
 
@@ -482,6 +483,13 @@ class App extends React.Component {
           <Layout className="body">
             <div className="sider">
               <div className="select">
+                <Button
+                  style={{ width: "90%", marginBottom: "5px" }}
+                  type="primary"
+                  onClick={() => this.setState({ infoModal: true })}
+                >
+                  广播全体学生
+                </Button>
                 <Select
                   value={this.state.windowSize}
                   style={{ width: "90%" }}
@@ -527,6 +535,7 @@ class App extends React.Component {
                 onCancel={() => {
                   this.setState({
                     modalStId: -1,
+                    warningMsg: "",
                   });
                 }}
                 footer={[
@@ -562,6 +571,7 @@ class App extends React.Component {
                     key={"closeBtn"}
                     onClick={() => {
                       this.setState({
+                        warningMsg: "",
                         modalStId: -1,
                       });
                     }}
@@ -582,6 +592,85 @@ class App extends React.Component {
                     width: "90%",
                   }}
                 ></video>
+                <p style={{ textAlign: "center" }}>
+                  <Input
+                    addonBefore="警告考生"
+                    style={{
+                      display: "inline-block",
+                      width: "auto",
+                      minWidth: "50%",
+                      maxWidth: "75%",
+                      marginRight: "5px",
+                    }}
+                    value={this.state.warningMsg}
+                    onChange={(e) =>
+                      this.setState({ warningMsg: e.currentTarget.value })
+                    }
+                  ></Input>
+                  <Button
+                    type="primary"
+                    ghost
+                    onClick={() => {
+                      if (this.state.warningMsg === "") {
+                        notification.error({ message: "不能发送空通知" });
+                        return;
+                      }
+                      this.rtc.sendWarning(
+                        this.state.modalObj.ep_id,
+                        this.state.modalStId,
+                        this.state.warningMsg
+                      );
+                      this.setState({ warningMsg: "" }, () =>
+                        notification.success({ message: "发送成功" })
+                      );
+                    }}
+                  >
+                    发送
+                  </Button>
+                </p>
+              </Modal>
+              <Modal
+                open={this.state.infoModal}
+                width={"50vw"}
+                onCancel={() => {
+                  this.setState({
+                    infoModal: false,
+                    infoMsg: "",
+                  });
+                }}
+                okText="发送"
+                cancelText="取消"
+                onOk={() => {
+                  if (this.state.infoMsg === "") {
+                    notification.error({ message: "不能发送空通知" });
+                    return;
+                  }
+                  this.rtc.sendInfo(this.state.infoMsg);
+                  this.setState(
+                    {
+                      infoModal: false,
+                      infoMsg: "",
+                    },
+                    () => {
+                      notification.success({ message: "发送成功" });
+                    }
+                  );
+                }}
+              >
+                <Typography>
+                  <Typography.Title level={3} style={{ textAlign: "center" }}>
+                    向全体考生发送通知
+                  </Typography.Title>
+                  <Typography.Paragraph>
+                    <Input.TextArea
+                      style={{ height: "50vh" }}
+                      onChange={(e) => {
+                        this.setState({ infoMsg: e.currentTarget.value });
+                      }}
+                      value={this.state.infoMsg}
+                    ></Input.TextArea>
+                  </Typography.Paragraph>
+                </Typography>
               </Modal>
               {this.state.epList.map((ep, i) => {
                 return (
