@@ -7,18 +7,18 @@ import { Progress } from "antd";
 function EditorWarp(props) {
   const { quid, value, onChange } = props;
   // editor 实例
-  const [editor, setEditor] = useState(null); // JS 语法
+  const [editor, setEditor] = useState(null); 
   const [progress, setProgress] = useState(-1);
 
   // 工具栏配置
-  const toolbarConfig = {}; // JS 语法
+  const toolbarConfig = {};
 
   // 编辑器配置
   const editorConfig = {
-    // JS 语法
     placeholder: "请输入内容...",
     MENU_CONF: {},
   };
+  // 配置图片上传服务器
   editorConfig.MENU_CONF["uploadImage"] = {
     server: `/upload/questions/subject/${quid}`,
     fieldName: "img",

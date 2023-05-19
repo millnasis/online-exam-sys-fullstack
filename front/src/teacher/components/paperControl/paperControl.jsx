@@ -909,7 +909,7 @@ class PaperControl extends React.Component {
                       },
                     });
                   }}
-                  disabledDate={disabledDate}
+                  // disabledDate={disabledDate}
                   showTime={true}
                   disabled={!this.state.editTime}
                 ></DatePicker>

@@ -346,27 +346,32 @@ class CorrectPaper extends React.Component {
   }
 
   async correctQuestion(sign, v, value, sub) {
+    console.log(sign, v, value, sub);
+    // 限制分数在正常区间
     if (value > v.qu_score) {
       value = v.qu_score;
     }
     if (value < 0) {
       value = 0;
     }
+    // sign用来区分本题已阅还是未阅
     if (sign.length === 0) {
       sign.push(1);
     }
     const eq = { ...v, eq_score: value, qu_choose: JSON.stringify(sign) };
     this.setState({
       examPaperQuestionData: this.state.examPaperQuestionData.map((q) => {
-        if (q.ep_id !== v.ep_id) {
+        if (q.eq_id !== v.eq_id) {
           return q;
         }
         return eq;
       }),
     });
+    // timeout用于防抖
     if (this.timeout !== null) {
       clearTimeout(this.timeout);
     }
+    // 判断当前考卷是否已经完成所有主观题的批改
     let finish = true;
     sub.forEach((s) => {
       const Ssign = JSON.parse(s.qu_choose);
@@ -401,6 +406,7 @@ class CorrectPaper extends React.Component {
     const { paperData, examPaperData, examPaperQuestionData } = this.state;
     let unfinishPaper = 0,
       totalPaper = paperData.ep_list.length;
+    // 对未完成批改的试卷进行计数
     paperData.ep_list.forEach((v) => {
       if (v.ep_state === constant.exam_paper_state.correcting) {
         unfinishPaper++;
@@ -411,6 +417,7 @@ class CorrectPaper extends React.Component {
       examPaperQuestionData,
       paperData.pa_order
     );
+    // 计算总分
     const choScore = cho.reduce((pre, cur) => {
       return pre + cur.eq_score;
     }, 0);
