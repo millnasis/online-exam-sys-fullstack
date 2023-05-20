@@ -519,7 +519,7 @@ class App extends React.Component {
     this.rtc.infoCallback = (msg) => {
       notification.info({
         message: "通知",
-        description: msg,
+        description: <div>{msg}</div>,
         placement: "top",
         duration: 0,
       });
