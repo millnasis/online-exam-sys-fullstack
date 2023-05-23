@@ -108,7 +108,6 @@ function checkFunc(back) {
           hasWebcam = true;
         }
 
-
         MediaDevices.push(device);
       });
 
@@ -127,8 +126,7 @@ function checkFunc(back) {
     } else {
       if (isWebcamAlreadyCaptured == false) {
         console.log("捕获摄像头失败，请重新安装摄像头！");
-        notification.error({ message: "捕获摄像头失败，请重新安装摄像头！" });
-        return false;
+        notification.error({ message: "捕获摄像头失败，可能是没有权限！" });
       }
     }
     notification.success({ message: "找到了摄像头!!" });

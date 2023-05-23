@@ -179,8 +179,25 @@ export default class MultiZeroRtc {
 
   async createPeerConnection(remoteUid) {
     // 创建peerConnection对象
-    const peerConnection = new RTCPeerConnection(null);
-    // candidate事件处理
+    const peerConnection = new RTCPeerConnection({
+      bundlePolicy: "max-bundle",
+      rtcpMuxPolicy: "require",
+      // relay是强制使用转发服务器，all是能打洞则打洞
+      iceTransportPolicy: "relay",
+      iceServers: [
+        {
+          urls: [
+            "turn:114.55.40.109:3478?transport=udp",
+            "turn:114.55.40.109:3478?transport=tcp",
+          ],
+          username: "tyy",
+          credential: "123456",
+        },
+        {
+          urls: ["stun:114.55.40.109:3478"],
+        },
+      ],
+    });
     peerConnection.onicecandidate = (e) => {
       if (e.candidate) {
         const jsonMsg = {

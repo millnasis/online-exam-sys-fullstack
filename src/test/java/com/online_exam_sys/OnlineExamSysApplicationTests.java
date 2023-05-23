@@ -1,12 +1,17 @@
 package com.online_exam_sys;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.util.ResourceUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -74,11 +79,22 @@ class OnlineExamSysApplicationTests {
 		System.out.println(10F / (float) 3);
 	}
 
-	@Test
+	// @Test
 	void uuidTest() {
 		String[] split = UUID.randomUUID().toString().split("-");
 
 		System.out.println(split[split.length - 1]);
+	}
+
+	@Test
+	void pathTest() throws FileNotFoundException {
+		String path = ResourceUtils.getURL("classpath:").getPath();
+		System.out.println(path);
+		Pattern compile = Pattern.compile("(file:)?/?(.+)/online_exam_sys.+");
+		Matcher matcher = compile.matcher(path);
+		if (matcher.find()) {
+			System.out.println(matcher.group(0));
+		}
 	}
 
 }

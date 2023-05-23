@@ -21,13 +21,15 @@ import com.online_exam_sys.util.Result;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Api
 @RequestMapping("/upload")
+@Slf4j
 public class FileUploadController {
 
-    private String staticPathHome = "D:/javaWorkSpace/online-exam-sys-fullstack/src/main/resources/static";
+    private String staticPathHome = "C:/Users/Administrator/Downloads/static";
 
     @ApiOperation("上传单个文件")
     @PostMapping("/single")
@@ -39,7 +41,7 @@ public class FileUploadController {
         System.out.println(img.getSize()); // 文件大小
         System.out.println(img.getOriginalFilename()); // 获取上传文件的真实名称
 
-        File destFile = new File("D:/javaWorkSpace/online-exam-sys-fullstack/src/main/resources/static/img");
+        File destFile = new File("C:/Users/Administrator/Downloads/static/img");
         if (!destFile.exists()) {
             destFile.mkdir();
         }
