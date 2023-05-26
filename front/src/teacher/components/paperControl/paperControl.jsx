@@ -27,6 +27,7 @@ import {
   Radio,
   Popconfirm,
   notification,
+  Skeleton,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
@@ -659,6 +660,7 @@ class PaperControl extends React.Component {
       paperData: {},
       modalOpen: false,
       fetching: false,
+      mainFetching: false,
       newQuestionType: constant.question_type.choose,
     };
 
@@ -674,12 +676,13 @@ class PaperControl extends React.Component {
     if (paperId === -1) {
       return;
     }
+    this.setState({ mainFetching: true });
     await request(
       axios.get(`/papers/${paperId}`),
       (response) => {
         this.setState({ paperData: response.data.data });
       },
-      () => null
+      () => this.setState({ mainFetching: false })
     );
     this.getQuestion();
   }
@@ -733,7 +736,9 @@ class PaperControl extends React.Component {
   render() {
     const { menuselect } = this.props;
     const { paperData } = this.state;
-    return (
+    return this.state.mainFetching ? (
+      <Skeleton></Skeleton>
+    ) : (
       <div className="paper-control">
         <Modal
           title="新建题目"
@@ -849,7 +854,14 @@ class PaperControl extends React.Component {
                 okText="确定"
                 cancelText="取消"
               >
-                <Button type="primary" style={{ marginRight: "10px" }}>
+                <Button
+                  type="primary"
+                  style={{ marginRight: "10px" }}
+                  disabled={
+                    this.state.paperData.pa_state !==
+                    constant.paper_state.preparing
+                  }
+                >
                   发布考试
                 </Button>
               </Popconfirm>
@@ -892,7 +904,13 @@ class PaperControl extends React.Component {
                   保存
                 </Button>
               ) : (
-                <Button onClick={() => this.setState({ editTime: true })}>
+                <Button
+                  onClick={() => this.setState({ editTime: true })}
+                  disabled={
+                    this.state.paperData.pa_state !==
+                    constant.paper_state.preparing
+                  }
+                >
                   修改
                 </Button>
               )}

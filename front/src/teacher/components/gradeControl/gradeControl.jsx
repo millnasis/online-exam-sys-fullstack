@@ -398,6 +398,7 @@ class GradeControl extends React.Component {
       },
       startExam: false,
       startExamGr_id: -1,
+      fetching: false,
     };
 
     this.getGradeInfo = this.getGradeInfo.bind(this);
@@ -405,6 +406,7 @@ class GradeControl extends React.Component {
 
   async getGradeInfo() {
     const { userInfo } = this.props.global;
+    this.setState({ fetching: true });
     request(
       axios.get("/grades/teacher/" + userInfo.te_id),
       (response) => {
@@ -413,7 +415,7 @@ class GradeControl extends React.Component {
           filterData: response.data.data,
         });
       },
-      () => null
+      () => this.setState({ fetching: false })
     );
   }
 
@@ -422,7 +424,9 @@ class GradeControl extends React.Component {
   }
 
   render() {
-    return (
+    return this.state.fetching ? (
+      <Skeleton></Skeleton>
+    ) : (
       <div className="grade-control">
         <StartAnExamModal
           key={this.state.startExamGr_id}

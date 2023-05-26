@@ -288,6 +288,7 @@ class CorrectPaper extends React.Component {
       examPaperQuestionData: fakeQuestionData,
       currentExPaperId: -1,
       fetching: false,
+      mainFetching: false,
     };
 
     this.timeout = null;
@@ -322,6 +323,7 @@ class CorrectPaper extends React.Component {
     if (paperId === -1) {
       return;
     }
+    this.setState({ mainFetching: true });
     await request(
       axios.get("/papers/ep/" + paperId),
       (response) => {
@@ -329,7 +331,7 @@ class CorrectPaper extends React.Component {
           this.setState({ paperData: response.data.data });
         }
       },
-      () => {}
+      () => this.setState({ mainFetching: false })
     );
   }
 
@@ -430,7 +432,9 @@ class CorrectPaper extends React.Component {
     const filTotal = fil.reduce((pre, cur) => {
       return pre + cur.qu_score;
     }, 0);
-    return (
+    return this.state.mainFetching ? (
+      <Skeleton></Skeleton>
+    ) : (
       <div className="correct-paper">
         <Collapse>
           <Panel

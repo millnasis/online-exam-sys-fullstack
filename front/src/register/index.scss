@@ -1,33 +1,43 @@
 body {
-  background-color: rgba($color: #000000, $alpha: 0.05);
   padding: 0;
   margin: 0;
-  .warpper {
-    width: 98vw;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    padding-top: 50px;
-    padding-bottom: 50px;
-    .register-window {
-      padding: 20px 5%;
-      width: 30vw;
-      min-width: 300px;
-      border-radius: 1vmin;
-      box-shadow: 0px 15px 25px 0 rgba(0, 0, 0, 0.6);
-      .title {
-        text-align: center;
-        font-size: 5vmin;
-        text-shadow: 0 5px 5px rgba(0, 0, 0, 0.6);
-      }
-      .bottom-icons {
-        font-size: 30px;
-        display: flex;
-        justify-content: space-around;
-        width: 100%;
-        svg {
-          cursor: pointer;
-        }
+}
+.warpper {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  background-size: cover;
+  background-position: 0 100%;
+  justify-content: right;
+  position: relative;
+  .head-title {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    font-size: 42px;
+    color: white;
+  }
+  .register-window {
+    padding: 20px 5%;
+    margin-right: 100px;
+    background-color: rgba(255, 255, 255, 0.8);
+    width: 480px;
+    border-radius: 1vmin;
+    height: 590px;
+    box-shadow: 0px 15px 25px 0 rgba(0, 0, 0, 0.6);
+    .title {
+      text-align: center;
+      font-size: 5vmin;
+      text-shadow: 0 5px 5px rgba(0, 0, 0, 0.6);
+    }
+    .bottom-icons {
+      font-size: 30px;
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      svg {
+        cursor: pointer;
       }
     }
   }

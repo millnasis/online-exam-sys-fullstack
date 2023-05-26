@@ -10,6 +10,7 @@ import {
   Row,
   Button,
   Select,
+  Skeleton,
 } from "antd";
 const { Countdown } = Statistic;
 import "./examControl.scss";
@@ -340,11 +341,13 @@ class ExamControl extends React.Component {
       modalVisable: false,
       modalObj: { pa_order: "[]" },
       welcome: true,
+      fetching: false,
     };
   }
 
   getExamInfo() {
     const { userInfo } = this.props.global;
+    this.setState({ fetching: true });
     request(
       axios.get("/papers/teacher/" + userInfo.te_id),
       (response) => {
@@ -364,7 +367,7 @@ class ExamControl extends React.Component {
           pa_state: "all",
         });
       },
-      () => null
+      () => this.setState({ fetching: false })
     );
   }
 
@@ -390,7 +393,9 @@ class ExamControl extends React.Component {
       begintime.toDate().getTime() + exam.pa_duringtime * 1000 * 60
     );
     const format = "YYYY年MM月DD日 HH时mm分";
-    return (
+    return this.state.fetching ? (
+      <Skeleton></Skeleton>
+    ) : (
       <div className="exam-control">
         <Button
           className="switch-welcome-btn"

@@ -178,11 +178,13 @@ class GradeControl extends React.Component {
       filterData: fakeData,
       showModal: false,
       gradeInput: "",
+      fetching: false,
     };
   }
 
   async getGradeInfo() {
     const { userInfo } = this.props.global;
+    this.setState({ fetching: true });
     request(
       axios.get("/grades/student/" + userInfo.st_id),
       (response) => {
@@ -191,7 +193,7 @@ class GradeControl extends React.Component {
           filterData: response.data.data,
         });
       },
-      () => null
+      () => this.setState({ fetching: false })
     );
   }
 
@@ -200,7 +202,9 @@ class GradeControl extends React.Component {
   }
 
   render() {
-    return (
+    return this.state.fetching ? (
+      <Skeleton></Skeleton>
+    ) : (
       <div className="grade-control">
         <Modal
           open={this.state.showModal}

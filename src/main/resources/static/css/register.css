@@ -2,36 +2,47 @@
   !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[0].oneOf[0].use[3]!./src/register/index.scss ***!
   \*************************************************************************************************************************************************************************************************/
 body {
-  background-color: rgba(0, 0, 0, 0.05);
   padding: 0;
   margin: 0;
 }
-body .warpper {
-  width: 98vw;
+
+.warpper {
+  width: 100vw;
   height: 100vh;
   display: flex;
-  justify-content: center;
-  padding-top: 50px;
-  padding-bottom: 50px;
+  align-items: center;
+  background-size: cover;
+  background-position: 0 100%;
+  justify-content: right;
+  position: relative;
 }
-body .warpper .register-window {
+.warpper .head-title {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  font-size: 42px;
+  color: white;
+}
+.warpper .register-window {
   padding: 20px 5%;
-  width: 30vw;
-  min-width: 300px;
+  margin-right: 100px;
+  background-color: rgba(255, 255, 255, 0.8);
+  width: 480px;
   border-radius: 1vmin;
+  height: 590px;
   box-shadow: 0px 15px 25px 0 rgba(0, 0, 0, 0.6);
 }
-body .warpper .register-window .title {
+.warpper .register-window .title {
   text-align: center;
   font-size: 5vmin;
   text-shadow: 0 5px 5px rgba(0, 0, 0, 0.6);
 }
-body .warpper .register-window .bottom-icons {
+.warpper .register-window .bottom-icons {
   font-size: 30px;
   display: flex;
   justify-content: space-around;
   width: 100%;
 }
-body .warpper .register-window .bottom-icons svg {
+.warpper .register-window .bottom-icons svg {
   cursor: pointer;
 }
