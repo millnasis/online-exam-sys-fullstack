@@ -6,6 +6,8 @@ const miniCssExtractPlugin = require("mini-css-extract-plugin");
 //将css提取为单独文件plugin
 const { resolve } = require("path");
 
+const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
+
 let entryObject = {};
 let htmlWebpackPluginArray = [];
 
@@ -112,6 +114,7 @@ module.exports = {
       filename: "css/[name].css",
       chunkFilename: "css/[name].css",
     }),
+    // new UglifyJSPlugin(),
   ],
   optimization: {
     splitChunks: {
@@ -130,5 +133,6 @@ module.exports = {
     hot: true,
     //每次调试重新编译启用热更新，即每次只重新编译被更改的文件，需要在入口js文件加入判别热更新模块的代码
   },
-  mode: "development",
+  // mode: "development",
+  mode: "production",
 };
